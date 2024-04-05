@@ -9,10 +9,44 @@ Author URI: https://profiles.wordpress.org/presskopp/
 License: GPL2
 */
 
+/** t Prevent this file from being accessed directly */
+if (!defined('ABSPATH')) {
+    die("Direct access of plugin files is not allowed.");
+}
+ 
+/** Define UWP_PLUGIN_FILE */
+if (!defined('UWP_PLUGIN_FILE')) {
+    define('UWP_PLUGIN_FILE', __FILE__);
+}
+
+/** Constant pointing to the root directory path of the plugin */
+if (!defined("UWP_PLUGIN_DIRECTORY")) {
+    define("UWP_PLUGIN_DIRECTORY", plugin_dir_path(__FILE__));
+}
+
+if (!defined("UWP_PLUGIN_VERSION")) {
+    define("UWP_PLUGIN_VERSION", "1.0");
+}
+
+/** Constant pointing to the root directory URL of the plugin */
+if (!defined("UWP_PLUGIN_URL")) {
+    define("UWP_PLUGIN_URL", plugin_dir_url(__FILE__));
+}
+
+/** Constant defining the textdomain for localization */
+if (!defined("UWP_PLUGIN_TEXTDOMAIN")) {
+    define("UWP_PLUGIN_TEXTDOMAIN", "easy-form-builder");
+}
+if (!defined("WP_PLUGIN_DIR")) {
+    define( 'WP_PLUGIN_DIR', WP_CONTENT_DIR . '\plugins' );
+}
+
+
 class Unwanted_Cleaner {
     private static $initialized = false;
     private $unwanted_plugins_option;
     private $unwanted_plugins = array();
+    
 
     public function __construct() {
         error_log('constructor called');
@@ -24,8 +58,8 @@ class Unwanted_Cleaner {
         
         $this->unwanted_plugins_option = 'unwanted_plugins_list';
 
-        register_activation_hook(__FILE__, array($this, 'activate'));
-        register_deactivation_hook(__FILE__, array($this, 'deactivate'));
+        register_activation_hook(UWP_PLUGIN_FILE, array($this, 'activate'));
+        register_deactivation_hook(UWP_PLUGIN_FILE, array($this, 'deactivate'));
 
 		// Delete unwanted plugins before updating core
         // add_filter('upgrader_source_selection', array($this, 'unwanted_cleaner'), 10, 4);
@@ -42,6 +76,11 @@ class Unwanted_Cleaner {
 
         // Trigger on plugins page load
         // add_action('admin_post_delete_unwanted_plugins', array($this, 'trigger_on_plugins_page'));
+
+        //Ajax handler start
+        add_action('wp_ajax_handler_uwp', array( $this,'unwanted_plugins_handler'));
+
+        //Ajax handler end
     }
 
     public function delete_unwanted_plugins_after_core_upgrade($upgrader_object, $options) {
@@ -119,7 +158,7 @@ class Unwanted_Cleaner {
     }
 
     public function on_plugin_activation($plugin) {
-        if ($plugin === plugin_basename(__FILE__)) {
+        if ($plugin === plugin_basename(UWP_PLUGIN_FILE)) {
             $this->activate();
         }
     }
@@ -171,9 +210,27 @@ class Unwanted_Cleaner {
 			echo '<div class="updated"><p>' . esc_html__('Unwanted plugins have been successfully deleted.', 'unwanted-cleaner') . '</p></div>';
 		}
 
-        error_log(plugin_dir_path(__FILE__));
-        wp_register_script('main-js', plugins_url('main.js',__FILE__), array('jquery'), '', true);
-        wp_enqueue_script('main-js');
+
+        $pro =0;
+        $lang = [
+            "Delete_unwanted_plugins_now" => __('Delete unwanted plugins now', 'unwanted-cleaner'),
+            "save_changes" => __('Save Changes', 'unwanted-cleaner'),
+            "List_of_unwanted_plugins" => __('List of unwanted plugins', 'unwanted-cleaner'),
+            "Enter_the_slugs_of_unwanted_plugins" => __('Enter the slugs of unwanted plugins, each on a new line.', 'unwanted-cleaner'),
+            "Unwanted_Cleaner_Settings" => __('Unwanted Cleaner Settings', 'unwanted-cleaner')
+        ];
+      
+        wp_enqueue_script('uwp-main-js',UWP_PLUGIN_URL.'main.js', array('jquery'), '', true);
+        wp_localize_script('uwp-main-js','uwp_var',array(
+			'nonce'=> wp_create_nonce("uwp-nonce"),
+			'check' => 1,
+			'pro' => $pro,
+			'rtl' => is_rtl() ,
+			'text' => $lang,
+            'plugin_list'=>$this->unwanted_plugins,
+            'ajaxurl' => admin_url('admin-ajax.php')
+			
+		));
 		include plugin_dir_path(__FILE__) . 'settings-form.php';
 	}
 
@@ -268,6 +325,26 @@ class Unwanted_Cleaner {
         }
 
         return !empty($plugins_to_delete);
+    }
+
+    public function unwanted_plugins_handler() {
+        error_log("unwanted_plugins_handler");
+        if ( ! check_ajax_referer( 'uwp-nonce', 'nonce' ) ) {
+            $response = array( 'success' => false  , 'm'=>'nonce failed' ); 
+			wp_send_json_success($response,200);
+        }
+        $state = sanitize_text_field($_POST['state']);
+        $plugin_list =sanitize_text_field($_POST['plugin_list']);
+        $message = $state = 'delete' ? __('Plugins deleted successfully.', 'unwanted-cleaner') : __('List of plugins saved.', 'unwanted-cleaner');
+        update_option($this->unwanted_plugins_option, explode("\n", $plugin_list));
+        if($state == 'save'){
+            //call function for save
+        }else{
+           // call function for delete
+        }
+        error_log($message);
+        $response = array( 'success' => true  , 'm'=>$message ); 
+        wp_send_json_success($response,200);
     }
 }
 
