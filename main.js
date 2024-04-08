@@ -61,13 +61,15 @@ function fun_handle_uwp(state){
     }
     noti_box = (m, clss) => {
         let noti = document.getElementById('noti-uwp')
-        noti.className = clss;
-        noti.innerHTML = '<div class="notice notice-success is-dismissible" data-slug="unwanted-changer"><p>' + m + '</p></div>';
+        // noti.className = clss;
+        noti.innerHTML = '<div class="notice notice-' + clss + ' ' + '" data-slug="unwanted-changer"><p>' + m + '</p></div>';
         el.innerHTML = d;
     }
     let el = document.getElementById(`${state}Button`);
     const d = el.innerHTML;
+    el.blur();
     el.innerHTML=uwp_var.text.wait;
+
     data = {};
     let msg = 'not working';
     let clss = "not-valid-";
@@ -82,14 +84,15 @@ function fun_handle_uwp(state){
             
         $.post(uwp_var.ajaxurl, data, function (res) {
             console.log(res ,res.data.success);
-           
             if(res.data.success ==true){
                 msg = res.data.m;
-                clss= "valid";
+                // clss= "valid";
+                clss= "success";
                 noti_box(msg ,clss);
             }else{
                 msg = res.data.m;
-                clss = "not-valid";
+                // clss = "not-valid";
+                clss = "error";
                 noti_box(msg ,clss);
             }  
         
