@@ -301,8 +301,9 @@ class Unwanted_Cleaner {
     public function unwanted_plugins_handler() {
         error_log("unwanted_plugins_handler");
         if ( ! check_ajax_referer( 'uwp-nonce', 'nonce' ) ) {
-            $response = array( 'success' => false  , 'm'=>'nonce failed' ); 
-			wp_send_json_success($response,200);
+            $response = array( 'success' => false  , 'm'=>'nonce failed' );
+			//wp_send_json_success($response,200);
+            wp_send_json_error($response, 401);
         }
 
         $state = sanitize_text_field($_POST['state']);
@@ -325,7 +326,7 @@ class Unwanted_Cleaner {
            error_log("unwanted_plugins_handler() called delete_unwanted_plugins()");
         }
         error_log($message);
-        $response = array( 'success' => true  , 'm'=>$message ); 
+        $response = array( 'success' => true, 'm'=>$message ); 
         wp_send_json_success($response,200);
     }
 }

@@ -1,10 +1,3 @@
-/* const test = '<h1> test</h1>';
-document.addEventListener("DOMContentLoaded", function() {
-document.getElementById('main_unwanted_cleaner').innerHTML= uwp_var.text.Unwanted_Cleaner_Settings;
-}); */
-
-
-
 document.addEventListener("DOMContentLoaded", function() {
     
     const pluginListUWP = uwp_var.plugin_list;
@@ -17,8 +10,6 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         }
     }
-    
-    
 
     console.log('pluginListUWP = ' + pluginlist);
 
@@ -44,7 +35,6 @@ document.addEventListener("DOMContentLoaded", function() {
     `;
     document.getElementById('main_unwanted_cleaner').innerHTML = ui_page;
 
-
     setTimeout(() => {
         // Event-Handler für den Speichern-Button hinzufügen
         document.getElementById('saveButton').addEventListener('click', function() {
@@ -69,11 +59,11 @@ function fun_handle_uwp(state){
     }else if(state == 'save'){
         console.log('fun_handle_uwp: save')
     }
-    noti_box =(m,clss)=>{
+    noti_box = (m, clss) => {
         let noti = document.getElementById('noti-uwp')
-        noti.className =clss;
-        noti.innerHTML=m;
-        el.innerHTML=d;
+        noti.className = clss;
+        noti.innerHTML = '<div class="notice notice-success is-dismissible" data-slug="unwanted-changer"><p>' + m + '</p></div>';
+        el.innerHTML = d;
     }
     let el = document.getElementById(`${state}Button`);
     const d = el.innerHTML;
