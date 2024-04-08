@@ -3,13 +3,13 @@
 Plugin Name: Unwanted Cleaner
 Plugin URI: https://wordpress.org/plugins/unwanted-cleaner/
 Description: This plugin removes unwanted plugins during the WordPress core upgrade process. You can manage the list of unwanted plugins from the settings page.
-Version: 1.0
+Version: 1.0.0
 Author: Presskopp
 Author URI: https://profiles.wordpress.org/presskopp/
 License: GPL2
 */
 
-/** t Prevent this file from being accessed directly */
+/** Prevent this file from being accessed directly */
 if (!defined('ABSPATH')) {
     die("Direct access of plugin files is not allowed.");
 }
@@ -25,7 +25,7 @@ if (!defined("UWP_PLUGIN_DIRECTORY")) {
 }
 
 if (!defined("UWP_PLUGIN_VERSION")) {
-    define("UWP_PLUGIN_VERSION", "1.0");
+    define("UWP_PLUGIN_VERSION", "1.0.0");
 }
 
 /** Constant pointing to the root directory URL of the plugin */
@@ -35,8 +35,9 @@ if (!defined("UWP_PLUGIN_URL")) {
 
 /** Constant defining the textdomain for localization */
 if (!defined("UWP_PLUGIN_TEXTDOMAIN")) {
-    define("UWP_PLUGIN_TEXTDOMAIN", "easy-form-builder");
+    define("UWP_PLUGIN_TEXTDOMAIN", "unwanted-cleaner");
 }
+
 if (!defined("WP_PLUGIN_DIR")) {
     define( 'WP_PLUGIN_DIR', WP_CONTENT_DIR . '\plugins' );
 }
@@ -49,7 +50,7 @@ class Unwanted_Cleaner {
     
 
     public function __construct() {
-        error_log('constructor called');
+        error_log('constructor called (our own code)');
 
         if (self::$initialized) {
             return;
@@ -74,26 +75,80 @@ class Unwanted_Cleaner {
         // für Nonce
         add_action('admin_post_delete_unwanted_plugins', 'process_delete_unwanted_plugins_form');
 
-        // Trigger on plugins page load
-        // add_action('admin_post_delete_unwanted_plugins', array($this, 'trigger_on_plugins_page'));
-
-        //Ajax handler start
+        // Ajax handler start
         add_action('wp_ajax_handler_uwp', array( $this,'unwanted_plugins_handler'));
+        // Ajax handler end
+    }
 
-        //Ajax handler end
+    // main function to delete the unwanted plugins
+    public function delete_unwanted_plugins() {
+        error_log("delete_unwanted_plugins was called");
+    
+        $installed_plugins = get_plugins();
+        $plugins_to_delete = array();
+        $plugin_list =  count($this->unwanted_plugins)==1 ? explode( ",", $this->unwanted_plugins[0] ) : $this->unwanted_plugins;
+		// Do we have a "hello.php" in the plugins directory?
+        $this->delete_hello_php_above_plugin();
+        error_log(gettype($plugin_list));
+        // Go through all of the installed plugins so if a plugin is active, it can be deactivated first
+        foreach ($installed_plugins as $plugin_file => $plugin_data) {
+            error_log("now checking: " . $plugin_file);
+            error_log(in_array(dirname($plugin_file), $plugin_list));
+            error_log(dirname($plugin_file));
+            error_log(json_encode($plugin_list));
+            if (in_array(dirname($plugin_file), $plugin_list)) {
+
+                if (is_plugin_active($plugin_file)) {
+                    deactivate_plugins($plugin_file);
+                }
+
+                // call uninstall so uninstall routine can run before deletion (this only happens if the plugin was activated)
+                // uninstall_plugins($plugin_file);
+                // but what if a plugin asks the user anything on deinstallaion?
+                // hmm..
+
+                $deleted = delete_plugins(array($plugin_file));
+
+                if ($deleted) {
+                    $plugins_to_delete[] = $plugin_file;
+                    error_log($plugin_file . " deleted successfully.");
+                }
+                else {
+                    error_log("Failed to delete " . $plugin_file);
+                }
+
+            }
+        }
+
+        return !empty($plugins_to_delete);
+    }
+
+    public function save_unwanted_plugins_list() {
+        if (!current_user_can('manage_options')) {
+            return;
+        }
+        if (isset($_POST['save_plugin_list'])) {
+            update_option('plugin_list_uwp', $_POST['plugin_list_uwp']);
+            error_log('Plugin-Liste erfolgreich gespeichert!');
+        }
     }
 
     public function delete_unwanted_plugins_after_core_upgrade($upgrader_object, $options) {
         error_log('delete_unwanted_plugins_after_core_upgrade');
-        // Überprüfen, ob es sich um ein Core-Upgrade handelt
+
+        // Check if a core upgrade was done
         if ($options['action'] === 'update' && $options['type'] === 'core') {
-            // Laden der Liste der unerwünschten Plugins
+            
+            // Load the list of unwanted plugins
             $unwanted_plugins = get_option('unwanted_plugins_list', array());
     
+            // undefined function - why??
+            // delete_unwanted_plugins();
+
             // Überprüfen und Löschen der unerwünschten Plugins
             foreach ($unwanted_plugins as $plugin) {
                 $plugin_dir = WP_PLUGIN_DIR . '/' . $plugin;
-                error_log("delete_plugin_folder: " . $plugin_dir);
+                // error_log("delete_plugin_folder: " . $plugin_dir);
                 if (is_dir($plugin_dir)) {
                     $deleted = $this->delete($plugin_dir, true); // Rekursives Löschen des Plugin-Ordners
                     if ($deleted) {
@@ -111,13 +166,13 @@ class Unwanted_Cleaner {
         }
     }
 
-    // Löschen der hello.php-Datei oberhalb des Plugin-Verzeichnisses
+    // Delete hello.php file if it exists above the plugin folder
     public function delete_hello_php_above_plugin() {
         $hello_php_file = WP_PLUGIN_DIR . '/hello.php';
-        error_log("hello_php_file: " . $hello_php_file);
+        // error_log("hello_php_file: " . $hello_php_file);
         if (file_exists($hello_php_file)) {
             deactivate_plugins($hello_php_file);
-            $file_exists_before_deletion = true;
+            // $file_exists_before_deletion = true;
             
             // = NULL for some reason
             // $deleted = wp_delete_file($hello_php_file);
@@ -164,7 +219,7 @@ class Unwanted_Cleaner {
     }
 
     public function activate() {
-        $default_options = array('akismet', 'hello-dolly');
+        $default_options = array('akismet','hello-dolly');
         update_option($this->unwanted_plugins_option, $default_options);
         update_option('unwanted_cleaner_active', true);
     }
@@ -185,7 +240,7 @@ class Unwanted_Cleaner {
     }
 
     public function add_admin_menu() {
-        add_options_page('Unwanted Cleaner', 'Unwanted Cleaner', 'manage_options', 'unwanted-cleaner', array($this, 'render_admin_page'));
+        add_options_page('Unwanted Cleaner', 'Unwanted Cleaner', 'manage_options', 'unwanted-cleaner', array($this, 'init_admin_page'));
     }
 
     public function register_settings() {
@@ -197,29 +252,22 @@ class Unwanted_Cleaner {
         return explode("\n", sanitize_textarea_field($input));
     }
 
-	public function render_admin_page() {
-        error_log('render_admin_page!');
+	public function init_admin_page() {
+        error_log('init_admin_page!');
 		$this->load_unwanted_plugins();
-		$status = isset($_GET['status']) ? $_GET['status'] : '';
-
-		if ($status === 'error') {
-			echo '<div class="error"><p>' . esc_html__('Error: No Plugins have been deleted.', 'unwanted-cleaner') . '</p></div>';
-		}
-		
-		if ($status === 'success') {
-			echo '<div class="updated"><p>' . esc_html__('Unwanted plugins have been successfully deleted.', 'unwanted-cleaner') . '</p></div>';
-		}
-
-
+	
         $pro =0;
         $lang = [
-            "Delete_unwanted_plugins_now" => __('Delete unwanted plugins now', 'unwanted-cleaner'),
-            "save_changes" => __('Save Changes', 'unwanted-cleaner'),
+            "Unwanted_Cleaner_Settings" => __('Unwanted Cleaner Settings', 'unwanted-cleaner'),
             "List_of_unwanted_plugins" => __('List of unwanted plugins', 'unwanted-cleaner'),
-            "Enter_the_slugs_of_unwanted_plugins" => __('Enter the slugs of unwanted plugins, each on a new line.', 'unwanted-cleaner'),
-            "Unwanted_Cleaner_Settings" => __('Unwanted Cleaner Settings', 'unwanted-cleaner')
+            "Enter_the_slugs_of_unwanted_plugins" => __('Enter the <b>slugs</b> of your unwanted plugins, <b>each on a new line</b>.', 'unwanted-cleaner'),
+            "They_will_be_automatically_deleted" => __('They are automatically deleted as soon as a core upgrade has taken place.', 'unwanted-cleaner'),
+            "save_changes" => __('Save Changes', 'unwanted-cleaner'),
+            "delete_now_hint" => __('If you want to delete the unwanted plugins right now, push the button below.', 'unwanted-cleaner'),
+            "delete_unwanted_plugins" => __('Delete unwanted plugins now', 'unwanted-cleaner'),
+            "wait" => __('Wait', 'unwanted-cleaner'),
         ];
-      
+        error_log(json_encode($this->unwanted_plugins));
         wp_enqueue_script('uwp-main-js',UWP_PLUGIN_URL.'main.js', array('jquery'), '', true);
         wp_localize_script('uwp-main-js','uwp_var',array(
 			'nonce'=> wp_create_nonce("uwp-nonce"),
@@ -233,99 +281,22 @@ class Unwanted_Cleaner {
 		));
 		include plugin_dir_path(__FILE__) . 'settings-form.php';
 	}
-
-    public function unwanted_cleaner($plugins) {
-        error_log('unwanted_cleaner');
-        $this->load_unwanted_plugins();
-        $installed_plugins = get_plugins();
-        $plugins_to_delete = array();
-
-		// Do we have a "hello.php" in the plugins directory?
-        /*$hello_php_plugin_file = WP_PLUGIN_DIR . '/hello.php';
-        if (file_exists($hello_php_plugin_file)) {
-            deactivate_plugins($hello_php_plugin_file);
-            $deleted = wp_delete_file($hello_php_plugin_file);
-            unset($plugins[$hello_php_plugin_file]);
-        }*/
-        $this->delete_hello_php_above_plugin();
-		
-        foreach ($installed_plugins as $plugin_file => $plugin_data) {
-            error_log('run foreach');
-            if (in_array(dirname($plugin_file), $this->unwanted_plugins)) {
-                $deleted = false;
-                deactivate_plugins($plugin_file);
-                $deleted = delete_plugins(array($plugin_file));
-
-                // Debugging output
-                if ($deleted) {
-					echo '<p>' . esc_html__('Deleted plugin: ', 'unwanted-cleaner') . esc_html($plugin_file) . '</p>';
-				} else {
-					echo '<p>' . esc_html__('Failed to delete plugin: ', 'unwanted-cleaner') . esc_html($plugin_file) . '</p>';
-				}
-
-                $plugins_to_delete[] = $plugin_file;
-            }
-        }
-
-        return empty($plugins_to_delete);
-    }
-
 	public function check_and_delete_unwanted_plugins() {
 		$this->load_unwanted_plugins();
 		
 		if (!empty($this->unwanted_plugins)) {
 
-			$result = $this->delete_unwanted_plugins_now();
+			$result = $this->delete_unwanted_plugins();
 			
 			if ($result) {
 				wp_redirect(admin_url('options-general.php?page=unwanted-cleaner&status=success'));
 			} else {
 				wp_redirect(admin_url('options-general.php?page=unwanted-cleaner&status=error'));
 			}
-			
+
 			exit;
 		}
 	}
-	
-    public function delete_unwanted_plugins_now() {
-        error_log("in delete_unwanted_plugins_now");
-
-        // Überprüfen des Nonce-Felds mit check_admin_referer()
-        if ( ! check_admin_referer( 'delete_unwanted_plugins_action', 'delete_unwanted_plugins_nonce' ) ) {
-            // Nonce ist ungültig oder nicht vorhanden, Formulardaten nicht verarbeiten
-            wp_die('Nonce verification failed. Form submission aborted.');
-        }
-
-        // Nonce ist gültig, Formulardaten können sicher verarbeitet werden
-        $this->load_unwanted_plugins();
-        $installed_plugins = get_plugins();
-        $plugins_to_delete = array();
-
-		// Do we have a "hello.php" in the plugins directory?
-        $this->delete_hello_php_above_plugin();
-        /*
-        $hello_php_plugin_file = WP_PLUGIN_DIR . '/hello.php';
-        if (file_exists($hello_php_plugin_file)) {
-            deactivate_plugins($hello_php_plugin_file);
-            $deleted = wp_delete_file($hello_php_plugin_file);
-            unset($plugins[$hello_php_plugin_file]);
-        }*/
-
-        foreach ($installed_plugins as $plugin_file => $plugin_data) {
-            error_log("unwanted plugins / now: " . $this->unwanted_plugins);
-            if (in_array(dirname($plugin_file), $this->unwanted_plugins)) {
-                $deleted = false;
-                deactivate_plugins($plugin_file);
-                $deleted = delete_plugins(array($plugin_file));
-
-                if ($deleted) {
-                    $plugins_to_delete[] = $plugin_file;
-                }
-            }
-        }
-
-        return !empty($plugins_to_delete);
-    }
 
     public function unwanted_plugins_handler() {
         error_log("unwanted_plugins_handler");
@@ -333,14 +304,25 @@ class Unwanted_Cleaner {
             $response = array( 'success' => false  , 'm'=>'nonce failed' ); 
 			wp_send_json_success($response,200);
         }
+
         $state = sanitize_text_field($_POST['state']);
-        $plugin_list =sanitize_text_field($_POST['plugin_list']);
-        $message = $state = 'delete' ? __('Plugins deleted successfully.', 'unwanted-cleaner') : __('List of plugins saved.', 'unwanted-cleaner');
-        update_option($this->unwanted_plugins_option, explode("\n", $plugin_list));
+        $plugin_list = sanitize_text_field($_POST['plugin_list']);
+        $plugin_list = str_replace(' ', ',', $plugin_list);
+        $message = $state == 'delete' ? __('Plugins deleted successfully.', 'unwanted-cleaner') : __('List of plugins saved.', 'unwanted-cleaner');
+        
+        //update_option($this->unwanted_plugins_option, explode("\n", $plugin_list));
+
         if($state == 'save'){
+            // save options (list of unwanted plugins)
+            error_log($plugin_list);
+            //update_option( 'unwanted_plugins_list', explode( ",", $plugin_list ) );
+            update_option( 'unwanted_plugins_list', $plugin_list );
             //call function for save
+            error_log("unwanted_plugins_handler() called save_unwanted_plugins_list()");
         }else{
            // call function for delete
+           $this->delete_unwanted_plugins();
+           error_log("unwanted_plugins_handler() called delete_unwanted_plugins()");
         }
         error_log($message);
         $response = array( 'success' => true  , 'm'=>$message ); 
