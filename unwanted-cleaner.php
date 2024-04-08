@@ -265,7 +265,8 @@ class Unwanted_Cleaner {
             "save_changes" => __('Save Changes', 'unwanted-cleaner'),
             "delete_now_hint" => __('If you want to delete the unwanted plugins right now, push the button below.', 'unwanted-cleaner'),
             "delete_unwanted_plugins" => __('Delete unwanted plugins now', 'unwanted-cleaner'),
-            "wait" => __('Wait', 'unwanted-cleaner'),
+            "saving" => __('Saving list...', 'unwanted-cleaner'),
+            "deleting" => __('Deleting plugins...', 'unwanted-cleaner')
         ];
         error_log(json_encode($this->unwanted_plugins));
         wp_enqueue_script('uwp-main-js',UWP_PLUGIN_URL.'main.js', array('jquery'), '', true);

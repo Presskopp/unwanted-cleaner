@@ -68,7 +68,11 @@ function fun_handle_uwp(state){
     let el = document.getElementById(`${state}Button`);
     const d = el.innerHTML;
     el.blur();
-    el.innerHTML=uwp_var.text.wait;
+    if(state == 'save'){
+        el.innerHTML=uwp_var.text.saving;
+    }else if(state == 'delete'){
+        el.innerHTML=uwp_var.text.deleting;
+    }
 
     data = {};
     let msg = 'not working';
