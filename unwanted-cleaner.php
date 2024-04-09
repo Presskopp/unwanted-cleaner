@@ -62,22 +62,17 @@ class Unwanted_Cleaner {
         register_activation_hook(UWP_PLUGIN_FILE, array($this, 'activate'));
         register_deactivation_hook(UWP_PLUGIN_FILE, array($this, 'deactivate'));
 
-		// Delete unwanted plugins before updating core
-        // add_filter('upgrader_source_selection', array($this, 'unwanted_cleaner'), 10, 4);
-
         add_action('upgrader_process_complete', array($this, 'delete_unwanted_plugins_after_core_upgrade'), 10, 2);
-
 		add_action('admin_menu', array($this, 'add_admin_menu'));
         add_action('admin_init', array($this, 'register_settings'));
         add_action('activated_plugin', array($this, 'on_plugin_activation'));
         add_action('init', array($this, 'init'));
 
-        // für Nonce
-        add_action('admin_post_delete_unwanted_plugins', 'process_delete_unwanted_plugins_form');
+        // unused?
+        // add_action('admin_post_delete_unwanted_plugins', 'process_delete_unwanted_plugins_form');
 
-        // Ajax handler start
+        // Ajax handler
         add_action('wp_ajax_handler_uwp', array( $this,'unwanted_plugins_handler'));
-        // Ajax handler end
     }
 
     // main function to delete the unwanted plugins
@@ -87,9 +82,11 @@ class Unwanted_Cleaner {
         $installed_plugins = get_plugins();
         $plugins_to_delete = array();
         $plugin_list =  count($this->unwanted_plugins)==1 ? explode( ",", $this->unwanted_plugins[0] ) : $this->unwanted_plugins;
+
 		// Do we have a "hello.php" in the plugins directory?
         $this->delete_hello_php_above_plugin();
         error_log(gettype($plugin_list));
+
         // Go through all of the installed plugins so if a plugin is active, it can be deactivated first
         foreach ($installed_plugins as $plugin_file => $plugin_data) {
             error_log("now checking: " . $plugin_file);
@@ -150,7 +147,7 @@ class Unwanted_Cleaner {
                 $plugin_dir = WP_PLUGIN_DIR . '/' . $plugin;
                 // error_log("delete_plugin_folder: " . $plugin_dir);
                 if (is_dir($plugin_dir)) {
-                    $deleted = $this->delete($plugin_dir, true); // Rekursives Löschen des Plugin-Ordners
+                    $deleted = $this->delete($plugin_dir, true); // recursively delete plugin folder
                     if ($deleted) {
                         error_log('Deleted unwanted plugin folder: ' . $plugin);
                     } else {
@@ -159,7 +156,7 @@ class Unwanted_Cleaner {
                 }
             }
 
-            // Löschen der hello.php-Datei, wenn hello-dolly in der Liste der unerwünschten Plugins enthalten ist
+            // Delete hello.php file, if hello-dolly is in list of unwanted plugins
             if (in_array('hello-dolly', $unwanted_plugins)) {
                 $this->delete_hello_php_above_plugin();
             }
@@ -187,6 +184,7 @@ class Unwanted_Cleaner {
 
             $file_still_exists_after_deletion = file_exists($hello_php_file);
             // unset($plugins[$hello_php_file]);
+            // 2DO user response
             if ($file_still_exists_after_deletion) {
                 error_log('Failed to delete hello.php file above plugin directory');
             } else {
@@ -195,8 +193,8 @@ class Unwanted_Cleaner {
         }
     }
 
-    // Funktion zum rekursiven Löschen des Plugin-Ordners definieren
-    // Verwendung der delete() Methode des WordPress-Dateisystems
+    // function to recursively delete plugin folder
+    // use delete() method of WP filesystem
     public function delete( $file, $recursive = false, $type = false ) {
         global $wp_filesystem;
 
@@ -205,10 +203,10 @@ class Unwanted_Cleaner {
             return false;
         }
 
-        // Verwendung des WP_Filesystem für das Löschen
+        // Use WP_Filesystem for deleting
         WP_Filesystem();
 
-        // Verwenden der WordPress-Dateisystemfunktionen zum Löschen von Dateien und Ordnern
+        // Use WP_Filesystem for deleting files and folders
         return $wp_filesystem->delete($file, $recursive, $type);
     }
 
@@ -282,6 +280,8 @@ class Unwanted_Cleaner {
 		));
 		include plugin_dir_path(__FILE__) . 'settings-form.php';
 	}
+
+    // 2DO check if function is still needed
 	public function check_and_delete_unwanted_plugins() {
 		$this->load_unwanted_plugins();
 		

@@ -36,12 +36,12 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById('main_unwanted_cleaner').innerHTML = ui_page;
 
     setTimeout(() => {
-        // Event-Handler für den Speichern-Button hinzufügen
+        // Event-Handler for save button
         document.getElementById('saveButton').addEventListener('click', function() {
             fun_handle_uwp('save');
         });
     
-        // Event-Handler für den Löschen-Button hinzufügen
+        // Event-Handler for delete now button
         document.getElementById('deleteButton').addEventListener('click', function() {
             fun_handle_uwp('delete');
         });        
@@ -101,8 +101,6 @@ function fun_handle_uwp(state){
             }  
         
         })
-       
-       
         return true;
     });
 }
