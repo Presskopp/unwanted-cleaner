@@ -92,7 +92,7 @@ class Unwanted_Cleaner {
             error_log("now checking: " . $plugin_file);
             error_log(in_array(dirname($plugin_file), $plugin_list));
             error_log(dirname($plugin_file));
-            error_log(json_encode($plugin_list));
+            error_log(wp_json_encode($plugin_list));
             if (in_array(dirname($plugin_file), $plugin_list)) {
 
                 if (is_plugin_active($plugin_file)) {
@@ -124,6 +124,13 @@ class Unwanted_Cleaner {
         if (!current_user_can('manage_options')) {
             return;
         }
+
+        // check nonce
+        if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'uwp-nonce' ) ) {
+            echo 'Nonce verification failed';
+            return;
+        }
+
         if (isset($_POST['save_plugin_list'])) {
             update_option('plugin_list_uwp', $_POST['plugin_list_uwp']);
             error_log('Plugin-Liste erfolgreich gespeichert!');
@@ -266,8 +273,8 @@ class Unwanted_Cleaner {
             "saving" => __('Saving list...', 'unwanted-cleaner'),
             "deleting" => __('Deleting plugins...', 'unwanted-cleaner')
         ];
-        error_log(json_encode($this->unwanted_plugins));
-        wp_enqueue_script('uwp-main-js',UWP_PLUGIN_URL.'main.js', array('jquery'), '', true);
+        error_log(wp_json_encode($this->unwanted_plugins));
+        wp_enqueue_script('uwp-main-js', UWP_PLUGIN_URL . 'main.js', array('jquery'), '1.0.0', true);
         wp_localize_script('uwp-main-js','uwp_var',array(
 			'nonce'=> wp_create_nonce("uwp-nonce"),
 			'check' => 1,
