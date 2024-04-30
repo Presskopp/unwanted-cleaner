@@ -149,7 +149,7 @@ class Unwanted_Cleaner {
             // undefined function - why??
             // delete_unwanted_plugins();
 
-            // Überprüfen und Löschen der unerwünschten Plugins
+            // Check and delete unwanted plugins
             foreach ($unwanted_plugins as $plugin) {
                 $plugin_dir = WP_PLUGIN_DIR . '/' . $plugin;
                 // error_log("delete_plugin_folder: " . $plugin_dir);
