@@ -21,8 +21,11 @@ How does the plugin work?
 On WordPress Core upgrades Unwanted Cleaner will check each item in the list you manage in the plugin settings. If plugins were installed during the upgrade process they will be deleted immediately automatically.
 
 How do I know what to enter into the list if I want to exclude a plugin
+
 Go to https://wordpress.org/plugins/ and find your unwanted plugin.
+
 For example if you don't like the 'Hello Dolly' plugin it's slug (URL) will be  https://wordpress.org/plugins/hello-dolly/
+
 enter the part after /plugins/ without the ending slash, in this case: hello-dolly
 
 == Upgrade Notice ==
