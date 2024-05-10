@@ -2,7 +2,6 @@ document.addEventListener("DOMContentLoaded", function() {
     
     const pluginListUWP = uwp_var.plugin_list;
     let pluginlist=null;
-    console.log(typeof pluginListUWP ,pluginListUWP)
     for (let key in pluginListUWP) {
         if (Object.prototype.hasOwnProperty.call(pluginListUWP, key)) {
             if (typeof pluginListUWP[key] === 'string') {
@@ -10,8 +9,6 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         }
     }
-
-    console.log('pluginListUWP = ' + pluginlist);
 
     const ui_page = `
     <div class="wrap">
@@ -50,15 +47,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 function fun_handle_uwp(state){
-    console.log('fun_handle_uwp');
-    console.log(uwp_var.ajaxurl);
     const plugin_list = document.getElementById('plugin-list-uwp').value;
-    console.log(plugin_list);
-    if(state == 'delete'){
-        console.log('fun_handle_uwp: delete')
-    }else if(state == 'save'){
-        console.log('fun_handle_uwp: save')
-    }
     noti_box = (m, clss) => {
         let noti = document.getElementById('noti-uwp')
         // noti.className = clss;
@@ -87,7 +76,6 @@ function fun_handle_uwp(state){
             };
             
         $.post(uwp_var.ajaxurl, data, function (res) {
-            console.log(res ,res.data.success);
             if(res.data.success ==true){
                 msg = res.data.m;
                 // clss= "valid";
@@ -99,7 +87,6 @@ function fun_handle_uwp(state){
                 clss = "error";
                 noti_box(msg ,clss);
             }  
-        
         })
         return true;
     });

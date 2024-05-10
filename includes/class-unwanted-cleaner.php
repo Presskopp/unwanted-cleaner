@@ -18,20 +18,21 @@ class Unwanted_Cleaner {
 
         register_activation_hook(UWP_PLUGIN_FILE, array($this, 'activate'));
         register_deactivation_hook(UWP_PLUGIN_FILE, array($this, 'deactivate'));
+        
+        // Initialisation
+        add_action('init', array($this, 'init'));
 
         // fires after upgrade of core, themes or plugins
         add_action('upgrader_process_complete', array($this, 'delete_unwanted_plugins_after_core_upgrade'), 10, 2);
+
+        if ( !is_admin() ) return;
+
         // add entries to admin menu
 		add_action('admin_menu', array($this, 'add_admin_menu'));
         // fires when admin panel is initialised
         add_action('admin_init', array($this, 'register_settings'));
         // fires on plugin activation
         add_action('activated_plugin', array($this, 'on_plugin_activation'));
-        // Initialisation
-        add_action('init', array($this, 'init'));
-
-        // unused
-        // add_action('admin_post_delete_unwanted_plugins', 'process_delete_unwanted_plugins_form');
 
         // Ajax handler
         add_action('wp_ajax_handler_uwp', array( $this,'unwanted_plugins_handler'));
@@ -45,15 +46,7 @@ class Unwanted_Cleaner {
         $plugins_to_delete = array();
         $plugin_list =  count($this->unwanted_plugins)==1 ? explode( ",", $this->unwanted_plugins[0] ) : $this->unwanted_plugins;
 
-        try {
-            // Do we have a "hello.php" in the plugins directory?
-            $this->delete_hello_php_above_plugin();
-            //error_log(gettype($plugin_list)); ARRAY
-            error_log('Successfully deleted Hello Dolly plugin.');
-        } catch (Exception $e) {
-            error_log('There was an error trying to delete the Hello Dolly plugin: ' . $e->getMessage());
-            // possible admin notice or anything here..
-        }
+        $this->delete_hello_php_above_plugin();
 
         // Go through all of the installed plugins so if a plugin is active, it can be deactivated first
         // foreach ($installed_plugins as $plugin_file => $plugin_data) {
@@ -68,6 +61,7 @@ class Unwanted_Cleaner {
 
                 if (is_plugin_active($plugin_file)) {
                     deactivate_plugins($plugin_file);
+                    //uninstall_plugins($plugin_file);
                 }
 
                 // call uninstall so uninstall routine can run before deletion (this only happens if the plugin was activated)
@@ -83,7 +77,7 @@ class Unwanted_Cleaner {
                 }
                 else {
                     error_log("Failed deleting " . $plugin_file);
-                    throw new Exception("Failed deleting " . $plugin_file);
+                    
                 }
 
             }
@@ -94,19 +88,16 @@ class Unwanted_Cleaner {
 
     public function save_unwanted_plugins_list() {
         error_log("function save_unwanted_plugins_list() was called");
-        if (!current_user_can('manage_options')) {
-            return;
-        }
 
         // check nonce
         if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'uwp-nonce' ) ) {
-            // echo 'Nonce verification failed';
-            echo __('Unwanted Cleaner Settings', 'unwanted-cleaner');
+            error_log('No permission to save list');
+            echo __("You don't have permission to do so", 'unwanted-cleaner');
             return;
         }
 
-        if (isset($_POST['save_plugin_list'])) {
-            update_option('plugin_list_uwp', $_POST['plugin_list_uwp']);
+        if (isset($_POST['plugin_list'])) {
+            update_option('unwanted_plugins_list', $_POST['plugin_list']);
             error_log('Plugin list saved successfully!');
         }
     }
@@ -119,6 +110,8 @@ class Unwanted_Cleaner {
             
             // Load the list of unwanted plugins
             $unwanted_plugins = get_option('unwanted_plugins_list', array());
+
+            if (empty($unwanted_plugins)) return;
 
             // Check and delete unwanted plugins
             foreach ($unwanted_plugins as $plugin) {
@@ -199,6 +192,11 @@ class Unwanted_Cleaner {
     }
 
     public function init() {
+        load_plugin_textdomain(
+            UWP_PLUGIN_TEXTDOMAIN,
+            false,
+            UWP_PLUGIN_URL . "/languages"
+        );
         if (is_admin() && current_user_can('manage_options') && get_option('unwanted_cleaner_active')) {
             $this->load_unwanted_plugins();
         }
@@ -240,7 +238,7 @@ class Unwanted_Cleaner {
 
         error_log(wp_json_encode($this->unwanted_plugins));
 
-        wp_enqueue_script('uwp-main-js', UWP_PLUGIN_URL . '/includes/assets/js/main.js', array('jquery'), '1.0.0', true);
+        wp_enqueue_script('uwp-main-js', UWP_PLUGIN_URL . '/includes/assets/js/uc_main.js', array('jquery'), '1.0.0', true);
 
         wp_localize_script('uwp-main-js','uwp_var',array(
 			'nonce'=> wp_create_nonce("uwp-nonce"),
@@ -278,7 +276,7 @@ class Unwanted_Cleaner {
 
         if( $state == 'save' ) {
             // save options (list of unwanted plugins)
-            error_log($plugin_list);
+            error_log('save: ' . $plugin_list);
             //update_option( 'unwanted_plugins_list', explode( ",", $plugin_list ) );
             
             //update_option( 'unwanted_plugins_list', $plugin_list );
