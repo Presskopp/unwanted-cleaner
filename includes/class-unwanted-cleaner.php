@@ -206,15 +206,6 @@ class Unwanted_Cleaner {
 
     public function load_unwanted_plugins() {
         $this->unwanted_plugins = get_option($this->unwanted_plugins_option, array());
-
-        /* should we use transient cache? like in:
-        $this->unwanted_plugins = get_transient('unwanted_plugins_list');
-
-        // if no cache exists, load again and set cache
-        if (!$this->unwanted_plugins) {
-            $this->unwanted_plugins = get_option($this->unwanted_plugins_option, array());
-            set_transient('unwanted_plugins_list', $this->unwanted_plugins, DAY_IN_SECONDS); // Cache for 1 day
-        } */
     }
 
     public function add_admin_menu() {
