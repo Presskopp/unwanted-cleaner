@@ -49,6 +49,7 @@ class Unwanted_Cleaner {
             // Do we have a "hello.php" in the plugins directory?
             $this->delete_hello_php_above_plugin();
             //error_log(gettype($plugin_list)); ARRAY
+            error_log('Successfully deleted Hello Dolly plugin.');
         } catch (Exception $e) {
             error_log('There was an error trying to delete the Hello Dolly plugin: ' . $e->getMessage());
             // possible admin notice or anything here..
@@ -59,9 +60,9 @@ class Unwanted_Cleaner {
         foreach ($installed_plugins as $plugin_file => $_) {    // Deconstruction of $plugin_data because we don't use it
             
             error_log("now checking: " . $plugin_file);
-            error_log(in_array(dirname($plugin_file), $plugin_list));
-            error_log(dirname($plugin_file));
-            error_log(wp_json_encode($plugin_list));
+            //error_log(in_array(dirname($plugin_file), $plugin_list));
+            error_log('dirname: ' . dirname($plugin_file));
+            //error_log(wp_json_encode($plugin_list));
 
             if (in_array(dirname($plugin_file), $plugin_list)) {
 
@@ -157,7 +158,7 @@ class Unwanted_Cleaner {
             if ($file_still_exists_after_deletion) {
                 error_log('Failed deleting hello.php file above plugin directory');
             } else {
-                error_log('Deleted hello.php file above plugin directory');
+                error_log('Successfully deleted hello.php file above plugin directory');
             }
         }
     }
