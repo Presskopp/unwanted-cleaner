@@ -48,7 +48,7 @@ class Unwanted_Cleaner {
         try {
             // Do we have a "hello.php" in the plugins directory?
             $this->delete_hello_php_above_plugin();
-            error_log(gettype($plugin_list));
+            //error_log(gettype($plugin_list)); ARRAY
         } catch (Exception $e) {
             error_log('There was an error trying to delete the Hello Dolly plugin: ' . $e->getMessage());
             // possible admin notice or anything here..
@@ -81,7 +81,7 @@ class Unwanted_Cleaner {
                     error_log($plugin_file . " deleted successfully.");
                 }
                 else {
-                    error_log("Failed to delete " . $plugin_file);
+                    error_log("Failed deleting " . $plugin_file);
                 }
 
             }
@@ -117,9 +117,6 @@ class Unwanted_Cleaner {
             
             // Load the list of unwanted plugins
             $unwanted_plugins = get_option('unwanted_plugins_list', array());
-    
-            // undefined function - why??
-            // delete_unwanted_plugins();
 
             // Check and delete unwanted plugins
             foreach ($unwanted_plugins as $plugin) {
@@ -130,7 +127,7 @@ class Unwanted_Cleaner {
                     if ($deleted) {
                         error_log('Deleted unwanted plugin folder: ' . $plugin);
                     } else {
-                        error_log('Failed to delete unwanted plugin folder: ' . $plugin);
+                        error_log('Failed deleting unwanted plugin folder: ' . $plugin);
                     }
                 }
             }
@@ -154,18 +151,11 @@ class Unwanted_Cleaner {
             // $deleted = wp_delete_file($hello_php_file);
             wp_delete_file($hello_php_file);
 
-            /*
-            ob_start();
-            var_dump($deleted);
-            $dumped_value = ob_get_clean();
-            error_log("deleted: " . $dumped_value);
-            */
-
             $file_still_exists_after_deletion = file_exists($hello_php_file);
             // unset($plugins[$hello_php_file]);
             // 2DO user response
             if ($file_still_exists_after_deletion) {
-                error_log('Failed to delete hello.php file above plugin directory');
+                error_log('Failed deleting hello.php file above plugin directory');
             } else {
                 error_log('Deleted hello.php file above plugin directory');
             }
@@ -231,7 +221,7 @@ class Unwanted_Cleaner {
 
     public function register_settings() {
         register_setting('unwanted_plugins_group', $this->unwanted_plugins_option, array($this, 'sanitize_plugins_list'));
-		add_action('admin_init', array($this, 'check_and_delete_unwanted_plugins'));
+		//add_action('admin_init', array($this, 'check_and_delete_unwanted_plugins'));
     }
 
 	public function sanitize_plugins_list($input) {
@@ -273,8 +263,7 @@ class Unwanted_Cleaner {
 		include plugin_dir_path(__FILE__) . 'settings-form.php';
 	}
 
-    // 2DO check if function is still needed
-	public function check_and_delete_unwanted_plugins() {
+	/*public function check_and_delete_unwanted_plugins() {
         error_log('DO WE NEED THIS? check_and_delete_unwanted_plugins was called');
 		$this->load_unwanted_plugins();
 		
@@ -290,7 +279,7 @@ class Unwanted_Cleaner {
 
 			exit;
 		}
-	}
+	}*/
 
     public function unwanted_plugins_handler() {
         error_log("unwanted_plugins_handler");
