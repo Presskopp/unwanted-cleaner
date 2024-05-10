@@ -83,6 +83,7 @@ class Unwanted_Cleaner {
                 }
                 else {
                     error_log("Failed deleting " . $plugin_file);
+                    throw new Exception("Failed deleting " . $plugin_file);
                 }
 
             }
@@ -285,14 +286,14 @@ class Unwanted_Cleaner {
     public function unwanted_plugins_handler() {
         error_log("unwanted_plugins_handler");
 
-        if ( ! check_ajax_referer( 'uwp-nonce', 'nonce' ) ) {
-            $response = array( 'success' => false  , 'm'=>'nonce failed' );
+        if ( !check_ajax_referer( 'uwp-nonce', 'nonce' ) ) {
+            $response = array( 'success' => false  , 'm'=>'Nonce verification failed' );
 			//wp_send_json_success($response,200);
             wp_send_json_error($response, 401);
         }
 
         if ( !current_user_can('manage_options') ) {
-            wp_send_json_error('Missing user rights');
+            wp_send_json_error('Insufficient permissions');
         }
 
         $state = sanitize_text_field($_POST['state']);
