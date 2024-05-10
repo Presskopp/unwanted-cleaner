@@ -107,7 +107,7 @@ class Unwanted_Cleaner {
 
         if (isset($_POST['save_plugin_list'])) {
             update_option('plugin_list_uwp', $_POST['plugin_list_uwp']);
-            error_log('Plugin-Liste erfolgreich gespeichert!');
+            error_log('Plugin list saved successfully!');
         }
     }
 
@@ -265,24 +265,6 @@ class Unwanted_Cleaner {
 		include plugin_dir_path(__FILE__) . 'settings-form.php';
 	}
 
-	/*public function check_and_delete_unwanted_plugins() {
-        error_log('DO WE NEED THIS? check_and_delete_unwanted_plugins was called');
-		$this->load_unwanted_plugins();
-		
-		if (!empty($this->unwanted_plugins)) {
-
-			$result = $this->delete_unwanted_plugins();
-			
-			if ($result) {
-				wp_redirect(admin_url('options-general.php?page=unwanted-cleaner&status=success'));
-			} else {
-				wp_redirect(admin_url('options-general.php?page=unwanted-cleaner&status=error'));
-			}
-
-			exit;
-		}
-	}*/
-
     public function unwanted_plugins_handler() {
         error_log("unwanted_plugins_handler");
 
@@ -299,7 +281,7 @@ class Unwanted_Cleaner {
         $state = sanitize_text_field($_POST['state']);
         $plugin_list = sanitize_text_field($_POST['plugin_list']);
         $plugin_list = str_replace(' ', ',', $plugin_list);
-        $message = $state == 'delete' ? __('Plugins deleted successfully.', 'unwanted-cleaner') : __('List of plugins saved.', 'unwanted-cleaner');
+        $message = $state == 'delete' ? __('Plugins deleted successfully.', 'unwanted-cleaner') : __('List of plugins saved successfully.', 'unwanted-cleaner');
         
         //update_option($this->unwanted_plugins_option, explode("\n", $plugin_list));
 
@@ -307,9 +289,12 @@ class Unwanted_Cleaner {
             // save options (list of unwanted plugins)
             error_log($plugin_list);
             //update_option( 'unwanted_plugins_list', explode( ",", $plugin_list ) );
-            update_option( 'unwanted_plugins_list', $plugin_list );
+            
+            //update_option( 'unwanted_plugins_list', $plugin_list );
+            $this->save_unwanted_plugins_list();
+
             //call function for save
-            error_log("unwanted_plugins_handler() called save_unwanted_plugins_list()");    // do we??
+            error_log("unwanted_plugins_handler() called save_unwanted_plugins_list()");    // we do now
         } else {    // delete
            // call function for delete
            $this->delete_unwanted_plugins();
