@@ -59,15 +59,7 @@ class Unwanted_Cleaner {
 
             if (in_array(dirname($plugin_file), $plugin_list)) {
 
-                if (is_plugin_active($plugin_file)) {
-                    deactivate_plugins($plugin_file);
-                    //uninstall_plugins($plugin_file);
-                }
-
-                // call uninstall so uninstall routine can run before deletion (this only happens if the plugin was activated)
-                // uninstall_plugins($plugin_file);
-                // but what if a plugin asks the user anything on deinstallaion?
-                // hmm..
+                uc_deactivate_plugin( $plugin_file );
 
                 $deleted = delete_plugins(array($plugin_file));
 
@@ -79,7 +71,6 @@ class Unwanted_Cleaner {
                     error_log("Failed deleting " . $plugin_file);
                     
                 }
-
             }
         }
 
@@ -98,6 +89,8 @@ class Unwanted_Cleaner {
 
         if (isset($_POST['plugin_list'])) {
             update_option('unwanted_plugins_list', $_POST['plugin_list']);
+            $unwanted_plugins = get_option('unwanted_plugins_list', array());
+            error_log(__LINE__ . ' ' . json_encode($unwanted_plugins));
             error_log('Plugin list saved successfully!');
         }
     }
@@ -117,7 +110,11 @@ class Unwanted_Cleaner {
             foreach ($unwanted_plugins as $plugin) {
                 $plugin_dir = WP_PLUGIN_DIR . '/' . $plugin;
                 // error_log("delete_plugin_folder: " . $plugin_dir);
+                
                 if (is_dir($plugin_dir)) {
+                    
+                    uc_deactivate_plugin( $plugin_file );
+
                     $deleted = $this->delete($plugin_dir, true); // recursively delete plugin folder
                     if ($deleted) {
                         error_log('Deleted unwanted plugin folder: ' . $plugin);
@@ -154,6 +151,13 @@ class Unwanted_Cleaner {
             } else {
                 error_log('Successfully deleted hello.php file above plugin directory');
             }
+        }
+    }
+
+    private function uc_deactivate_plugin( $plugin ) {
+        // see https://core.trac.wordpress.org/ticket/26735
+        if ( is_plugin_active( $plugin ) ) {
+            deactivate_plugins( $plugin );
         }
     }
 

@@ -45,7 +45,7 @@ if (!defined("WP_PLUGIN_DIR")) {
 }
 
 // Include the main plugin class file
-require_once plugin_dir_path(__FILE__) . 'includes/class-Unwanted-Cleaner.php';
+require_once plugin_dir_path(__FILE__) . 'includes/class-unwanted-cleaner.php';
 
 // Instantiate the main plugin class
 $unwanted_cleaner = new UnwantedCleaner\Unwanted_Cleaner();
