@@ -55,21 +55,22 @@ class Unwanted_Cleaner {
             //error_log(in_array(dirname($plugin_file), $plugin_list));
             error_log('dirname: ' . dirname($plugin_file));
             //error_log(wp_json_encode($plugin_list));
-
+            //+
             if (in_array(dirname($plugin_file), $plugin_list)) {
 
-                uc_deactivate_plugin( $plugin_file );
-
+                $this->uc_deactivate_plugin( $plugin_file );
+            error_log(__LINE__);
                 $deleted = delete_plugins(array($plugin_file));
-
+                error_log(__LINE__);
                 if ($deleted) {
                     $plugins_to_delete[] = $plugin_file;
+                    error_log(__LINE__);
                     error_log($plugin_file . " deleted successfully.");
-                }
-                else {
+                }else {
                     error_log("Failed deleting " . $plugin_file);
                     
                 }
+                error_log(__LINE__);
             }
         }
 
@@ -107,14 +108,18 @@ class Unwanted_Cleaner {
 
             // Check and delete unwanted plugins
             foreach ($unwanted_plugins as $plugin) {
-                $plugin_dir = WP_PLUGIN_DIR . '/' . $plugin;
+                //$plugin_dir = WP_PLUGIN_DIR . '/' . $plugin;
                 // error_log("delete_plugin_folder: " . $plugin_dir);
                 
-                if (is_dir($plugin_dir)) {
+                if (isset($plugin)) {
                     
-                    uc_deactivate_plugin( $plugin_file );
-
-                    $deleted = $this->delete($plugin_dir, true); // recursively delete plugin folder
+                    $plugin_deactivated = $this->uc_deactivate_plugin( $plugin );
+                    $deleted =false;
+                        if($plugin_deactivated){
+                            $plugin_dir = WP_PLUGIN_DIR . '/' . $plugin;
+                            $deleted = $this->delete($plugin_dir, true); // recursively delete plugin folder
+                        }
+                   
                     if ($deleted) {
                         error_log('Deleted unwanted plugin folder: ' . $plugin);
                     } else {
@@ -156,9 +161,6 @@ class Unwanted_Cleaner {
     private function uc_deactivate_plugin( $plugin_slug ) {
         // see https://core.trac.wordpress.org/ticket/26735
 
-
-        
-        
         include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
         //$plugin_slug = 'your-plugin-slug'; // replace with your plugin slug
         $plugin_file = '';
@@ -172,8 +174,11 @@ class Unwanted_Cleaner {
         if ($plugin_file) {
             error_log("The main file for the plugin ".$plugin_slug." is: ". $plugin_file);
             deactivate_plugins( $plugin_file );
+
+            return true;
         } else {
             error_log("Could not find the plugin ". $plugin_slug) ;
+            return false;
         }
        
 
