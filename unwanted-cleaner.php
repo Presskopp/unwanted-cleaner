@@ -48,4 +48,4 @@ if (!defined("WP_PLUGIN_DIR")) {
 require_once plugin_dir_path(__FILE__) . 'includes/class-unwanted-cleaner.php';
 
 // Instantiate the main plugin class
-$unwanted_cleaner = new UnwantedCleaner\Unwanted_Cleaner();
+$unwanted_cleaner = new unwantedcleaner\unwanted_cleaner();

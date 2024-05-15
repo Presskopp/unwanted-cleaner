@@ -1,6 +1,6 @@
 <?php
-namespace UnwantedCleaner;
-class Unwanted_Cleaner {
+namespace unwantedcleaner;
+class unwanted_cleaner {
     private static $initialized = false;
     private $unwanted_plugins_option;
     private $unwanted_plugins = array();
@@ -305,9 +305,7 @@ class Unwanted_Cleaner {
         error_log("unwanted_plugins_handler");
 
         if ( !check_ajax_referer( 'uwp-nonce', 'nonce' ) ) {
-            $response = array( 'success' => false  , 'm'=>'Nonce verification failed' );
-			//wp_send_json_success($response,200);
-            wp_send_json_error($response, 401);
+            wp_send_json_error(array('success' => false, 'm' => 'Nonce verification failed'), 401);
         }
 
         if ( !current_user_can('manage_options') ) {
