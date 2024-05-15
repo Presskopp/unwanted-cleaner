@@ -1,6 +1,5 @@
 <?php
 namespace UnwantedCleaner;
-
 class Unwanted_Cleaner {
     private static $initialized = false;
     private $unwanted_plugins_option;
@@ -154,11 +153,50 @@ class Unwanted_Cleaner {
         }
     }
 
-    private function uc_deactivate_plugin( $plugin ) {
+    private function uc_deactivate_plugin( $plugin_slug ) {
         // see https://core.trac.wordpress.org/ticket/26735
-        if ( is_plugin_active( $plugin ) ) {
-            deactivate_plugins( $plugin );
+
+
+        
+        
+        include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+        //$plugin_slug = 'your-plugin-slug'; // replace with your plugin slug
+        $plugin_file = '';
+        $plugins = get_plugins();
+        foreach ($plugins as $file => $info) {
+            if (strpos($file, $plugin_slug) === 0) {
+                $plugin_file = $file;
+                break;
+            }
         }
+        if ($plugin_file) {
+            error_log("The main file for the plugin ".$plugin_slug." is: ". $plugin_file);
+            deactivate_plugins( $plugin_file );
+        } else {
+            error_log("Could not find the plugin ". $plugin_slug) ;
+        }
+       
+
+        /* $plugin_slug = $plugin;
+        $plugin_file = '';
+
+        $plugins = get_plugins();
+        foreach ($plugins as $file => $info) {
+            if (strpos($file, $plugin_slug) === 0) {
+                $plugin_file = $file;
+                break;
+            }
+        }
+        if ($plugin_file) {
+            error_log("The main file for the plugin '$plugin_slug' is:". $plugin_file);
+            deactivate_plugins( $plugin_file );
+        } else {
+            error_log("Could not find the plugin ". $plugin_slug) ;
+        }
+
+        if ( is_plugin_active( $plugin ) ) {
+            deactivate_plugins( UWP_PLUGIN_DIRECTORY . '/' . $plugin_file );
+        } */
     }
 
     // function to recursively delete plugin folder
