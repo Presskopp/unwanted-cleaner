@@ -177,7 +177,7 @@ class unwanted_cleaner {
     }
 
     public function add_admin_menu() {
-        add_options_page('Unwanted Cleaner', 'Unwanted Cleaner', 'manage_options', 'unwanted-cleaner', array($this, 'init_admin_page'));
+        add_options_page('Unwanted Cleaner', 'Unwanted Cleaner', 'manage_options', 'unwanted_cleaner', array($this, 'init_admin_page'));
     }
 
     public function register_settings() {
@@ -194,15 +194,15 @@ class unwanted_cleaner {
 	
         $pro = 0;    // for future use
         $lang = [
-            "Unwanted_Cleaner_Settings" => __('Unwanted Cleaner Settings', 'unwanted-cleaner'),
-            "List_of_unwanted_plugins" => __('List of unwanted plugins', 'unwanted-cleaner'),
-            "Enter_the_slugs_of_unwanted_plugins" => __('Enter the <b>slugs</b> of your unwanted plugins, <b>each on a new line</b>.', 'unwanted-cleaner'),
-            "They_will_be_automatically_deleted" => __('They are automatically deleted as soon as a core upgrade has taken place.', 'unwanted-cleaner'),
-            "save_changes" => __('Save Changes', 'unwanted-cleaner'),
-            "delete_now_hint" => __('If you want to delete the unwanted plugins right now, push the button below.', 'unwanted-cleaner'),
-            "delete_unwanted_plugins" => __('Delete unwanted plugins now', 'unwanted-cleaner'),
-            "saving" => __('Saving list...', 'unwanted-cleaner'),
-            "deleting" => __('Deleting plugins...', 'unwanted-cleaner')
+            "Unwanted_Cleaner_Settings" => __('Unwanted Cleaner Settings', 'unwanted_cleaner'),
+            "List_of_unwanted_plugins" => __('List of unwanted plugins', 'unwanted_cleaner'),
+            "Enter_the_slugs_of_unwanted_plugins" => __('Enter the <b>slugs</b> of your unwanted plugins, <b>each on a new line</b>.', 'unwanted_cleaner'),
+            "They_will_be_automatically_deleted" => __('They are automatically deleted as soon as a core upgrade has taken place.', 'unwanted_cleaner'),
+            "save_changes" => __('Save Changes', 'unwanted_cleaner'),
+            "delete_now_hint" => __('If you want to delete the unwanted plugins right now, push the button below.', 'unwanted_cleaner'),
+            "delete_unwanted_plugins" => __('Delete unwanted plugins now', 'unwanted_cleaner'),
+            "saving" => __('Saving list...', 'unwanted_cleaner'),
+            "deleting" => __('Deleting plugins...', 'unwanted_cleaner')
         ];
 
         wp_enqueue_script('uwp-main-js', UWP_PLUGIN_URL . '/includes/assets/js/uc_main.js', array('jquery'), '1.0.0', true);
@@ -224,21 +224,21 @@ class unwanted_cleaner {
     public function unwanted_plugins_handler() {
 
         if ( !check_ajax_referer( 'uwp-nonce', 'nonce' ) ) {
-            wp_send_json_success(array('success' => false, 'm' => __('Nonce verification failed', 'unwanted-cleaner')), 401);
+            wp_send_json_success(array('success' => false, 'm' => __('Nonce verification failed', 'unwanted_cleaner')), 401);
         }
 
         if ( !current_user_can('manage_options') ) {
-            wp_send_json_success(array('success' => false, 'm' => __('Insufficient permissions', 'unwanted-cleaner')), 401);
+            wp_send_json_success(array('success' => false, 'm' => __('Insufficient permissions', 'unwanted_cleaner')), 401);
         }
 
         $state = sanitize_text_field($_POST['state']);
         $_POST['plugin_list'] = sanitize_text_field($_POST['plugin_list']);
         $_POST['plugin_list'] = str_replace(' ', ',',  $_POST['plugin_list']);
 
-        $message = __('Plugins deleted successfully.', 'unwanted-cleaner');
+        $message = __('Plugins deleted successfully.', 'unwanted_cleaner');
         if( $state == 'save' ) {
             $this->save_unwanted_list('plugins',  $_POST['plugin_list'] );
-            $message = __('List of plugins saved successfully.', 'unwanted-cleaner'); 
+            $message = __('List of plugins saved successfully.', 'unwanted_cleaner'); 
         } else {
            $this->delete_unwanted_plugins();
         }

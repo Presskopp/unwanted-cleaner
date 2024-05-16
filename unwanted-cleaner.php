@@ -7,7 +7,7 @@ Version: 1.0.0
 Author: Presskopp
 Author URI: https://presskopp.com/
 License: GPL2
-Text Domain: unwanted-cleaner
+Text Domain: unwanted_cleaner
 Domain Path: /languages
 */
 
