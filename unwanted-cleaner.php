@@ -1,11 +1,11 @@
 <?php
 /*
 Plugin Name: Unwanted Cleaner
-Plugin URI: https://wordpress.org/plugins/unwanted-cleaner/
+Plugin URI: https://presskopp.com/
 Description: This plugin removes unwanted plugins during the WordPress core upgrade process. You can manage the list of unwanted plugins from the settings page.
 Version: 1.0.0
-Author: Presskopp, hassantafreshi
-Author URI: https://profiles.wordpress.org/presskopp/
+Author: Presskopp
+Author URI: https://presskopp.com/
 License: GPL2
 Text Domain: unwanted-cleaner
 Domain Path: /languages

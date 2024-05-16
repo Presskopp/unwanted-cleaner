@@ -7,14 +7,12 @@ Tested up to: 6.5
 Stable tag: 1.0.0
 License: GPLv2 or later
 License URL: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
-Donate link: https://presskopp.com/donate
-
-
-1) This plugin removes unwanted plugins during the WordPress core upgrade process. You can manage the list of unwanted plugins.
+Donate link: https://presskopp.com/
+This plugin removes unwanted plugins during the WordPress core upgrade process or manually. You manage the list of unwanted plugins in the backend.
 
 == Description ==
 
-2) This plugin removes unwanted plugins during the WordPress core upgrade process. You can manage the list of unwanted plugins.
+This plugin removes unwanted plugins during the WordPress core upgrade process or manually. You manage the list of unwanted plugins in the backend.
 
 Here some description how it works
 
@@ -25,24 +23,44 @@ Here some description how it works
 == Installation ==
 
 Upload the plugin to your blog/website, activate it.
+To manage the list of unwanted plugins, go to Settings > Unwanted Cleaner
 
 == Frequently Asked Questions ==
 
-How does the plugin work?
+=Why the name: Unwanted Cleaner=
+
+because you don't want the plugin to be installed on your site or
+because you want a plugin to delete unwanted plugins so your place will be tidy and clean
+
+=Why should I use this plugin=
+
+You don't need to! But if you don't like the fact of plugins like Hello Dolly and Akismet being automatically installed when you upgrade or reinstall your WordPress, this plugin may be for you.
+
+=I install one plugin to get rid of two other plugins? Really?=
+
+Yes. I can understand if you want to to the dirty work yourself. But if not, this plugin might be just the thing for you.
+Also if there are other plugins you don't want installed on your website, you've come to the right place!
+
+=How does the plugin work?=
+
 On WordPress Core upgrades Unwanted Cleaner will check each item in the list you manage in the plugin settings. If plugins were installed during the upgrade process they will be deleted immediately automatically.
 
-How do I know what to enter into the list if I want to exclude a plugin
+= How do I know what to enter into the list if I want to exclude a plugin =
+
 Go to https://wordpress.org/plugins/ and find your unwanted plugin.
-For example if you don't like the 'Hello Dolly' plugin it's slug (URL) will be  https://wordpress.org/plugins/hello-dolly/
-enter the part after /plugins/ without the ending slash, in this case: hello-dolly
+For example if you don't like the 'Hello Dolly' plugin it's full slug (URL) will be [https://wordpress.org/plugins/hello-dolly/](https://wordpress.org/plugins/hello-dolly/).
+Enter only the last part after /plugins/ without the ending slash, in this case: hello-dolly
+
+= Can I delete the unwanted plugins without updating the core? =
+Yes you can. Just push the button you find right under the list of unwanted plugins
 
 == Upgrade Notice ==
 
-nothing special
+nothing here
 
 == Changelog ==
 
 = 1.0.0 =
-*Release Date - 01 April 2024*
+*Release Date - coming soon in Summer 2024*
 
 Initial release

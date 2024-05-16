@@ -6,13 +6,10 @@ class unwanted_cleaner {
     private $unwanted_plugins = array();
 
     public function __construct() {
-        
 
-        if (self::$initialized) {
-            return;
-        }
+        if (self::$initialized) return;
         self::$initialized = true;
-        
+
         $this->unwanted_plugins_option = 'unwanted_plugins_list';
 
         register_activation_hook(UWP_PLUGIN_FILE, array($this, 'activate'));
@@ -39,7 +36,6 @@ class unwanted_cleaner {
 
     // main function to delete the unwanted plugins
     public function delete_unwanted_plugins() {
-        
     
         $installed_plugins = get_plugins();
         $plugins_to_delete = array();
@@ -68,7 +64,6 @@ class unwanted_cleaner {
             $n = "unwanted_".$purpose."_list";
             update_option($n, $list);
         }
-        
     }
 
     public function delete_unwanted_plugins_after_core_upgrade($upgrader_object, $options) {
@@ -151,9 +146,8 @@ class unwanted_cleaner {
     }
 
     public function on_plugin_activation($plugin) {
-        if ($plugin === plugin_basename(UWP_PLUGIN_FILE)) {
-            $this->activate();
-        }
+        if ($plugin === plugin_basename(UWP_PLUGIN_FILE)) $this->activate();
+            
     }
 
     public function activate() {
@@ -187,8 +181,7 @@ class unwanted_cleaner {
     }
 
     public function register_settings() {
-        register_setting('unwanted_plugins_group', $this->unwanted_plugins_option, array($this, 'sanitize_plugins_list'));
-		//add_action('admin_init', array($this, 'check_and_delete_unwanted_plugins'));
+        register_setting('unwanted_cleaner_group', $this->unwanted_plugins_option, array($this, 'sanitize_plugins_list'));
     }
 
 	public function sanitize_plugins_list($input) {
@@ -212,8 +205,6 @@ class unwanted_cleaner {
             "deleting" => __('Deleting plugins...', 'unwanted-cleaner')
         ];
 
-        
-
         wp_enqueue_script('uwp-main-js', UWP_PLUGIN_URL . '/includes/assets/js/uc_main.js', array('jquery'), '1.0.0', true);
 
         wp_localize_script('uwp-main-js','uwp_var',array(
@@ -231,11 +222,9 @@ class unwanted_cleaner {
 	}
 
     public function unwanted_plugins_handler() {
-        
 
         if ( !check_ajax_referer( 'uwp-nonce', 'nonce' ) ) {
             wp_send_json_success(array('success' => false, 'm' => __('Nonce verification failed', 'unwanted-cleaner')), 401);
-            
         }
 
         if ( !current_user_can('manage_options') ) {
