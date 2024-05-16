@@ -218,7 +218,7 @@ class unwanted_cleaner {
 			
 		));
 
-		include plugin_dir_path(__FILE__) . 'settings-form.php';
+		include plugin_dir_path(__FILE__) . 'settings-form.html';
 	}
 
     public function unwanted_plugins_handler() {
