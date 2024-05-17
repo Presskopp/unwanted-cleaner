@@ -34,11 +34,20 @@ class unwanted_cleaner {
         add_action('wp_ajax_handler_uwp', array( $this,'unwanted_plugins_handler'));
     }
 
+    public function save_unwanted_list($purpose , $list) {
+        if (isset($list)) {
+            $n = "unwanted_".$purpose."_list";
+            update_option($n, $list);
+        }
+    }
+
     // main function to delete the unwanted plugins
     public function delete_unwanted_plugins() {
     
         $installed_plugins = get_plugins();
         $plugins_to_delete = array();
+        error_log(__LINE__);
+        error_log(json_encode($this->unwanted_plugins));
         $plugin_list =  count($this->unwanted_plugins)==1 ? explode( ",", $this->unwanted_plugins[0] ) : $this->unwanted_plugins;
 
         $this->delete_hello_php_above_plugin();
@@ -59,13 +68,6 @@ class unwanted_cleaner {
         return !empty($plugins_to_delete);
     }
 
-    public function save_unwanted_list($purpose , $list) {
-        if (isset($list)) {
-            $n = "unwanted_".$purpose."_list";
-            update_option($n, $list);
-        }
-    }
-
     public function delete_unwanted_plugins_after_core_upgrade($upgrader_object, $options) {
 
         // Check if a core upgrade was done
@@ -73,11 +75,12 @@ class unwanted_cleaner {
             
             // Load the list of unwanted plugins
             $unwanted_plugins = get_option('unwanted_plugins_list', array());
-
+            error_log(json_encode( $unwanted_plugins));
             if (empty($unwanted_plugins)) return;
+            $plugin_list =  count($unwanted_plugins)==1 ? explode( ",", $unwanted_plugins[0] ) : $unwanted_plugins;
 
             // Check and delete unwanted plugins
-            foreach ($unwanted_plugins as $plugin) {
+            foreach ($plugin_list as $plugin) {
 
                 if (isset($plugin)) {
                     $plugin_deactivated = $this->uc_deactivate_plugin( $plugin );
@@ -91,7 +94,7 @@ class unwanted_cleaner {
             }
 
             // Delete hello.php file, if hello-dolly is in list of unwanted plugins
-            if (in_array('hello-dolly', $unwanted_plugins))  $this->delete_hello_php_above_plugin();
+            if (in_array('hello-dolly', $plugin_list))  $this->delete_hello_php_above_plugin();
 
         }
     }
@@ -246,4 +249,5 @@ class unwanted_cleaner {
         $response = array( 'success' => true, 'm'=>$message ); 
         wp_send_json_success($response,200);
     }
+
 }
