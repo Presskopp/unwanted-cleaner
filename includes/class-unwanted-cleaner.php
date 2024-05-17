@@ -128,7 +128,7 @@ class unwanted_cleaner {
         }
         return false;
     }
-
+    //test
     // function to recursively delete plugin folder
     // use delete() method of WP filesystem
     public function delete( $file, $recursive = false, $type = false ) {
