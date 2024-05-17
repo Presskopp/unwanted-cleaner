@@ -192,7 +192,7 @@ class unwanted_cleaner {
     }
 
 	public function init_admin_page() {
-        
+        ?><div id="main_unwanted_cleaner"></div> <?php
 		$this->load_unwanted_plugins();
 	
         $pro = 0;    // for future use
@@ -220,8 +220,6 @@ class unwanted_cleaner {
             'ajaxurl' => admin_url('admin-ajax.php')
 			
 		));
-
-		include plugin_dir_path(__FILE__) . 'settings-form.html';
 	}
 
     public function unwanted_plugins_handler() {
