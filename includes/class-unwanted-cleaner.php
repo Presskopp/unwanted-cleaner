@@ -152,7 +152,8 @@ class unwanted_cleaner {
     }
 
     public function activate() {
-        $default_options = array('akismet','hello-dolly');
+        //$default_options = array('akismet','hello-dolly');
+        $default_options = array('hello-dolly');
         update_option($this->unwanted_plugins_option, $default_options);
         update_option('unwanted_cleaner_active', true);
     }
