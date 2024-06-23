@@ -50,12 +50,9 @@ document.addEventListener("DOMContentLoaded", function() {
     }, 100);
 });
 
-
 function fun_handle_uwp(state){
     const plugin_list = document.getElementById('plugin-list-uncl').value;
     const checkbox_delete = document.getElementById('delete_ok').checked;
-    console.log("checkbox delete: " + checkbox_delete);
-    console.log("plugin_list: " + plugin_list);
     noti_box = (m, clss) => {
         let noti = document.getElementById('noti-uncl')
         // noti.className = clss;

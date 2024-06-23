@@ -42,9 +42,6 @@ class uncl_unwanted_cleaner {
     }
 
     public function uncl_save_unwanted_list($purpose , $list) {
-        error_log($list);
-        error_log(gettype($list));
-        error_log($purpose);
         if (isset($list)) {
             $n = "uncl_unwanted_".$purpose."_list";
             update_option($n, $list);
@@ -91,12 +88,8 @@ class uncl_unwanted_cleaner {
 
     public function uncl_delete_unwanted_plugins_after_core_upgrade($upgrader_object, $options) {
 
-        
         $option_delete = get_option('uncl_state_delete') ?? false;
-        error_log('core update '.$option_delete);
         if( $option_delete==false ) return ;
-        
-
 
         ///auto
         if ($options['action'] === 'update' && $options['type'] === 'core') {
@@ -265,15 +258,12 @@ class uncl_unwanted_cleaner {
         $plugin_list = sanitize_text_field($_POST['plugin_list']);
         $plugin_list = str_replace(' ', ',',  $plugin_list);
 
-        error_log('delete:'.$_POST['delete_ok']);
         $delete_ok =sanitize_text_field($_POST['delete_ok']);
-        error_log('delete_ok after sanitize: ' . $delete_ok);
         $message = esc_html__('Plugins deleted successfully.', 'unwanted-cleaner');
         if( $state == 'save' ) {
             $this->uncl_save_unwanted_list('plugins',  $plugin_list);
             $message = esc_html__('List of plugins saved successfully.', 'unwanted-cleaner'); 
             update_option('uncl_state_delete', $delete_ok);
-            error_log('uncl_state_delete ' . get_option('uncl_state_delete'));
         } else {
            $this->uncl_delete_unwanted_plugins();
         }
