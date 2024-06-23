@@ -1,24 +1,30 @@
 document.addEventListener("DOMContentLoaded", function() {
     
     const pluginListUWP = uwp_var.plugin_list;
-    let pluginlist=null;
+    let pluginlist = null;
     for (let key in pluginListUWP) {
         if (Object.prototype.hasOwnProperty.call(pluginListUWP, key)) {
             if (typeof pluginListUWP[key] === 'string') {
-                pluginlist===null ?  pluginlist= pluginListUWP[key].replace(/,/g, '\n') : pluginlist += '\n'+ pluginListUWP[key].replace(/,/g, '\n')
+                pluginlist === null ? pluginlist = pluginListUWP[key].replace(/,/g, '\n') : pluginlist += '\n'+ pluginListUWP[key].replace(/,/g, '\n')
             }
         }
     }
-
+    
+    const delete_ok= uwp_var.delete_ok=='true' || uwp_var.delete_ok==1 ? 1 : 0
     const ui_page = `
     <div class="wrap">
         <h2>${uwp_var.text.Unwanted_Cleaner_Settings}</h2>
+        <h3>[DEBUG] WP-Version: ${uwp_var.version}</h3>
         <div id="noti-uwp"> </div>
         <div>
             <h3>${uwp_var.text.List_of_unwanted_plugins}</h3>
             <p>${uwp_var.text.Enter_the_slugs_of_unwanted_plugins}</p>
             <p>${uwp_var.text.They_will_be_automatically_deleted}</p>
             <textarea name="plugin-list-uwp" id="plugin-list-uwp" rows="5" cols="50">${pluginlist}</textarea>
+        </div>
+        <div>
+            <input type="checkbox" id="delete_ok" name="delete_ok" value="0" ${delete_ok ? 'checked' : ''}>
+            <label for="delete_ok">If checked you give permission to Unwanted Cleaner to <b>automatically</b> delete the plugins listed above, whenever a core update did run.</label><br><br>
         </div>
         <div>
             <button class="button button-primary" id="saveButton">${uwp_var.text.save_changes}</button>
@@ -48,6 +54,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
 function fun_handle_uwp(state){
     const plugin_list = document.getElementById('plugin-list-uwp').value;
+    const checkbox_delete = document.getElementById('delete_ok').checked;
+    console.log("checkbox delete: " + checkbox_delete);
     noti_box = (m, clss) => {
         let noti = document.getElementById('noti-uwp')
         // noti.className = clss;
@@ -72,16 +80,17 @@ function fun_handle_uwp(state){
             action: "handler_uwp",
             state: state,
             plugin_list: plugin_list,
+            delete_ok: checkbox_delete,
             nonce: uwp_var.nonce
             };
             
         $.post(uwp_var.ajaxurl, data, function (res) {
-            if(res.data.success ==true){
+            if(res.data.success == true){
                 msg = res.data.m;
                 // clss= "valid";
                 clss= "success";
                 noti_box(msg ,clss);
-            }else{
+            } else {
                 msg = res.data.m;
                 // clss = "not-valid";
                 clss = "error";
