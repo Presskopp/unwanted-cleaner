@@ -3,7 +3,7 @@ Contributors: presskopp, hassantafreshi
 Tags: plugins
 Requires at least: 6.5
 Requires PHP: 7.0
-Tested up to: 6.5
+Tested up to: 6.6
 Stable tag: 1.0.0
 License: GPLv2 or later
 License URL: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
@@ -61,6 +61,5 @@ nothing here
 == Changelog ==
 
 = 1.0.0 =
-*Release Date - coming soon in Summer 2024*
+*Initial Release*
 
-Initial release

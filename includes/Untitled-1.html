@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Searchable Dropdown</title>
+    <style>
+        .dropdown {
+            position: relative;
+            display: inline-block;
+            width: 300px;
+        }
+
+        .dropdown input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 8px;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            max-height: 200px;
+            overflow-y: auto;
+            width: 100%;
+        }
+
+        .dropdown-content div {
+            padding: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .dropdown-content div img {
+            margin-right: 10px;
+            width: 30px;
+            height: 30px;
+        }
+
+        .dropdown-content div:hover {
+            background-color: #ddd;
+        }
+
+        .selected-list {
+            margin-top: 20px;
+        }
+
+        .selected-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .selected-item img {
+            margin-right: 10px;
+            width: 30px;
+            height: 30px;
+        }
+
+        .remove-icon {
+            margin-left: 10px;
+            cursor: pointer;
+            color: red;
+        }
+
+        .item-row {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .item-row input {
+            margin-right: 10px;
+            padding: 5px;
+        }
+
+        .item-row .remove-button {
+            margin-left: 10px;
+            cursor: pointer;
+            color: red;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="selected-list" id="selectedList"></div>
+    <div class="dropdown">
+        
+        <input type="text" id="dropdownInput" placeholder="Search...">
+        <div class="dropdown-content" id="dropdownList"></div>
+        
+    </div>
+    
+
+    <script>
+        const availableItems = [
+            { name: "Item 1", image: "https://via.placeholder.com/30", id: "710" },
+            { name: "Item 2", image: "https://via.placeholder.com/30", id: "720" },
+            { name: "Item 3", image: "https://via.placeholder.com/30", id: "730" },
+            { name: "Item 4", image: "https://via.placeholder.com/30", id: "740" }
+        ];
+
+        const selectedItems = new Set();
+        const dropdownInput = document.getElementById('dropdownInput');
+        const dropdownList = document.getElementById('dropdownList');
+        const selectedList = document.getElementById('selectedList');
+
+        // Filter and display the dropdown list
+        dropdownInput.addEventListener('input', function() {
+            const filter = dropdownInput.value.toLowerCase();
+            dropdownList.innerHTML = '';
+            const filteredItems = availableItems.filter(item => item.name.toLowerCase().includes(filter) && !selectedItems.has(item.name));
+            if (filteredItems.length) {
+                filteredItems.forEach(item => {
+                    const itemElement = document.createElement('div');
+                    itemElement.innerHTML = `<img src="${item.image}" alt="${item.name}"><span>${item.name}</span>`;
+                    itemElement.addEventListener('click', () => addItemToSelectedList(item));
+                    dropdownList.appendChild(itemElement);
+                });
+            } else {
+                checkExternalSource(dropdownInput.value);
+            }
+            dropdownList.style.display = filteredItems.length ? 'block' : 'none';
+        });
+
+        // Add item to selected list
+        function addItemToSelectedList(item) {
+            if (!selectedItems.has(item.name)) {
+                selectedItems.add(item.name);
+                const itemRow = document.createElement('div');
+                itemRow.className = 'item-row';
+                itemRow.innerHTML = `
+                    <label>Artikel (ID): <input type="text" value="${item.id}" readonly></label>
+                    <label>Menge: <input type="text" value="1"></label>
+                    <span class="remove-button">&times;</span>
+                `;
+                itemRow.querySelector('.remove-button').addEventListener('click', () => removeItemFromSelectedList(item.name, itemRow));
+                selectedList.appendChild(itemRow);
+                dropdownInput.value = '';
+                dropdownList.innerHTML = '';
+                dropdownList.style.display = 'none';
+            }
+        }
+
+        // Remove item from selected list
+        function removeItemFromSelectedList(name, element) {
+            selectedItems.delete(name);
+            element.remove();
+        }
+
+        // Check external source if item is not found
+        function checkExternalSource(query) {
+            // Simulate an API request
+            setTimeout(() => {
+                const externalItem = { name: query, image: "https://via.placeholder.com/30", id: "750" };
+                const itemElement = document.createElement('div');
+                itemElement.innerHTML = `<img src="${externalItem.image}" alt="${externalItem.name}"><span>${externalItem.name}</span>`;
+                itemElement.addEventListener('click', () => addItemToSelectedList(externalItem));
+                dropdownList.appendChild(itemElement);
+                dropdownList.style.display = 'block';
+            }, 500); // Simulate network delay
+        }
+
+        // Hide the dropdown list when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.dropdown')) {
+                dropdownList.style.display = 'none';
+            }
+        });
+
+        dropdownInput.addEventListener('click', function(event) {
+            event.stopPropagation();
+            dropdownList.style.display = 'block';
+        });
+    </script>
+</body>
+</html>

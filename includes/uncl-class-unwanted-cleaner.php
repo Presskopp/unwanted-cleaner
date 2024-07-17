@@ -213,14 +213,15 @@ class uncl_unwanted_cleaner {
     }
 
 	public function uncl_init_admin_page() {
-        ?><div id="main_unwanted_cleaner"></div> <?php
+        ?><div id="main_unwanted_cleaner"></div><?php
 		$this->uncl_load_unwanted_plugins();
 	
         // $pro = 0;    // for future use
         $lang = [
             "Unwanted_Cleaner_Settings" => esc_html__('Unwanted Cleaner Settings', 'unwanted-cleaner'),
             "List_of_unwanted_plugins" => esc_html__('List of unwanted plugins', 'unwanted-cleaner'),
-            "Enter_the_slugs_of_unwanted_plugins" => esc_html__('Enter the <b>slugs</b> of your unwanted plugins, <b>each on a new line</b>.', 'unwanted-cleaner'),
+            "Enter_the_slugs_of_unwanted_plugins" => esc_html__('Enter the slugs of your unwanted plugins, each on a new line.', 'unwanted-cleaner'),
+            "Enter_the_slugs_of_unwanted_plugins" => sprintf( esc_html__('Enter the %1$sslugs%2$s of your unwanted plugins, %1$seach on a new line%2$s.', 'unwanted-cleaner'), '<b>', '</b>' ),
             "They_will_be_automatically_deleted" => esc_html__('They are automatically deleted as soon as a core upgrade has taken place.', 'unwanted-cleaner'),
             "save_changes" => esc_html__('Save Changes', 'unwanted-cleaner'),
             "delete_now_hint" => esc_html__('If you want to delete the unwanted plugins right now, push the button below.', 'unwanted-cleaner'),
@@ -228,7 +229,7 @@ class uncl_unwanted_cleaner {
             "saving" => esc_html__('Saving list...', 'unwanted-cleaner'),
             "deleting" => esc_html__('Deleting plugins...', 'unwanted-cleaner')
         ];
-      
+        $r = $this->uncl_get_list_of_plugins();
         $delete_ok= get_option('uncl_state_delete');
         $delete_ok = !empty($delete_ok) ?  $delete_ok : false;
         wp_enqueue_script('uncl-main-js', UNCL_PLUGIN_URL . '/includes/assets/js/uncl_main.js', array('jquery'), '1.0.0', true);
@@ -240,7 +241,8 @@ class uncl_unwanted_cleaner {
 			'text' => $lang,
             'plugin_list' => $this->uncl_unwanted_plugins,
             'ajaxurl' => admin_url('admin-ajax.php'),
-            'delete_ok' => $delete_ok
+            'delete_ok' => $delete_ok,
+            'plugin_list' =>$r
 		));
 	}
 
@@ -265,10 +267,27 @@ class uncl_unwanted_cleaner {
             $message = esc_html__('List of plugins saved successfully.', 'unwanted-cleaner'); 
             update_option('uncl_state_delete', $delete_ok);
         } else {
-           $this->uncl_delete_unwanted_plugins();
+            $this->uncl_delete_unwanted_plugins();
         }
         
         $response = array( 'success' => true, 'm'=>$message );
         wp_send_json_success($response,200);
+    }
+
+    public function uncl_get_list_of_plugins(){
+        $url ='https://api.wordpress.org/plugins/info/1.2/?action=query_plugins&request[per_page]=100';
+
+       $response = wp_remote_get($url); 
+       if (is_wp_error($response)) return 0; //if WP not responed
+        $body = wp_remote_retrieve_body($response); $data = json_decode($body, true); 
+        if (empty($data['plugins'])) return 0; // Plugins not found 
+        $r = [];
+           foreach ($data['plugins'] as $key => $value) {
+            $r[$key] = ['name'=>$value['name'],'slug'=>$value['slug'] ,'icons'=>$value['icons']];
+           }
+           
+        return $r; 
+
+
     }
 }

@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
     
-    const delete_ok= uncl_var.delete_ok=='true' || uncl_var.delete_ok==1 ? 1 : 0
+    const delete_ok= uncl_var.delete_ok == 'true' || uncl_var.delete_ok == 1 ? 1 : 0
     const ui_page = `
     <div class="wrap">
         <h2>${uncl_var.text.Unwanted_Cleaner_Settings}</h2>
@@ -97,3 +97,11 @@ function fun_handle_uwp(state){
         return true;
     });
 }
+
+
+//Start new code for parsing Plugins
+uncl_var.plugin_list.forEach(plugin => {
+    console.log(plugin.name,plugin.icons['1x'])
+});
+
+//End new code for parsing Plugins
