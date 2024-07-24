@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     <div id="noti-uncl"> </div>
      <div class="uwcl-header">
-        <img class="uwcl-header-image" src="/wp-content/plugins/unwanted-cleaner/includes/assets/img/banner-1544x500.png">
+        <img class="uwcl-header-image" src="${uncl_var.images}/banner-1544x500.png">
     </div>
     <div class="wrap">
         <!-- h1>${uncl_var.text.Unwanted_Cleaner_Settings}</h1 -->

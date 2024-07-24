@@ -264,6 +264,7 @@ class uncl_unwanted_cleaner {
         $delete_ok= get_option('uncl_state_delete');
         $delete_ok = !empty($delete_ok) ?  $delete_ok : false;
         wp_enqueue_script('uncl-main-js', UNCL_PLUGIN_URL . '/includes/assets/js/uncl_main.js', array('jquery'), '1.0.0', true);
+        $images = UNCL_PLUGIN_URL . '/includes/assets/img/';
         wp_localize_script('uncl-main-js','uncl_var',array(
 			'nonce' => wp_create_nonce("uncl-nonce"),
 			'check' => 1,
@@ -273,7 +274,8 @@ class uncl_unwanted_cleaner {
             'plugin_list' => $this->uncl_unwanted_plugins,
             'ajaxurl' => admin_url('admin-ajax.php'),
             'delete_ok' => $delete_ok,
-            'plugin_dropdown_list' => $r
+            'plugin_dropdown_list' => $r,
+            'images' => $images
 		));
 	}
 
