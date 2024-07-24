@@ -39,7 +39,36 @@ class uncl_unwanted_cleaner {
         add_action('wp_ajax_uncl_handler', array( $this,'uncl_unwanted_plugins_handler'));
 
         ///$this->fun_show_noti_update_happen();
+        
+        // Hook to register scripts
+        add_action('admin_enqueue_scripts', array($this, 'uncl_enqueue_admin_scripts'));
+
     }
+
+    public function uncl_enqueue_admin_scripts($hook) {
+        // Überprüfen, ob wir uns auf der Einstellungsseite des Plugins befinden
+        if ($hook !== 'settings_page_unwanted-cleaner') {
+            return;
+        }
+        // Bootstrap CSS einbinden
+        wp_enqueue_style('bootstrap-css', 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css');
+        // Bootstrap JavaScript einbinden
+        wp_enqueue_script('bootstrap-js', 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js', array('jquery'), null, true);
+    }
+
+    // Funktion zum Einbinden von Stylesheets
+    public function uncl_unwanted_cleaner_enqueue_styles() {
+        // Bootstrap CSS einbinden
+        wp_enqueue_style('bootstrap-css', 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css');
+    }
+
+    // Funktion zum Einbinden von JavaScript
+    public function uncl_unwanted_cleaner_enqueue_scripts() {
+        // Bootstrap JavaScript einbinden
+        wp_enqueue_script('bootstrap-js', 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js', array('jquery'), null, true);
+    }
+
+
 
     public function uncl_save_unwanted_list($purpose , $list) {
         if (isset($list)) {
@@ -47,7 +76,8 @@ class uncl_unwanted_cleaner {
             update_option($n, $list);
         }
     }
-//$option_value = get_option('uncl_last_wp_version');
+    
+    //$option_value = get_option('uncl_last_wp_version');
     // main function to delete the unwanted plugins
     public function uncl_delete_unwanted_plugins() {
         
@@ -223,6 +253,7 @@ class uncl_unwanted_cleaner {
             "Enter_the_slugs_of_unwanted_plugins" => esc_html__('Enter the slugs of your unwanted plugins, each on a new line.', 'unwanted-cleaner'),
             "Enter_the_slugs_of_unwanted_plugins" => sprintf( esc_html__('Enter the %1$sslugs%2$s of your unwanted plugins, %1$seach on a new line%2$s.', 'unwanted-cleaner'), '<b>', '</b>' ),
             "They_will_be_automatically_deleted" => esc_html__('They are automatically deleted as soon as a core upgrade has taken place.', 'unwanted-cleaner'),
+            "Automatic_deletion_confirmation" => sprintf( esc_html__('If checked you give permission to Unwanted Cleaner to %1$sautomatically%2$s delete the plugins listed above, whenever a core update did run.', 'unwanted-cleaner'), '<b>', '</b>' ),
             "save_changes" => esc_html__('Save Changes', 'unwanted-cleaner'),
             "delete_now_hint" => esc_html__('If you want to delete the unwanted plugins right now, push the button below.', 'unwanted-cleaner'),
             "delete_unwanted_plugins" => esc_html__('Delete unwanted plugins now', 'unwanted-cleaner'),
@@ -242,7 +273,7 @@ class uncl_unwanted_cleaner {
             'plugin_list' => $this->uncl_unwanted_plugins,
             'ajaxurl' => admin_url('admin-ajax.php'),
             'delete_ok' => $delete_ok,
-            'plugin_list' =>$r
+            'plugin_dropdown_list' => $r
 		));
 	}
 
@@ -276,18 +307,14 @@ class uncl_unwanted_cleaner {
 
     public function uncl_get_list_of_plugins(){
         $url ='https://api.wordpress.org/plugins/info/1.2/?action=query_plugins&request[per_page]=100';
-
-       $response = wp_remote_get($url); 
-       if (is_wp_error($response)) return 0; //if WP not responed
+        $response = wp_remote_get($url); 
+        if (is_wp_error($response)) return 0; // API didn't respond
         $body = wp_remote_retrieve_body($response); $data = json_decode($body, true); 
         if (empty($data['plugins'])) return 0; // Plugins not found 
         $r = [];
-           foreach ($data['plugins'] as $key => $value) {
+        foreach ($data['plugins'] as $key => $value) {
             $r[$key] = ['name'=>$value['name'],'slug'=>$value['slug'] ,'icons'=>$value['icons']];
-           }
-           
+        }
         return $r; 
-
-
     }
 }

@@ -4,7 +4,7 @@ Tags: plugins
 Requires at least: 6.5
 Requires PHP: 7.0
 Tested up to: 6.6
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URL: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 Donate link: https://presskopp.com/
@@ -59,6 +59,10 @@ Yes you can. Just push the button you find right under the list of unwanted plug
 nothing here
 
 == Changelog ==
+
+= 1.0.1 =
+*Better UI*
+*A string was not translatable*
 
 = 1.0.0 =
 *Initial Release*
