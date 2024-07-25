@@ -47,26 +47,18 @@ class uncl_unwanted_cleaner {
 
     public function uncl_enqueue_admin_scripts($hook) {
         // Überprüfen, ob wir uns auf der Einstellungsseite des Plugins befinden
-        if ($hook !== 'settings_page_unwanted-cleaner') {
+        if ($hook !== 'toplevel_page_unwanted-cleaner') {
             return;
         }
-        // Bootstrap CSS einbinden
-        wp_enqueue_style('bootstrap-css', 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css');
-        // Bootstrap JavaScript einbinden
-        wp_enqueue_script('bootstrap-js', 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js', array('jquery'), null, true);
+        // Bootstrap CSS einbinden        
+        wp_enqueue_style('bootstrap', UNCL_PLUGIN_URL . '/includes/assets/css/bootstrap.min.css');
+        wp_enqueue_style('uncl_style', UNCL_PLUGIN_URL . '/includes/assets/css/style.css', true,UNCL_PLUGIN_VERSION);
+        // Bootstrap JavaScript einbinden    
+        wp_enqueue_script('bootstrap', UNCL_PLUGIN_URL . '/includes/assets/js/bootstrap.bundle.min.js', array('jquery'), null, true);
+
     }
 
-    // Funktion zum Einbinden von Stylesheets
-    public function uncl_unwanted_cleaner_enqueue_styles() {
-        // Bootstrap CSS einbinden
-        wp_enqueue_style('bootstrap-css', 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css');
-    }
 
-    // Funktion zum Einbinden von JavaScript
-    public function uncl_unwanted_cleaner_enqueue_scripts() {
-        // Bootstrap JavaScript einbinden
-        wp_enqueue_script('bootstrap-js', 'https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js', array('jquery'), null, true);
-    }
 
 
 
@@ -231,7 +223,8 @@ class uncl_unwanted_cleaner {
     }
 
     public function add_admin_menu() {
-        add_options_page('Unwanted Cleaner', 'Unwanted Cleaner', 'manage_options', 'unwanted-cleaner', array($this, 'uncl_init_admin_page'));
+        //add_options_page('Unwanted Cleaner', 'Unwanted Cleaner', 'manage_options', 'unwanted-cleaner', array($this, 'uncl_init_admin_page'));
+        add_menu_page('Unwanted Cleaner', 'Unwanted Cleaner', 'manage_options', 'unwanted-cleaner', array($this, 'uncl_init_admin_page'), ''.UNCL_PLUGIN_URL . '/includes/assets/img/icon.png', 100);
     }
 
     public function uncl_register_settings() {
@@ -243,7 +236,7 @@ class uncl_unwanted_cleaner {
     }
 
 	public function uncl_init_admin_page() {
-        ?><div id="main_unwanted_cleaner"></div><?php
+        ?><div id="main_unwanted_cleaner" class="container"></div><?php
 		$this->uncl_load_unwanted_plugins();
 	
         // $pro = 0;    // for future use
@@ -260,11 +253,12 @@ class uncl_unwanted_cleaner {
             "saving" => esc_html__('Saving list...', 'unwanted-cleaner'),
             "deleting" => esc_html__('Deleting plugins...', 'unwanted-cleaner')
         ];
-        $r = $this->uncl_get_list_of_plugins();
+       // $r = $this->uncl_get_list_of_plugins();
         $delete_ok= get_option('uncl_state_delete');
         $delete_ok = !empty($delete_ok) ?  $delete_ok : false;
-        wp_enqueue_script('uncl-main-js', UNCL_PLUGIN_URL . '/includes/assets/js/uncl_main.js', array('jquery'), '1.0.0', true);
+        wp_enqueue_script('uncl-main-js', UNCL_PLUGIN_URL . '/includes/assets/js/uncl_main.js', array('jquery'), UNCL_PLUGIN_VERSION, true);
         $images = UNCL_PLUGIN_URL . '/includes/assets/img/';
+        $user_lang = get_user_locale(get_current_user_id());
         wp_localize_script('uncl-main-js','uncl_var',array(
 			'nonce' => wp_create_nonce("uncl-nonce"),
 			'check' => 1,
@@ -274,8 +268,9 @@ class uncl_unwanted_cleaner {
             'plugin_list' => $this->uncl_unwanted_plugins,
             'ajaxurl' => admin_url('admin-ajax.php'),
             'delete_ok' => $delete_ok,
-            'plugin_dropdown_list' => $r,
-            'images' => $images
+            //'plugin_dropdown_list' => $r,
+            'images' => $images,
+            'user_lang'=>$user_lang
 		));
 	}
 
@@ -307,7 +302,7 @@ class uncl_unwanted_cleaner {
         wp_send_json_success($response,200);
     }
 
-    public function uncl_get_list_of_plugins(){
+    /* public function uncl_get_list_of_plugins(){
         $url ='https://api.wordpress.org/plugins/info/1.2/?action=query_plugins&request[per_page]=100';
         $response = wp_remote_get($url); 
         if (is_wp_error($response)) return 0; // API didn't respond
@@ -318,5 +313,6 @@ class uncl_unwanted_cleaner {
             $r[$key] = ['name'=>$value['name'],'slug'=>$value['slug'] ,'icons'=>$value['icons']];
         }
         return $r; 
-    }
+    } */
+    
 }

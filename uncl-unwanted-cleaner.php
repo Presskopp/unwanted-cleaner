@@ -21,9 +21,9 @@ if (!defined('UNCL_PLUGIN_FILE')) {
     define('UNCL_PLUGIN_FILE', __FILE__);
 }
 
-/* if (!defined("UNCL_PLUGIN_VERSION")) {
-    define("UNCL_PLUGIN_VERSION", "1.0.0");
-} */
+if (!defined("UNCL_PLUGIN_VERSION")) {
+    define("UNCL_PLUGIN_VERSION", "1.0.1");
+}
 
 /** Constant pointing to the root directory URL of the plugin */
 if (!defined("UNCL_PLUGIN_URL")) {

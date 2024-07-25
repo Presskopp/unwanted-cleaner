@@ -1,11 +1,11 @@
 document.addEventListener("DOMContentLoaded", function() {
     
-    const pluginListUWP = uncl_var.plugin_list;
+    const pluginListuncl = uncl_var.plugin_list;
     let pluginlist = null;
-    for (let key in pluginListUWP) {
-        if (Object.prototype.hasOwnProperty.call(pluginListUWP, key)) {
-            if (typeof pluginListUWP[key] === 'string') {
-                pluginlist === null ? pluginlist = pluginListUWP[key].replace(/,/g, '\n') : pluginlist += '\n'+ pluginListUWP[key].replace(/,/g, '\n')
+    for (let key in pluginListuncl) {
+        if (Object.prototype.hasOwnProperty.call(pluginListuncl, key)) {
+            if (typeof pluginListuncl[key] === 'string') {
+                pluginlist === null ? pluginlist = pluginListuncl[key].replace(/,/g, '\n') : pluginlist += '\n'+ pluginListuncl[key].replace(/,/g, '\n')
             }
         }
     }
@@ -17,11 +17,11 @@ document.addEventListener("DOMContentLoaded", function() {
             background-color: #f0f0f1;
         }
 
-        .uwcl-header {
+        .uncl-header {
             background-color: #fafafa;
         }
 
-        .uwcl-header-image {
+        .uncl-header-image {
             width: 50%;
             height: auto; /* to keep aspect ratio */
             display: block;
@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", function() {
             margin-bottom: -7px;
         }
 
-        .uwcl-header, .wrap, .uncl-footer {
+        .uncl-header, .wrap, .uncl-footer {
             max-width: 67rem;
             display: block;
             margin: 15px auto 0;
@@ -54,8 +54,8 @@ document.addEventListener("DOMContentLoaded", function() {
     </style>
 
     <div id="noti-uncl"> </div>
-     <div class="uwcl-header">
-        <img class="uwcl-header-image" src="${uncl_var.images}/banner-1544x500.png">
+     <div class="uncl-header">
+        <img class="uncl-header-image" src="${uncl_var.images}/banner-1544x500.png">
     </div>
     <div class="wrap">
         <!-- h1>${uncl_var.text.Unwanted_Cleaner_Settings}</h1 -->
@@ -73,7 +73,17 @@ document.addEventListener("DOMContentLoaded", function() {
                     <div>
                         <p>${uncl_var.text.Enter_the_slugs_of_unwanted_plugins}<br>
                         ${uncl_var.text.They_will_be_automatically_deleted}</p>
-                        <textarea name="plugin-list-uncl" id="plugin-list-uncl" rows="5" cols="50">${pluginlist}</textarea>
+                        <!-- textarea name="plugin-list-uncl" id="plugin-list-uncl" rows="5" cols="50">${pluginlist}</textarea -->
+                        <!-- start new code -->
+                        <div class="uncl section-dropdown">
+                            <div class="uncl selected-list row col-12" id="selectedList-uncl"></div>
+                                <div class="uncl  dropdown col-8">                                
+                                    <input type="text" id="dropdownInput-uncl" placeholder="Search...">
+                                    <div class="uncl dropdown-content" id="dropdownList-uncl"></div>                                    
+                                </div>
+                                <a class="button button-primary col-3"  role="button" id="searchPlng-uncl"> Search</a>
+                        </div>
+                        <!-- end  new code-->
                     </div>
                     <div>
                         <input type="checkbox" id="delete_ok" name="delete_ok" value="0" ${delete_ok ? 'checked' : ''}>
@@ -102,17 +112,17 @@ document.addEventListener("DOMContentLoaded", function() {
     setTimeout(() => {
         // Event-Handler for save button
         document.getElementById('saveButton').addEventListener('click', function() {
-            fun_handle_uwp('save');
+            fun_handle_uncl('save');
         });
     
         // Event-Handler for delete now button
         document.getElementById('deleteButton').addEventListener('click', function() {
-            fun_handle_uwp('delete');
+            fun_handle_uncl('delete');
         });        
     }, 100);
 });
 
-function fun_handle_uwp(state){
+function fun_handle_uncl(state){
     const plugin_list = document.getElementById('plugin-list-uncl').value;
     const checkbox_delete = document.getElementById('delete_ok').checked;
     noti_box = (m, clss) => {
@@ -162,8 +172,185 @@ function fun_handle_uwp(state){
 
 
 //Start new code for parsing Plugins
-uncl_var.plugin_dropdown_list.forEach(plugin => {
+/* uncl_var.plugin_dropdown_list.forEach(plugin => {
     console.log(plugin.name,plugin.icons['1x'])
-});
+}); */
 
 //End new code for parsing Plugins
+
+
+// Start new code for dropdown
+document.addEventListener('DOMContentLoaded', function() {
+const availableItems = [
+    { name: "Item 1", image: "https://via.placeholder.com/30", id: "710" },
+    { name: "Item 2", image: "https://via.placeholder.com/30", id: "720" },
+    { name: "Item 3", image: "https://via.placeholder.com/30", id: "730" },
+    { name: "Item 4", image: "https://via.placeholder.com/30", id: "740" }
+];
+
+const selectedItems = new Set();
+const dropdownInput = document.getElementById('dropdownInput-uncl');
+const dropdownList = document.getElementById('dropdownList-uncl');
+const selectedList = document.getElementById('selectedList-uncl');
+const searchPlng = document.getElementById('searchPlng-uncl');
+let filteredItems = [];
+
+// Filter and display the dropdown list
+
+
+fun_addItemToSelectedList = (items) => {
+    fun_addedItems =()=>{
+        dropdownList.innerHTML = '';
+        //const filteredItems = uncl_var.plugin_dropdown_list.filter(item => item.name.toLowerCase().includes(filter) && !selectedItems.has(item.name));
+        if (filteredItems.length) {
+            filteredItems.forEach(item => {
+                console.log(item.icons['1x']);
+                const itemElement = document.createElement('div');
+                itemElement.innerHTML = `<img src="${item.icons['1x'] ?? item.icons['default']}" alt="${item.name}"><span>${item.name}</span>`;
+                itemElement.addEventListener('click', () => addItemToSelectedList(item));
+                dropdownList.appendChild(itemElement);
+            });
+        } else {
+            checkExternalSource(dropdownInput.value);
+        }
+        dropdownList.style.display = filteredItems.length ? 'block' : 'none';
+    }//end of fun_addedItems
+
+    console.log('fun_addItemToSelectedList', items);
+    filteredItems =items;
+    fun_addedItems();
+    console.log(filteredItems);
+    dropdownInput.addEventListener('input', function() {
+        fun_addedItems();       
+    });
+}
+
+//fun_searchPlng-uncl
+searchPlng.addEventListener('click', function() {
+    const name = dropdownInput.value;
+     fun_fetch_plugin_list_uncl(name);
+    //remove event click on dropdownInput
+    
+});
+
+// Add item to selected list
+function addItemToSelectedList(item) {
+    if (!selectedItems.has(item.name)) {
+        selectedItems.add(item.name);
+        const itemRow = document.createElement('div');
+        itemRow.className = 'item-row';
+        itemRow.innerHTML = `
+            <label>Artikel (ID): <input type="text" value="${item.id}" readonly></label>
+            <label>Menge: <input type="text" value="1"></label>
+            <span class="remove-button">&times;</span>
+        `;
+        itemRow.querySelector('.remove-button').addEventListener('click', () => removeItemFromSelectedList(item.name, itemRow));
+        selectedList.appendChild(itemRow);
+        dropdownInput.value = '';
+        dropdownList.innerHTML = '';
+        dropdownList.style.display = 'none';
+    }
+}
+
+// Remove item from selected list
+function removeItemFromSelectedList(name, element) {
+    selectedItems.delete(name);
+    element.remove();
+}
+
+// Check external source if item is not found
+function checkExternalSource(query) {
+    // Simulate an API request
+    setTimeout(() => {
+        const externalItem = { name: query, image: "https://via.placeholder.com/30", id: "750" };
+        const itemElement = document.createElement('div');
+        itemElement.innerHTML = `<img src="${externalItem.image}" alt="${externalItem.name}"><span>${externalItem.name}</span>`;
+        itemElement.addEventListener('click', () => addItemToSelectedList(externalItem));
+        dropdownList.appendChild(itemElement);
+        dropdownList.style.display = 'block';
+    }, 500); // Simulate network delay
+}
+
+// Hide the dropdown list when clicking outside
+document.addEventListener('click', function(event) {
+    if (!event.target.closest('.dropdown')) {
+        dropdownList.style.display = 'none';
+    }
+});
+
+dropdownInput.addEventListener('click', function(event) {
+    event.stopPropagation();
+    dropdownList.style.display = 'block';
+});
+
+
+//fun_fetch_plugin_list_uncl('unwanted');
+//fetch the plugin list from the server https://api.wordpress.org/plugins/info/1.2/?action=query_plugins&request[search]=jetpack
+async function fun_fetch_plugin_list_uncl(name ){
+   // const response = await fetch(`https://api.wordpress.org/plugins/info/1.2/?action=query_plugins&request[search]=${name}`);
+   f_u=(lang , page , search)=>{
+    return `https://api.wordpress.org/plugins/info/1.2/?action=query_plugins&request[search]=${search}&request[per_page]=100&request[page]=${page}&request[locale]=${lang}`;
+    }
+
+    f_progressbar= (total_page, page)=>{
+        if(!document.getElementById('progressbar-uncl')){
+            dropdownList.innerHTML = `<div class="progress px-0 my-4 mx-1">
+                <div class="progress-bar" id="progressbar-uncl" role="progressbar" style="width:0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+            </div>`;
+            dropdownList.style.display = 'block';
+        }else{
+            console.log(page/total_page);
+            let r = (page/total_page);
+            r = r.toFixed(2);
+            document.getElementById('progressbar-uncl').style.width = `${(r)*100}%`;
+            document.getElementById('progressbar-uncl').innerHTML = `${(r)*100}%` ;
+        }
+    }
+    let page = 1;
+
+    
+    let data_filtered = [];
+     let total_page = 0;
+     try {
+        do {
+            const url = f_u(uncl_var.user_lang, page, name);
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            const r = data.plugins.filter(plugin => plugin.name.toLowerCase().includes(name.toLowerCase())).map(plugin => {
+                return { name: plugin.name, icons: plugin.icons, slug: plugin.slug }
+            });
+            data_filtered = data_filtered.concat(r);
+            console.log(data_filtered);
+            if (total_page == 0 && data.info && data.info.pages) {
+                console.log('total_page:', data.info.pages );
+                //data.info.results
+                total_page = data.info.pages;                                
+            }
+            f_progressbar(total_page, page);
+            page += 1;
+        } while (page <= total_page);
+        fun_addItemToSelectedList(data_filtered);
+    } catch (error) {
+        console.error('Error fetching plugin list:', error);
+    }
+/*     const response = await fetch(url);
+    const data = await response.json();
+    let total_page = data.info.pages;
+    page+=1;
+     console.log(data);
+   let data_filtered = data.plugins.filter(plugin => plugin.name.toLowerCase().includes(name.toLowerCase())).map(plugin => {
+        return { name: plugin.name, icons: plugin.icons , slug:plugin.slug }
+    }); */
+    console.log(data_filtered)
+    return data_filtered;
+
+}
+
+
+// End new code for dropdown
+
+
+});//end of dom content loaded
