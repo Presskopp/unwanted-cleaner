@@ -1,14 +1,15 @@
+let pluginlist_uncl = [];
 document.addEventListener("DOMContentLoaded", function() {
     
     const pluginListuncl = uncl_var.plugin_list;
-    let pluginlist = null;
-    for (let key in pluginListuncl) {
+    
+  /*   for (let key in pluginListuncl) {
         if (Object.prototype.hasOwnProperty.call(pluginListuncl, key)) {
             if (typeof pluginListuncl[key] === 'string') {
-                pluginlist === null ? pluginlist = pluginListuncl[key].replace(/,/g, '\n') : pluginlist += '\n'+ pluginListuncl[key].replace(/,/g, '\n')
+                pluginlist_uncl === null ? pluginlist_uncl = pluginListuncl[key].replace(/,/g, '\n') : pluginlist_uncl += '\n'+ pluginListuncl[key].replace(/,/g, '\n')
             }
         }
-    }
+    } */
     
     const delete_ok= uncl_var.delete_ok == 'true' || uncl_var.delete_ok == 1 ? 1 : 0
     const ui_page = `
@@ -73,10 +74,10 @@ document.addEventListener("DOMContentLoaded", function() {
                     <div>
                         <p>${uncl_var.text.Enter_the_slugs_of_unwanted_plugins}<br>
                         ${uncl_var.text.They_will_be_automatically_deleted}</p>
-                        <!-- textarea name="plugin-list-uncl" id="plugin-list-uncl" rows="5" cols="50">${pluginlist}</textarea -->
+                        <!-- textarea name="plugin-list-uncl" id="plugin-list-uncl" rows="5" cols="50">${pluginlist_uncl}</textarea -->
                         <!-- start new code -->
                         <div class="uncl section-dropdown">
-                            <div class="uncl selected-list row col-12" id="selectedList-uncl"></div>
+                                <div class="uncl selected-list row col-12 my-3 mx-2" id="selectedList-uncl"></div>
                                 <div class="uncl  dropdown col-8">                                
                                     <input type="text" id="dropdownInput-uncl" placeholder="Search...">
                                     <div class="uncl dropdown-content" id="dropdownList-uncl"></div>                                    
@@ -194,6 +195,7 @@ const dropdownList = document.getElementById('dropdownList-uncl');
 const selectedList = document.getElementById('selectedList-uncl');
 const searchPlng = document.getElementById('searchPlng-uncl');
 let filteredItems = [];
+let listReceivedFromWP_uncl = [];
 
 // Filter and display the dropdown list
 
@@ -204,7 +206,6 @@ fun_addItemToSelectedList = (items) => {
         //const filteredItems = uncl_var.plugin_dropdown_list.filter(item => item.name.toLowerCase().includes(filter) && !selectedItems.has(item.name));
         if (filteredItems.length) {
             filteredItems.forEach(item => {
-                console.log(item.icons['1x']);
                 const itemElement = document.createElement('div');
                 itemElement.innerHTML = `<img src="${item.icons['1x'] ?? item.icons['default']}" alt="${item.name}"><span>${item.name}</span>`;
                 itemElement.addEventListener('click', () => addItemToSelectedList(item));
@@ -212,14 +213,17 @@ fun_addItemToSelectedList = (items) => {
             });
         } else {
             checkExternalSource(dropdownInput.value);
+            return;
         }
         dropdownList.style.display = filteredItems.length ? 'block' : 'none';
     }//end of fun_addedItems
-
-    console.log('fun_addItemToSelectedList', items);
+    if(items.length==0){
+        dropdownList.innerHTML = `<div><span>Not Found any</span></div>`;
+        return;
+    }
+   
     filteredItems =items;
     fun_addedItems();
-    console.log(filteredItems);
     dropdownInput.addEventListener('input', function() {
         fun_addedItems();       
     });
@@ -240,15 +244,18 @@ function addItemToSelectedList(item) {
         const itemRow = document.createElement('div');
         itemRow.className = 'item-row';
         itemRow.innerHTML = `
-            <label>Artikel (ID): <input type="text" value="${item.id}" readonly></label>
-            <label>Menge: <input type="text" value="1"></label>
-            <span class="remove-button">&times;</span>
+            <div class=" ${item.slug}">              
+                    <img src="${item.icons['1x'] ?? item.icons['default']}" alt="${item.name}" width="30">
+                    <span>${item.name}</span>
+                    <span class="remove-button removeItemBtnFromListUncl" data-slug='${item.slug}' >&#120299;</span>
+            </div>
         `;
         itemRow.querySelector('.remove-button').addEventListener('click', () => removeItemFromSelectedList(item.name, itemRow));
         selectedList.appendChild(itemRow);
         dropdownInput.value = '';
         dropdownList.innerHTML = '';
         dropdownList.style.display = 'none';
+        fun_addPluginToList_uncl(item);
     }
 }
 
@@ -264,8 +271,7 @@ function checkExternalSource(query) {
     setTimeout(() => {
         const externalItem = { name: query, image: "https://via.placeholder.com/30", id: "750" };
         const itemElement = document.createElement('div');
-        itemElement.innerHTML = `<img src="${externalItem.image}" alt="${externalItem.name}"><span>${externalItem.name}</span>`;
-        itemElement.addEventListener('click', () => addItemToSelectedList(externalItem));
+        itemElement.innerHTML = `<span>Not Found any</span>`;
         dropdownList.appendChild(itemElement);
         dropdownList.style.display = 'block';
     }, 500); // Simulate network delay
@@ -283,11 +289,22 @@ dropdownInput.addEventListener('click', function(event) {
     dropdownList.style.display = 'block';
 });
 
+dropdownInput.addEventListener('input', function() {
+    if(listReceivedFromWP_uncl.length==0)return;
+    const value = dropdownInput.value;    
+    const data_filtered = listReceivedFromWP_uncl.filter(plugin => plugin.name.toLowerCase().includes(value.toLowerCase())).map(plugin => {
+        return { name: plugin.name, icons: plugin.icons , slug:plugin.slug }
+    });
+    console.log(data_filtered);
+    fun_addItemToSelectedList(data_filtered);
+});
 
-//fun_fetch_plugin_list_uncl('unwanted');
+
+
 //fetch the plugin list from the server https://api.wordpress.org/plugins/info/1.2/?action=query_plugins&request[search]=jetpack
 async function fun_fetch_plugin_list_uncl(name ){
    // const response = await fetch(`https://api.wordpress.org/plugins/info/1.2/?action=query_plugins&request[search]=${name}`);
+   fun_state_btn_searchPlnguncl(1);
    f_u=(lang , page , search)=>{
     return `https://api.wordpress.org/plugins/info/1.2/?action=query_plugins&request[search]=${search}&request[per_page]=100&request[page]=${page}&request[locale]=${lang}`;
     }
@@ -301,9 +318,9 @@ async function fun_fetch_plugin_list_uncl(name ){
         }else{
             console.log(page/total_page);
             let r = (page/total_page);
-            r = r.toFixed(2);
-            document.getElementById('progressbar-uncl').style.width = `${(r)*100}%`;
-            document.getElementById('progressbar-uncl').innerHTML = `${(r)*100}%` ;
+            r = Math.floor(r*100);
+            document.getElementById('progressbar-uncl').style.width = `${(r)}%`;
+            document.getElementById('progressbar-uncl').innerHTML = `${(r)}%` ;
         }
     }
     let page = 1;
@@ -332,6 +349,7 @@ async function fun_fetch_plugin_list_uncl(name ){
             f_progressbar(total_page, page);
             page += 1;
         } while (page <= total_page);
+        listReceivedFromWP_uncl = data_filtered;
         fun_addItemToSelectedList(data_filtered);
     } catch (error) {
         console.error('Error fetching plugin list:', error);
@@ -344,7 +362,7 @@ async function fun_fetch_plugin_list_uncl(name ){
    let data_filtered = data.plugins.filter(plugin => plugin.name.toLowerCase().includes(name.toLowerCase())).map(plugin => {
         return { name: plugin.name, icons: plugin.icons , slug:plugin.slug }
     }); */
-    console.log(data_filtered)
+    fun_state_btn_searchPlnguncl(0);
     return data_filtered;
 
 }
@@ -353,4 +371,26 @@ async function fun_fetch_plugin_list_uncl(name ){
 // End new code for dropdown
 
 
+/* functions of handling list of plugins */
+fun_addPluginToList_uncl = (item) => {
+    //pluginlist_uncl
+    pluginlist_uncl.push([item.name, item.slug, item.icons['1x'] ?? item.icons['default']]);
+}
+
+/* End functions of handling list of plugins */
+
+fun_state_btn_searchPlnguncl = (state) => {
+    if(state==1){
+        searchPlng.classList.add('disabled');
+        searchPlng.disabled = true;
+        searchPlng.innerHTML = 'loading...';
+    }else{
+        searchPlng.classList.remove('disabled');
+        searchPlng.disabled = false;
+        searchPlng.innerHTML = 'Search';
+    }
+  
+}
+
 });//end of dom content loaded
+
