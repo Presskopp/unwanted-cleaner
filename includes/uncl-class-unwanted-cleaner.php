@@ -63,6 +63,7 @@ class uncl_unwanted_cleaner {
 
 
     public function uncl_save_unwanted_list($purpose , $list) {
+        error_log('uncl_save_unwanted_list: '.$list);
         if (isset($list)) {
             $n = "uncl_unwanted_".$purpose."_list";
             update_option($n, $list);
@@ -219,6 +220,9 @@ class uncl_unwanted_cleaner {
     }
 
     public function uncl_load_unwanted_plugins() {
+        error_log('uncl_load_unwanted_plugins');
+        error_log($this->uncl_unwanted_options);
+        
         $this->uncl_unwanted_plugins = get_option($this->uncl_unwanted_options, array());
     }
 
@@ -259,13 +263,14 @@ class uncl_unwanted_cleaner {
         wp_enqueue_script('uncl-main-js', UNCL_PLUGIN_URL . '/includes/assets/js/uncl_main.js', array('jquery'), UNCL_PLUGIN_VERSION, true);
         $images = UNCL_PLUGIN_URL . '/includes/assets/img/';
         $user_lang = get_user_locale(get_current_user_id());
+        $plugins = str_replace( '\\', "",  $this->uncl_unwanted_plugins );
         wp_localize_script('uncl-main-js','uncl_var',array(
 			'nonce' => wp_create_nonce("uncl-nonce"),
 			'check' => 1,
 			//'pro' => $pro,  // for future use
 			'rtl' => is_rtl() ,
 			'text' => $lang,
-            'plugin_list' => $this->uncl_unwanted_plugins,
+            'plugin_list' => $plugins,
             'ajaxurl' => admin_url('admin-ajax.php'),
             'delete_ok' => $delete_ok,
             //'plugin_dropdown_list' => $r,
@@ -286,7 +291,7 @@ class uncl_unwanted_cleaner {
 
         $state = sanitize_text_field($_POST['state']);
         $plugin_list = sanitize_text_field($_POST['plugin_list']);
-        $plugin_list = str_replace(' ', ',',  $plugin_list);
+        //$plugin_list = json_decode($plugin_list);
 
         $delete_ok =sanitize_text_field($_POST['delete_ok']);
         $message = esc_html__('Plugins deleted successfully.', 'unwanted-cleaner');

@@ -1,7 +1,16 @@
 let pluginlist_uncl = [];
+addItemUiselected=(item)=>{ 
+    const icon = item.hasOwnProperty('icon') ? item.icon : item.icons['1x'] ?? item.icons['default'];
+    return ` <div class=" ${item.slug}">              
+                        <img src="${icon}" alt="${item.name}" width="30">
+                        <span>${item.name}</span>
+                        <span class="remove-button removeItemBtnFromListUncl" data-slug='${item.slug}' >&#120299;</span>
+                </div>`;
+    }
+    
 document.addEventListener("DOMContentLoaded", function() {
     
-    const pluginListuncl = uncl_var.plugin_list;
+    
     
   /*   for (let key in pluginListuncl) {
         if (Object.prototype.hasOwnProperty.call(pluginListuncl, key)) {
@@ -10,6 +19,8 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         }
     } */
+
+
     
     const delete_ok= uncl_var.delete_ok == 'true' || uncl_var.delete_ok == 1 ? 1 : 0
     const ui_page = `
@@ -119,12 +130,22 @@ document.addEventListener("DOMContentLoaded", function() {
         // Event-Handler for delete now button
         document.getElementById('deleteButton').addEventListener('click', function() {
             fun_handle_uncl('delete');
-        });        
-    }, 100);
+        });    
+        
+        //addItemToSelectedList
+    }, 200);
 });
 
+
+
+
+
+
 function fun_handle_uncl(state){
-    const plugin_list = document.getElementById('plugin-list-uncl').value;
+    //const plugin_list = document.getElementById('plugin-list-uncl').value;
+    const plugin_list = JSON.stringify(pluginlist_uncl);
+    console.log(plugin_list);
+
     const checkbox_delete = document.getElementById('delete_ok').checked;
     noti_box = (m, clss) => {
         let noti = document.getElementById('noti-uncl')
@@ -243,14 +264,8 @@ function addItemToSelectedList(item) {
         selectedItems.add(item.name);
         const itemRow = document.createElement('div');
         itemRow.className = 'item-row';
-        itemRow.innerHTML = `
-            <div class=" ${item.slug}">              
-                    <img src="${item.icons['1x'] ?? item.icons['default']}" alt="${item.name}" width="30">
-                    <span>${item.name}</span>
-                    <span class="remove-button removeItemBtnFromListUncl" data-slug='${item.slug}' >&#120299;</span>
-            </div>
-        `;
-        itemRow.querySelector('.remove-button').addEventListener('click', () => removeItemFromSelectedList(item.name, itemRow));
+        itemRow.innerHTML = addItemUiselected(item);
+        itemRow.querySelector('.remove-button').addEventListener('click', () => removeItemFromSelectedList(item.name, item.slug ,itemRow));
         selectedList.appendChild(itemRow);
         dropdownInput.value = '';
         dropdownList.innerHTML = '';
@@ -259,10 +274,13 @@ function addItemToSelectedList(item) {
     }
 }
 
+
 // Remove item from selected list
-function removeItemFromSelectedList(name, element) {
+function removeItemFromSelectedList(name, slug , element) {
     selectedItems.delete(name);
     element.remove();
+    pluginlist_uncl = pluginlist_uncl.filter(plugin => plugin.slug != slug);
+    console.log(pluginlist_uncl);
 }
 
 // Check external source if item is not found
@@ -374,7 +392,10 @@ async function fun_fetch_plugin_list_uncl(name ){
 /* functions of handling list of plugins */
 fun_addPluginToList_uncl = (item) => {
     //pluginlist_uncl
-    pluginlist_uncl.push([item.name, item.slug, item.icons['1x'] ?? item.icons['default']]);
+    ///item.name, item.slug, item.icons['1x'] ?? item.icons['default']
+    const icon =item.hasOwnProperty('icon') ? item.icon : item.icons['1x'] ?? item.icons['default'];
+    pluginlist_uncl.push({ name: item.name, slug: item.slug, icon: icon });
+    console.log(pluginlist_uncl);
 }
 
 /* End functions of handling list of plugins */
@@ -391,6 +412,20 @@ fun_state_btn_searchPlnguncl = (state) => {
     }
   
 }
+
+
+if(uncl_var.plugin_list){
+        
+    // let tem= uncl_var.plugin_list.replace(/[\\]/g, '');
+    pluginlist_uncl=JSON.parse(uncl_var.plugin_list);
+   
+     
+ }
+ 
+ let pluginListUi = '<!-- unc -->';
+ pluginlist_uncl.forEach(plugin => {
+     addItemToSelectedList(plugin);
+ });
 
 });//end of dom content loaded
 
