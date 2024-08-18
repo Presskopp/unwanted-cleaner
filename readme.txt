@@ -7,7 +7,7 @@ Tested up to: 6.5
 Stable tag: 1.0.0
 License: GPLv2 or later
 License URL: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
-Donate link: https://presskopp.com/
+Donate link: https://presskopp.com#main-footer
 This plugin removes unwanted plugins during the WordPress core upgrade process or manually. You manage the list of unwanted plugins in the backend.
 
 == Description ==
