@@ -1,11 +1,35 @@
 let pluginlist_uncl = [];
 addItemUiselected=(item)=>{ 
     const icon = item.hasOwnProperty('icon') ? item.icon : item.icons['1x'] ?? item.icons['default'];
-    return ` <div class=" ${item.slug}">              
+
+    /* 
+    <div class="plugin-card-top">
+				<div class="name column-name">
+					<h3>
+						<a href="http://127.0.0.1/wp/wp-admin/plugin-install.php?tab=plugin-information&amp;plugin=classic-editor&amp;TB_iframe=true&amp;width=772&amp;height=859" class="thickbox open-plugin-details-modal">
+						Classic Editor						<img src="https://ps.w.org/classic-editor/assets/icon-256x256.png?rev=1998671" class="plugin-icon" alt="">
+						</a>
+					</h3>
+				</div>
+				<div class="action-links">
+					<ul class="plugin-action-buttons"><li><a class="install-now button" data-slug="classic-editor" href="http://127.0.0.1/wp/wp-admin/update.php?action=install-plugin&amp;plugin=classic-editor&amp;_wpnonce=e1c7210d82" aria-label="Install Classic Editor 1.6.4 now" data-name="Classic Editor 1.6.4" role="button">Install Now</a></li><li></li></ul>				</div>
+				
+			</div>
+    */
+    return ` <div class="plugin-card-top  ${item.slug}">       
+                <div class="name column-name">     
+                    <h3>  
+                    <a href="#" class="thickbox open-plugin-details-modal">
+						${item.name}<img src="${icon}" class="plugin-icon" alt="">
+					</a>
+                    <!--
                         <img src="${icon}" alt="${item.name}" width="30">
                         <span>${item.name}</span>
+                    -->
+                    </h3>
                         <span class="remove-button removeItemBtnFromListUncl" data-slug='${item.slug}' >&#120299;</span>
-                </div>`;
+                </div>
+            </div>`;
     }
     
 document.addEventListener("DOMContentLoaded", function() {
@@ -83,26 +107,25 @@ document.addEventListener("DOMContentLoaded", function() {
             <div class="tab-pane fade show active" id="tab1" role="tabpanel" aria-labelledby="tab1-tab">
                 <div class="uncl-panel">
                     <div>
-                        <p>${uncl_var.text.Enter_the_slugs_of_unwanted_plugins}<br>
-                        ${uncl_var.text.They_will_be_automatically_deleted}</p>
-                        <!-- textarea name="plugin-list-uncl" id="plugin-list-uncl" rows="5" cols="50">${pluginlist_uncl}</textarea -->
+                        <p>${uncl_var.text.They_will_be_automatically_deleted}</p>                
                         <!-- start new code -->
                         <div class="uncl section-dropdown">
-                                <div class="uncl selected-list row col-12 my-3 mx-2" id="selectedList-uncl"></div>
+                                
                                 <div class="uncl  dropdown col-8">                                
-                                    <input type="text" id="dropdownInput-uncl" placeholder="Search...">
+                                    <input type="text" id="dropdownInput-uncl" >
                                     <div class="uncl dropdown-content" id="dropdownList-uncl"></div>                                    
                                 </div>
-                                <a class="button button-primary col-3"  role="button" id="searchPlng-uncl"> Search</a>
+                                <a class="button button-primary col-3"  role="button" id="searchPlng-uncl">${uncl_var.text.search}</a>
                         </div>
+                        <div class="uncl selected-list my-3 mx-2 plugin-install-php" id="selectedList-uncl"></div>
                         <!-- end  new code-->
                     </div>
-                    <div>
+                    <div id="delete_checkbox_section">
                         <input type="checkbox" id="delete_ok" name="delete_ok" value="0" ${delete_ok ? 'checked' : ''}>
                         <label for="delete_ok">${uncl_var.text.Automatic_deletion_confirmation}</label><br><br>
                     </div>
                     <div>
-                        <button class="button button-primary" id="saveButton">${uncl_var.text.save_changes}</button>
+                       <button class="button button-primary d-none" id="saveButton">${uncl_var.text.save_changes}</button>
                     </div>
                     <br>
                     <div>
@@ -143,8 +166,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
 function fun_handle_uncl(state){
     //const plugin_list = document.getElementById('plugin-list-uncl').value;
-    const plugin_list = JSON.stringify(pluginlist_uncl);
+    //delete dubplicate
+    const pluginlist_uncl_ = pluginlist_uncl.filter((v,i,a)=>a.findIndex(t=>(t.slug === v.slug))===i);
+    console.log('save/delete:', pluginlist_uncl_);
+    const plugin_list = JSON.stringify(pluginlist_uncl_);
     console.log(plugin_list);
+
 
     const checkbox_delete = document.getElementById('delete_ok').checked;
     noti_box = (m, clss) => {
@@ -180,7 +207,7 @@ function fun_handle_uncl(state){
                 msg = res.data.m;
                 // clss= "valid";
                 clss= "success";
-                noti_box(msg ,clss);
+               if(state!='save') noti_box(msg ,clss);
             } else {
                 msg = res.data.m;
                 // clss = "not-valid";
@@ -239,7 +266,7 @@ fun_addItemToSelectedList = (items) => {
         dropdownList.style.display = filteredItems.length ? 'block' : 'none';
     }//end of fun_addedItems
     if(items.length==0){
-        dropdownList.innerHTML = `<div><span>Not Found any</span></div>`;
+        dropdownList.innerHTML = `<div><span>${uncl_var.text.no_plugin_found}</span></div>`;
         return;
     }
    
@@ -253,6 +280,11 @@ fun_addItemToSelectedList = (items) => {
 //fun_searchPlng-uncl
 searchPlng.addEventListener('click', function() {
     const name = dropdownInput.value;
+    if(name.length<2) {
+        noti_box(uncl_var.text.please_enter_atleast_2chrs, 'error');
+
+        return false;
+    }
      fun_fetch_plugin_list_uncl(name);
     //remove event click on dropdownInput
     
@@ -263,7 +295,7 @@ function addItemToSelectedList(item) {
     if (!selectedItems.has(item.name)) {
         selectedItems.add(item.name);
         const itemRow = document.createElement('div');
-        itemRow.className = 'item-row';
+        itemRow.className = 'plugin-card';
         itemRow.innerHTML = addItemUiselected(item);
         itemRow.querySelector('.remove-button').addEventListener('click', () => removeItemFromSelectedList(item.name, item.slug ,itemRow));
         selectedList.appendChild(itemRow);
@@ -281,6 +313,9 @@ function removeItemFromSelectedList(name, slug , element) {
     element.remove();
     pluginlist_uncl = pluginlist_uncl.filter(plugin => plugin.slug != slug);
     console.log(pluginlist_uncl);
+    setTimeout(() => {
+        fun_handle_uncl('save');
+    }, 100);
 }
 
 // Check external source if item is not found
@@ -289,7 +324,7 @@ function checkExternalSource(query) {
     setTimeout(() => {
         const externalItem = { name: query, image: "https://via.placeholder.com/30", id: "750" };
         const itemElement = document.createElement('div');
-        itemElement.innerHTML = `<span>Not Found any</span>`;
+        itemElement.innerHTML = `<span>${uncl_var.text.no_plugin_found}</span>`;
         dropdownList.appendChild(itemElement);
         dropdownList.style.display = 'block';
     }, 500); // Simulate network delay
@@ -396,6 +431,10 @@ fun_addPluginToList_uncl = (item) => {
     const icon =item.hasOwnProperty('icon') ? item.icon : item.icons['1x'] ?? item.icons['default'];
     pluginlist_uncl.push({ name: item.name, slug: item.slug, icon: icon });
     console.log(pluginlist_uncl);
+
+    setTimeout(() => {
+        fun_handle_uncl('save');
+    }, 100);
 }
 
 /* End functions of handling list of plugins */
@@ -404,11 +443,11 @@ fun_state_btn_searchPlnguncl = (state) => {
     if(state==1){
         searchPlng.classList.add('disabled');
         searchPlng.disabled = true;
-        searchPlng.innerHTML = 'loading...';
+        searchPlng.innerHTML = uncl_var.text.loading;
     }else{
         searchPlng.classList.remove('disabled');
         searchPlng.disabled = false;
-        searchPlng.innerHTML = 'Search';
+        searchPlng.innerHTML = uncl_var.text.search;
     }
   
 }

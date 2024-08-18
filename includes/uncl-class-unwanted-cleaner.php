@@ -76,15 +76,22 @@ class uncl_unwanted_cleaner {
         
         $installed_plugins = get_plugins();
         $plugins_to_delete = array();
-        $plugin_list = count($this->uncl_unwanted_plugins) == 1 ? explode( ",", $this->uncl_unwanted_plugins[0] ) : $this->uncl_unwanted_plugins;
-
+        //$plugin_list = count($this->uncl_unwanted_plugins) == 1 ? explode( ",", $this->uncl_unwanted_plugins[0] ) : $this->uncl_unwanted_plugins;
+        $plugin_list = str_replace( '\\', "",  $this->uncl_unwanted_plugins );
+        $slugs = [];
+        $plugins = $plugin_list[0];
+        $plugins =json_decode($plugins, true);
+       foreach ($plugins as $plugin) {
+                $slug =  $plugin['slug'];
+                array_push($slugs, $slug);          
+        }
         $this->uncl_delete_unwanted_delete_hello_php_above_plugin();
-
+        error_log('slugs: '.json_encode($slugs));
         // Go through all of the installed plugins so if a plugin is active, it can be deactivated first
         // foreach ($installed_plugins as $plugin_file => $plugin_data) {
         foreach ($installed_plugins as $plugin_file => $_) {    // Deconstruction of $plugin_data because we don't use it
 
-            if (in_array(dirname($plugin_file), $plugin_list)) {
+            if (in_array(dirname($plugin_file), $slugs)) {
 
                 $this->uncl_deactivate_plugin( $plugin_file );
                 $deleted = delete_plugins(array($plugin_file));
@@ -249,12 +256,16 @@ class uncl_unwanted_cleaner {
             "List_of_unwanted_plugins" => esc_html__('List of unwanted plugins', 'unwanted-cleaner'),
             "Enter_the_slugs_of_unwanted_plugins" => esc_html__('Enter the slugs of your unwanted plugins, each on a new line.', 'unwanted-cleaner'),
             "Enter_the_slugs_of_unwanted_plugins" => sprintf( esc_html__('Enter the %1$sslugs%2$s of your unwanted plugins, %1$seach on a new line%2$s.', 'unwanted-cleaner'), '<b>', '</b>' ),
-            "They_will_be_automatically_deleted" => esc_html__('They are automatically deleted as soon as a core upgrade has taken place.', 'unwanted-cleaner'),
+            "They_will_be_automatically_deleted" => esc_html__('Plugins in this list will be automatically deleted as soon as a core upgrade has taken place.', 'unwanted-cleaner'),
             "Automatic_deletion_confirmation" => sprintf( esc_html__('If checked you give permission to Unwanted Cleaner to %1$sautomatically%2$s delete the plugins listed above, whenever a core update did run.', 'unwanted-cleaner'), '<b>', '</b>' ),
             "save_changes" => esc_html__('Save Changes', 'unwanted-cleaner'),
             "delete_now_hint" => esc_html__('If you want to delete the unwanted plugins right now, push the button below.', 'unwanted-cleaner'),
             "delete_unwanted_plugins" => esc_html__('Delete unwanted plugins now', 'unwanted-cleaner'),
             "saving" => esc_html__('Saving list...', 'unwanted-cleaner'),
+            "please_enter_atleast_2chrs" => esc_html__('Please enter at least 2 characters', 'unwanted-cleaner'),
+            "no_plugin_found" => esc_html__('No plugin found', 'unwanted-cleaner'),
+            "loading" => esc_html__('Loading...', 'unwanted-cleaner'),
+            "search" => esc_html__('Search', 'unwanted-cleaner'),
             "deleting" => esc_html__('Deleting plugins...', 'unwanted-cleaner')
         ];
        // $r = $this->uncl_get_list_of_plugins();
@@ -292,6 +303,7 @@ class uncl_unwanted_cleaner {
         $state = sanitize_text_field($_POST['state']);
         $plugin_list = sanitize_text_field($_POST['plugin_list']);
         //$plugin_list = json_decode($plugin_list);
+        error_log('uncl_unwanted_plugins_handler: '.json_encode($plugin_list));
 
         $delete_ok =sanitize_text_field($_POST['delete_ok']);
         $message = esc_html__('Plugins deleted successfully.', 'unwanted-cleaner');
