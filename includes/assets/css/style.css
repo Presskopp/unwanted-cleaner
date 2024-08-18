@@ -80,16 +80,18 @@
 }
 
 .plugin-icon {
-    top: 20px!important;
-    left: 20px!important;
     width: 70px!important;
     height: 70px!important;
-    margin: 0 20px 20px 0!important;
 }
 
 .plugin-card .name, .plugin-card .desc > p {
     margin-left: 80px!important;
 }
+
 #delete_checkbox_section{
     clear: both;
+}
+
+.plugin-card .name, .plugin-card .desc > p {
+    width: 50%;
 }

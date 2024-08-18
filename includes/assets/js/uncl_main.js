@@ -1,42 +1,31 @@
 let pluginlist_uncl = [];
+
 addItemUiselected=(item)=>{ 
     const icon = item.hasOwnProperty('icon') ? item.icon : item.icons['1x'] ?? item.icons['default'];
 
-    /* 
-    <div class="plugin-card-top">
-				<div class="name column-name">
-					<h3>
-						<a href="http://127.0.0.1/wp/wp-admin/plugin-install.php?tab=plugin-information&amp;plugin=classic-editor&amp;TB_iframe=true&amp;width=772&amp;height=859" class="thickbox open-plugin-details-modal">
-						Classic Editor						<img src="https://ps.w.org/classic-editor/assets/icon-256x256.png?rev=1998671" class="plugin-icon" alt="">
-						</a>
-					</h3>
-				</div>
-				<div class="action-links">
-					<ul class="plugin-action-buttons"><li><a class="install-now button" data-slug="classic-editor" href="http://127.0.0.1/wp/wp-admin/update.php?action=install-plugin&amp;plugin=classic-editor&amp;_wpnonce=e1c7210d82" aria-label="Install Classic Editor 1.6.4 now" data-name="Classic Editor 1.6.4" role="button">Install Now</a></li><li></li></ul>				</div>
-				
-			</div>
-    */
-    return ` <div class="plugin-card-top  ${item.slug}">       
-                <div class="name column-name">     
-                    <h3>  
-                    <a href="#" class="thickbox open-plugin-details-modal">
+    return ` <div class="plugin-card-top  ${item.slug}">
+                <div class="name column-name">
+                    <h3>
+                    <div class="action-links">
+                        <div class="plugin-action-buttons">
+                            <span class="btn btn-primary remove-button removeItemBtnFromListUncl" data-slug='${item.slug}' >&#120299;</span>
+                        </div>
+                    </div>
+                    <p class="thickbox open-plugin-details-modal">
 						${item.name}<img src="${icon}" class="plugin-icon" alt="">
-					</a>
+					</p>
                     <!--
                         <img src="${icon}" alt="${item.name}" width="30">
                         <span>${item.name}</span>
                     -->
                     </h3>
-                        <span class="remove-button removeItemBtnFromListUncl" data-slug='${item.slug}' >&#120299;</span>
                 </div>
             </div>`;
     }
     
 document.addEventListener("DOMContentLoaded", function() {
     
-    
-    
-  /*   for (let key in pluginListuncl) {
+    /* for (let key in pluginListuncl) {
         if (Object.prototype.hasOwnProperty.call(pluginListuncl, key)) {
             if (typeof pluginListuncl[key] === 'string') {
                 pluginlist_uncl === null ? pluginlist_uncl = pluginListuncl[key].replace(/,/g, '\n') : pluginlist_uncl += '\n'+ pluginListuncl[key].replace(/,/g, '\n')
@@ -44,8 +33,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     } */
 
-
-    
     const delete_ok= uncl_var.delete_ok == 'true' || uncl_var.delete_ok == 1 ? 1 : 0
     const ui_page = `
     <style>
@@ -108,17 +95,20 @@ document.addEventListener("DOMContentLoaded", function() {
                 <div class="uncl-panel">
                     <div>
                         <p>${uncl_var.text.They_will_be_automatically_deleted}</p>                
+                        
                         <!-- start new code -->
+
                         <div class="uncl section-dropdown">
-                                
-                                <div class="uncl  dropdown col-8">                                
-                                    <input type="text" id="dropdownInput-uncl" >
-                                    <div class="uncl dropdown-content" id="dropdownList-uncl"></div>                                    
-                                </div>
-                                <a class="button button-primary col-3"  role="button" id="searchPlng-uncl">${uncl_var.text.search}</a>
+                            <div class="uncl dropdown col-8">                                
+                                <input type="text" id="dropdownInput-uncl" >
+                                <div class="uncl dropdown-content" id="dropdownList-uncl"></div>                                    
+                            </div>
+                            <a class="button button-primary" role="button" id="searchPlng-uncl">${uncl_var.text.search}</a>
                         </div>
-                        <div class="uncl selected-list my-3 mx-2 plugin-install-php" id="selectedList-uncl"></div>
+                        <div class="uncl selected-list my-3 mx-2" id="selectedList-uncl"></div>
+                        
                         <!-- end  new code-->
+
                     </div>
                     <div id="delete_checkbox_section">
                         <input type="checkbox" id="delete_ok" name="delete_ok" value="0" ${delete_ok ? 'checked' : ''}>
@@ -158,11 +148,6 @@ document.addEventListener("DOMContentLoaded", function() {
         //addItemToSelectedList
     }, 200);
 });
-
-
-
-
-
 
 function fun_handle_uncl(state){
     //const plugin_list = document.getElementById('plugin-list-uncl').value;
@@ -440,11 +425,11 @@ fun_addPluginToList_uncl = (item) => {
 /* End functions of handling list of plugins */
 
 fun_state_btn_searchPlnguncl = (state) => {
-    if(state==1){
+    if (state == 1) {
         searchPlng.classList.add('disabled');
         searchPlng.disabled = true;
         searchPlng.innerHTML = uncl_var.text.loading;
-    }else{
+    } else {
         searchPlng.classList.remove('disabled');
         searchPlng.disabled = false;
         searchPlng.innerHTML = uncl_var.text.search;
@@ -467,4 +452,40 @@ if(uncl_var.plugin_list){
  });
 
 });//end of dom content loaded
+
+
+/* workaround for 3 columns plugin list */
+document.addEventListener("DOMContentLoaded", function() {
+    function applyStylesToPluginCards() {
+        if (window.matchMedia('(min-width: 1600px) and (max-width: 2299px)').matches) {
+            const pluginCards = document.querySelectorAll('.plugin-card');
+            pluginCards.forEach(function(card) {
+                card.style.maxWidth = '32.2%';
+            });
+        }
+    }
+
+    // Initial applying of styles
+    applyStylesToPluginCards();
+
+    // observe new attached elements having the class "plugin-card"
+    const observer = new MutationObserver(function(mutationsList) {
+        mutationsList.forEach(function(mutation) {
+            if (mutation.type === 'childList') {
+                mutation.addedNodes.forEach(function(node) {
+                    if (node.classList && node.classList.contains('plugin-card')) {
+                        applyStylesToPluginCards(); // apply to new plugin-cards
+                    }
+                });
+            }
+        });
+    });
+
+    // Start observing to whole document body
+    
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+});
 
