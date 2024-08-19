@@ -490,39 +490,45 @@ pluginlist_uncl.forEach(plugin => {
 
 });//end of dom content loaded
 
-/* workaround for 3 columns plugin list */
+/* workaround for plugin list columns */
 document.addEventListener("DOMContentLoaded", function() {
     function applyStylesToPluginCards() {
-        if (window.matchMedia('(min-width: 1600px) and (max-width: 2299px)').matches) {
-            const pluginCards = document.querySelectorAll('.plugin-card');
+        const pluginCards = document.querySelectorAll('.plugin-card');
+
+        if (window.innerWidth < 1600) {
+            pluginCards.forEach(function(card) {
+                card.style.maxWidth = '';
+            });
+        }
+        else if (window.matchMedia('(min-width: 1600px) and (max-width: 2299px)').matches) {
             pluginCards.forEach(function(card) {
                 card.style.maxWidth = '32.2%';
             });
         }
     }
 
-    // Initial applying of styles
     applyStylesToPluginCards();
 
-    // observe new attached elements having the class "plugin-card"
+    window.addEventListener('resize', applyStylesToPluginCards);
+
     const observer = new MutationObserver(function(mutationsList) {
         mutationsList.forEach(function(mutation) {
             if (mutation.type === 'childList') {
                 mutation.addedNodes.forEach(function(node) {
                     if (node.classList && node.classList.contains('plugin-card')) {
-                        applyStylesToPluginCards(); // apply to new plugin-cards
+                        applyStylesToPluginCards();
                     }
                 });
             }
         });
     });
 
-    // Start observing to whole document body
     observer.observe(document.body, {
         childList: true,
         subtree: true
     });
 });
+
 
 function showErrorModal(errorMessage) {
     if (errorMessage) {
