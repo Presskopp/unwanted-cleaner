@@ -94,21 +94,16 @@ document.addEventListener("DOMContentLoaded", function() {
             <div class="tab-pane fade show active" id="tab1" role="tabpanel" aria-labelledby="tab1-tab">
                 <div class="uncl-panel">
                     <div>
-                        <p>${uncl_var.text.They_will_be_automatically_deleted}</p>                
-                        
-                        <!-- start new code -->
-
                         <div class="uncl section-dropdown">
                             <div class="uncl dropdown col-8">                                
                                 <input type="text" id="dropdownInput-uncl" >
                                 <div class="uncl dropdown-content" id="dropdownList-uncl"></div>                                    
                             </div>
                             <a class="button button-primary" role="button" id="searchPlng-uncl">${uncl_var.text.search}</a>
+                            <br><br>
+                            <p id="automatic_hint">${uncl_var.text.Plugins_will_be_automatically_deleted}</p>
                         </div>
                         <div class="uncl selected-list my-3 mx-2" id="selectedList-uncl"></div>
-                        
-                        <!-- end  new code-->
-
                     </div>
                     <div id="delete_checkbox_section">
                         <input type="checkbox" id="delete_ok" name="delete_ok" value="0" ${delete_ok ? 'checked' : ''}>
@@ -131,6 +126,23 @@ document.addEventListener("DOMContentLoaded", function() {
     </div>
     <br>
     <div class="uncl-footer">Thank you for using <a href="https://presskopp.com/en/unwanted-cleaner">Unwanted Cleaner</a>. If you like it, you may consider <a href="https://presskopp.com/en/unwanted-cleaner/#main-footer"> buying me a coffee</a></div>
+
+    <!-- Vertically centered modal -->
+    <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="errorModalLabel">Warning</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+    </div>
     `;
     document.getElementById('main_unwanted_cleaner').innerHTML = ui_page;
 
@@ -214,13 +226,15 @@ function fun_handle_uncl(state){
 
 
 // Start new code for dropdown
+
 document.addEventListener('DOMContentLoaded', function() {
-const availableItems = [
+/*const availableItems = [
     { name: "Item 1", image: "https://via.placeholder.com/30", id: "710" },
     { name: "Item 2", image: "https://via.placeholder.com/30", id: "720" },
     { name: "Item 3", image: "https://via.placeholder.com/30", id: "730" },
     { name: "Item 4", image: "https://via.placeholder.com/30", id: "740" }
 ];
+*/
 
 const selectedItems = new Set();
 const dropdownInput = document.getElementById('dropdownInput-uncl');
@@ -231,8 +245,6 @@ let filteredItems = [];
 let listReceivedFromWP_uncl = [];
 
 // Filter and display the dropdown list
-
-
 fun_addItemToSelectedList = (items) => {
     fun_addedItems =()=>{
         dropdownList.innerHTML = '';
@@ -265,32 +277,53 @@ fun_addItemToSelectedList = (items) => {
 //fun_searchPlng-uncl
 searchPlng.addEventListener('click', function() {
     const name = dropdownInput.value;
-    if(name.length<2) {
+    if (name.length < 2) {
         noti_box(uncl_var.text.please_enter_atleast_2chrs, 'error');
-
         return false;
     }
-     fun_fetch_plugin_list_uncl(name);
+    fun_fetch_plugin_list_uncl(name);
     //remove event click on dropdownInput
-    
 });
 
 // Add item to selected list
 function addItemToSelectedList(item) {
-    if (!selectedItems.has(item.name)) {
-        selectedItems.add(item.name);
-        const itemRow = document.createElement('div');
-        itemRow.className = 'plugin-card';
-        itemRow.innerHTML = addItemUiselected(item);
-        itemRow.querySelector('.remove-button').addEventListener('click', () => removeItemFromSelectedList(item.name, item.slug ,itemRow));
-        selectedList.appendChild(itemRow);
-        dropdownInput.value = '';
-        dropdownList.innerHTML = '';
-        dropdownList.style.display = 'none';
-        fun_addPluginToList_uncl(item);
+    console.log('DEBUG: ' + item.name);
+    // Plugin already on the list?
+    if (selectedItems.has(item.name)) {
+        try {
+            throw new Error("The selected plugin is already on the list!");
+        } catch (error) {
+            showErrorModal(error.message);
+        }
+        return;
     }
-}
 
+    if (!item.name) {
+        console.error("Plugin name missing.");
+        return;
+    }
+
+    if (item.name === "Unwanted Cleaner") { 
+        try {
+            throw new Error("You are not allowed to put Unwanted Cleaner to the list of unwanted plugins!");
+        } catch (error) {
+            showErrorModal(error.message);
+        }
+        return;
+    };
+
+    // Plugin not on the list
+    selectedItems.add(item.name);
+    const itemRow = document.createElement('div');
+    itemRow.className = 'plugin-card';
+    itemRow.innerHTML = addItemUiselected(item);
+    itemRow.querySelector('.remove-button').addEventListener('click', () => removeItemFromSelectedList(item.name, item.slug ,itemRow));
+    selectedList.appendChild(itemRow);
+    dropdownInput.value = '';
+    dropdownList.innerHTML = '';
+    dropdownList.style.display = 'none';
+    fun_addPluginToList_uncl(item);
+}
 
 // Remove item from selected list
 function removeItemFromSelectedList(name, slug , element) {
@@ -307,7 +340,7 @@ function removeItemFromSelectedList(name, slug , element) {
 function checkExternalSource(query) {
     // Simulate an API request
     setTimeout(() => {
-        const externalItem = { name: query, image: "https://via.placeholder.com/30", id: "750" };
+        // const externalItem = { name: query, image: "https://via.placeholder.com/30", id: "750" };
         const itemElement = document.createElement('div');
         itemElement.innerHTML = `<span>${uncl_var.text.no_plugin_found}</span>`;
         dropdownList.appendChild(itemElement);
@@ -337,7 +370,17 @@ dropdownInput.addEventListener('input', function() {
     fun_addItemToSelectedList(data_filtered);
 });
 
+document.getElementById('delete_ok').addEventListener('click', function() {
+    //const checkbox = document.getElementById('delete_ok');
+    let automaticHint = document.getElementById('automatic_hint');
 
+    if (this.checked) {
+        automaticHint.innerHTML = `${uncl_var.text.Plugins_will_be_automatically_deleted}`;
+    }
+    else {
+        automaticHint.innerHTML = `${uncl_var.text.Plugins_can_be_manually_deleted}`;
+    }
+});
 
 //fetch the plugin list from the server https://api.wordpress.org/plugins/info/1.2/?action=query_plugins&request[search]=jetpack
 async function fun_fetch_plugin_list_uncl(name ){
@@ -348,12 +391,12 @@ async function fun_fetch_plugin_list_uncl(name ){
     }
 
     f_progressbar= (total_page, page)=>{
-        if(!document.getElementById('progressbar-uncl')){
+        if (!document.getElementById('progressbar-uncl') ){
             dropdownList.innerHTML = `<div class="progress px-0 my-4 mx-1">
                 <div class="progress-bar" id="progressbar-uncl" role="progressbar" style="width:0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
             </div>`;
             dropdownList.style.display = 'block';
-        }else{
+        } else {
             console.log(page/total_page);
             let r = (page/total_page);
             r = Math.floor(r*100);
@@ -404,10 +447,7 @@ async function fun_fetch_plugin_list_uncl(name ){
     return data_filtered;
 
 }
-
-
 // End new code for dropdown
-
 
 /* functions of handling list of plugins */
 fun_addPluginToList_uncl = (item) => {
@@ -438,21 +478,17 @@ fun_state_btn_searchPlnguncl = (state) => {
 }
 
 
-if(uncl_var.plugin_list){
-        
+if(uncl_var.plugin_list) {
     // let tem= uncl_var.plugin_list.replace(/[\\]/g, '');
     pluginlist_uncl=JSON.parse(uncl_var.plugin_list);
-   
-     
- }
+}
  
- let pluginListUi = '<!-- unc -->';
- pluginlist_uncl.forEach(plugin => {
+let pluginListUi = '<!-- unc -->';
+pluginlist_uncl.forEach(plugin => {
      addItemToSelectedList(plugin);
- });
+});
 
 });//end of dom content loaded
-
 
 /* workaround for 3 columns plugin list */
 document.addEventListener("DOMContentLoaded", function() {
@@ -482,10 +518,18 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     // Start observing to whole document body
-    
     observer.observe(document.body, {
         childList: true,
         subtree: true
     });
 });
 
+function showErrorModal(errorMessage) {
+    if (errorMessage) {
+        document.querySelector('#errorModal .modal-body').textContent = errorMessage;
+    }
+    let myModal = new bootstrap.Modal(document.getElementById('errorModal'), {
+        keyboard: true
+    });
+    myModal.show();
+}

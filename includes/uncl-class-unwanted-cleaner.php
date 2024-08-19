@@ -254,9 +254,9 @@ class uncl_unwanted_cleaner {
         $lang = [
             "Unwanted_Cleaner_Settings" => esc_html__('Unwanted Cleaner Settings', 'unwanted-cleaner'),
             "List_of_unwanted_plugins" => esc_html__('List of unwanted plugins', 'unwanted-cleaner'),
-            "Enter_the_slugs_of_unwanted_plugins" => esc_html__('Enter the slugs of your unwanted plugins, each on a new line.', 'unwanted-cleaner'),
             "Enter_the_slugs_of_unwanted_plugins" => sprintf( esc_html__('Enter the %1$sslugs%2$s of your unwanted plugins, %1$seach on a new line%2$s.', 'unwanted-cleaner'), '<b>', '</b>' ),
-            "They_will_be_automatically_deleted" => esc_html__('Plugins shown below will be automatically deleted as soon as a core upgrade has taken place.', 'unwanted-cleaner'),
+            "Plugins_can_be_manually_deleted" => sprintf( esc_html__('Plugins shown below will %1$snot%2$s be automatically deleted, unless you check the checkbox below.', 'unwanted-cleaner'), '<b>', '</b>' ),
+            "Plugins_will_be_automatically_deleted" => sprintf( esc_html__('Plugins shown below will be %1$sautomatically%2$s deleted as soon as a core upgrade has taken place.', 'unwanted-cleaner'), '<b>', '</b>' ),
             "Automatic_deletion_confirmation" => sprintf( esc_html__('If checked you give permission to Unwanted Cleaner to %1$sautomatically%2$s delete the plugins listed above, whenever a core update did run.', 'unwanted-cleaner'), '<b>', '</b>' ),
             "save_changes" => esc_html__('Save Changes', 'unwanted-cleaner'),
             "delete_now_hint" => esc_html__('If you want to delete the unwanted plugins right now, push the button below.', 'unwanted-cleaner'),

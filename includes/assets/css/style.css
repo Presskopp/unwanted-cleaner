@@ -95,3 +95,11 @@
 .plugin-card .name, .plugin-card .desc > p {
     width: 50%;
 }
+
+#searchPlng-uncl {
+    margin: 10px;
+}
+
+p#automatic_hint {
+    font-size: 1.1em;
+}
