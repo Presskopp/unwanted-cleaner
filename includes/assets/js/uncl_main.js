@@ -101,7 +101,7 @@ document.addEventListener("DOMContentLoaded", function() {
                             </div>
                             <a class="button button-primary" role="button" id="searchPlng-uncl">${uncl_var.text.search}</a>
                             <br><br>
-                            <p id="automatic_hint">${uncl_var.text.Plugins_will_be_automatically_deleted}</p>
+                            <p id="automatic_hint">${uncl_var.text.Plugins_can_be_manually_deleted}</p>
                         </div>
                         <div class="uncl selected-list my-3 mx-2" id="selectedList-uncl"></div>
                     </div>
