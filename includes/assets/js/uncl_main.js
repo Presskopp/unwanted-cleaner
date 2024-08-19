@@ -131,7 +131,7 @@ document.addEventListener("DOMContentLoaded", function() {
     <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header bg-warning text-dark">
                 <h5 class="modal-title" id="errorModalLabel">Warning</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -291,7 +291,7 @@ function addItemToSelectedList(item) {
     // Plugin already on the list?
     if (selectedItems.has(item.name)) {
         try {
-            throw new Error("The selected plugin is already on the list!");
+            throw new Error("The selected plugin has already been added!");
         } catch (error) {
             showErrorModal(error.message);
         }
