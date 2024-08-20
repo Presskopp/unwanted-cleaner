@@ -266,7 +266,9 @@ class uncl_unwanted_cleaner {
             "no_plugin_found" => esc_html__('No plugin found', 'unwanted-cleaner'),
             "loading" => esc_html__('Loading...', 'unwanted-cleaner'),
             "search" => esc_html__('Search', 'unwanted-cleaner'),
-            "deleting" => esc_html__('Deleting plugins...', 'unwanted-cleaner')
+            "deleting" => esc_html__('Deleting plugins...', 'unwanted-cleaner'),
+            "no_select_uc" => esc_html__('You are not allowed to select Unwanted Cleaner as an unwanted plugin!', 'unwanted-cleaner'),
+            "error_load_fetch" => esc_html__('A network error occurred. Please reload the page and try again.', 'unwanted-cleaner'),
         ];
        // $r = $this->uncl_get_list_of_plugins();
         $delete_ok= get_option('uncl_state_delete');
@@ -304,15 +306,19 @@ class uncl_unwanted_cleaner {
         $plugin_list = sanitize_text_field($_POST['plugin_list']);
         //$plugin_list = json_decode($plugin_list);
         error_log('uncl_unwanted_plugins_handler: '.json_encode($plugin_list));
-
+        
         $delete_ok =sanitize_text_field($_POST['delete_ok']);
         $message = esc_html__('Plugins deleted successfully.', 'unwanted-cleaner');
         if( $state == 'save' ) {
             $this->uncl_save_unwanted_list('plugins',  $plugin_list);
             $message = esc_html__('List of plugins saved successfully.', 'unwanted-cleaner'); 
             update_option('uncl_state_delete', $delete_ok);
-        } else {
+            update_option('uncl_unwanted_plugins_list', $plugin_list);
+        }elseif( $state == 'delete' ) {
             $this->uncl_delete_unwanted_plugins();
+        }elseif ($state == 'auto') {
+            error_log('uncl_unwanted_plugins_handler: auto==>'.$delete_ok);
+            update_option('uncl_state_delete', $delete_ok);
         }
         
         $response = array( 'success' => true, 'm'=>$message );
