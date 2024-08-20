@@ -8,7 +8,7 @@ addItemUiselected=(item)=>{
                     <h3>
                     <div class="action-links">
                         <div class="plugin-action-buttons">
-                            <span class="btn btn-primary remove-button removeItemBtnFromListUncl" data-slug='${item.slug}' >&#120299;</span>
+                            <span class="btn btn-secondary btn-sm remove-button removeItemBtnFromListUncl" data-slug='${item.slug}' >&#120299;</span>
                         </div>
                     </div>
                     <p class="thickbox open-plugin-details-modal">
