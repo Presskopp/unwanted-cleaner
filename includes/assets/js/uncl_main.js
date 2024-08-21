@@ -25,7 +25,6 @@ addItemUiselected=(item)=>{
     
 document.addEventListener("DOMContentLoaded", function() {
 
-    //const delete_ok= uncl_var.delete_ok == 'true' || uncl_var.delete_ok == 1 ? 1 : 0
     const delete_ok = (uncl_var.delete_ok === 'true' || uncl_var.delete_ok === 1) ? 1 : 0;
     const ui_page = `
     <style>
@@ -221,7 +220,6 @@ function fun_handle_uncl(state){
     });
 }
 
-
 //Start new code for parsing Plugins
 /* uncl_var.plugin_dropdown_list.forEach(plugin => {
     console.log(plugin.name,plugin.icons['1x'])
@@ -229,244 +227,243 @@ function fun_handle_uncl(state){
 
 //End new code for parsing Plugins
 
-
 // Start new code for dropdown
 
 document.addEventListener('DOMContentLoaded', function() {
-/*const availableItems = [
-    { name: "Item 1", image: "https://via.placeholder.com/30", id: "710" },
-    { name: "Item 2", image: "https://via.placeholder.com/30", id: "720" },
-    { name: "Item 3", image: "https://via.placeholder.com/30", id: "730" },
-    { name: "Item 4", image: "https://via.placeholder.com/30", id: "740" }
-];
-*/
+    /*const availableItems = [
+        { name: "Item 1", image: "https://via.placeholder.com/30", id: "710" },
+        { name: "Item 2", image: "https://via.placeholder.com/30", id: "720" },
+        { name: "Item 3", image: "https://via.placeholder.com/30", id: "730" },
+        { name: "Item 4", image: "https://via.placeholder.com/30", id: "740" }
+    ];
+    */
 
-const selectedItems = new Set();
-const dropdownInput = document.getElementById('dropdownInput-uncl');
-const dropdownList = document.getElementById('dropdownList-uncl');
-const selectedList = document.getElementById('selectedList-uncl');
-const searchPlng = document.getElementById('searchPlng-uncl');
-let filteredItems = [];
-let listReceivedFromWP_uncl = [];
+    const selectedItems = new Set();
+    const dropdownInput = document.getElementById('dropdownInput-uncl');
+    const dropdownList = document.getElementById('dropdownList-uncl');
+    const selectedList = document.getElementById('selectedList-uncl');
+    const searchPlng = document.getElementById('searchPlng-uncl');
+    let filteredItems = [];
+    let listReceivedFromWP_uncl = [];
 
-// Filter and display the dropdown list
-fun_addItemToSelectedList = (items) => {
-    fun_addedItems =()=>{
-        dropdownList.innerHTML = '';
-        //const filteredItems = uncl_var.plugin_dropdown_list.filter(item => item.name.toLowerCase().includes(filter) && !selectedItems.has(item.name));
-        if (filteredItems.length) {
-            filteredItems.forEach(item => {
-                const itemElement = document.createElement('div');
-                itemElement.innerHTML = `<img src="${item.icons['1x'] ?? item.icons['default']}" alt="${item.name}"><span>${item.name}</span>`;
-                itemElement.addEventListener('click', () => addItemToSelectedList(item));
-                dropdownList.appendChild(itemElement);
-            });
-        } 
-        dropdownList.style.display = filteredItems.length ? 'block' : 'none';
-    }//end of fun_addedItems
-    if(items.length==0){
-        dropdownList.innerHTML = `<div><span>${uncl_var.text.no_plugin_found}</span></div>`;
-        return;
+    // Filter and display the dropdown list
+    fun_addItemToSelectedList = (items) => {
+        fun_addedItems =()=>{
+            dropdownList.innerHTML = '';
+            //const filteredItems = uncl_var.plugin_dropdown_list.filter(item => item.name.toLowerCase().includes(filter) && !selectedItems.has(item.name));
+            if (filteredItems.length) {
+                filteredItems.forEach(item => {
+                    const itemElement = document.createElement('div');
+                    itemElement.innerHTML = `<img src="${item.icons['1x'] ?? item.icons['default']}" alt="${item.name}"><span>${item.name}</span>`;
+                    itemElement.addEventListener('click', () => addItemToSelectedList(item));
+                    dropdownList.appendChild(itemElement);
+                });
+            } 
+            dropdownList.style.display = filteredItems.length ? 'block' : 'none';
+        }//end of fun_addedItems
+        if(items.length==0){
+            dropdownList.innerHTML = `<div><span>${uncl_var.text.no_plugin_found}</span></div>`;
+            return;
+        }
+    
+        filteredItems =items;
+        fun_addedItems();
+        dropdownInput.addEventListener('input', function() {
+            fun_addedItems();       
+        });
     }
-   
-    filteredItems =items;
-    fun_addedItems();
-    dropdownInput.addEventListener('input', function() {
-        fun_addedItems();       
+
+    //fun_searchPlng-uncl
+    searchPlng.addEventListener('click', function() {
+        const name = dropdownInput.value;
+        if (name.length < 2) {
+            noti_box(uncl_var.text.please_enter_atleast_2chrs, 'error');
+            return false;
+        }
+        fun_fetch_plugin_list_uncl(name);
+        //remove event click on dropdownInput
     });
-}
 
-//fun_searchPlng-uncl
-searchPlng.addEventListener('click', function() {
-    const name = dropdownInput.value;
-    if (name.length < 2) {
-        noti_box(uncl_var.text.please_enter_atleast_2chrs, 'error');
-        return false;
-    }
-    fun_fetch_plugin_list_uncl(name);
-    //remove event click on dropdownInput
-});
-
-// Add item to selected list
-function addItemToSelectedList(item) {
-    console.log('DEBUG: ' + item.name);
-    // Plugin already on the list?
-    if (selectedItems.has(item.name)) {
-        try {
-            throw new Error("The selected plugin has already been added!");
-        } catch (error) {
-            showErrorModal(error.message);
+    // Add item to selected list
+    function addItemToSelectedList(item) {
+        console.log('DEBUG: ' + item.name);
+        // Plugin already on the list?
+        if (selectedItems.has(item.name)) {
+            try {
+                throw new Error("The selected plugin has already been added!");
+            } catch (error) {
+                showErrorModal(error.message);
+            }
+            return;
         }
-        return;
-    }
 
-    if (!item.name) {
-        console.error("Plugin name missing.");
-        return;
-    }
-
-    if (item.name === "Unwanted Cleaner") { 
-        try {
-            throw new Error(uncl_var.text.no_select_uc);
-        } catch (error) {
-            showErrorModal(error.message);
+        if (!item.name) {
+            console.error("Plugin name missing.");
+            return;
         }
-        return;
+
+        if (item.name === "Unwanted Cleaner") { 
+            try {
+                throw new Error(uncl_var.text.no_select_uc);
+            } catch (error) {
+                showErrorModal(error.message);
+            }
+            return;
+        };
+
+        // Plugin not on the list
+        selectedItems.add(item.name);
+        const itemRow = document.createElement('div');
+        itemRow.className = 'plugin-card';
+        itemRow.innerHTML = addItemUiselected(item);
+        itemRow.querySelector('.remove-button').addEventListener('click', () => removeItemFromSelectedList(item.name, item.slug ,itemRow));
+        selectedList.appendChild(itemRow);
+        dropdownInput.value = '';
+        dropdownList.innerHTML = '';
+        dropdownList.style.display = 'none';
+        fun_addPluginToList_uncl(item);
+    }
+
+    // Remove item from selected list
+    function removeItemFromSelectedList(name, slug , element) {
+        selectedItems.delete(name);
+        element.remove();
+        pluginlist_uncl = pluginlist_uncl.filter(plugin => plugin.slug != slug);
+        console.log(pluginlist_uncl);
+        setTimeout(() => {
+            fun_handle_uncl('save');
+        }, 100);
+    }
+
+    // Hide the dropdown list when clicking outside
+    document.addEventListener('click', function(event) {
+        if (!event.target.closest('.dropdown')) {
+            dropdownList.style.display = 'none';
+        }
+    });
+
+    dropdownInput.addEventListener('click', function(event) {
+        event.stopPropagation();
+        dropdownList.style.display = 'block';
+    });
+
+    dropdownInput.addEventListener('input', function() {
+        if(listReceivedFromWP_uncl.length==0)return;
+        const value = dropdownInput.value;    
+        const data_filtered = listReceivedFromWP_uncl.filter(plugin => plugin.name.toLowerCase().includes(value.toLowerCase())).map(plugin => {
+            return { name: plugin.name, icons: plugin.icons , slug:plugin.slug }
+        });
+        // list of found plugins
+        //console.log(data_filtered);
+        fun_addItemToSelectedList(data_filtered);
+    });
+
+    document.getElementById('delete_ok').addEventListener('click', function() {
+        // 2DO: Save option !?
+        let automaticHint = document.getElementById('automatic_hint');
+        fun_handle_uncl('auto');
+        if (this.checked) {
+            automaticHint.innerHTML = `${uncl_var.text.Plugins_will_be_automatically_deleted}`;
+        }
+        else {
+            automaticHint.innerHTML = `${uncl_var.text.Plugins_can_be_manually_deleted}`;
+        }
+    });
+
+    // fetch the plugin list from the server https://api.wordpress.org/plugins/info/1.2/?action=query_plugins&request[search]=jetpack
+    async function fun_fetch_plugin_list_uncl(name ){
+        
+        const progressBar = document.getElementById('progressbar-uncl');
+
+        // const response = await fetch(`https://api.wordpress.org/plugins/info/1.2/?action=query_plugins&request[search]=${name}`);
+        fun_state_btn_searchPlnguncl(1);
+        f_u=(lang , page , search)=>{
+            return `https://api.wordpress.org/plugins/info/1.2/?action=query_plugins&request[search]=${search}&request[per_page]=100&request[page]=${page}&request[locale]=${lang}`;
+        }
+
+        f_progressbar= (total_page, page)=>{
+            if (!document.getElementById('progressbar-uncl') ){
+                dropdownList.innerHTML = `<div class="progress px-0 my-4 mx-1">
+                    <div class="progress-bar" id="progressbar-uncl" role="progressbar" style="width:0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                </div>`;
+                dropdownList.style.display = 'block';
+            } else {
+                console.log(page/total_page);
+                let r = Math.floor((page / total_page) * 100);
+                progressBar.style.width = `${r}%`;
+                progressBar.innerHTML = `${r}%`;
+            }
+        }
+
+        let page = 1;
+        let data_filtered = [];
+        let total_page = 0;
+
+        try {
+            do {
+                const url = f_u(uncl_var.user_lang, page, name);
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                const r = data.plugins.filter(plugin => plugin.name.toLowerCase().includes(name.toLowerCase())).map(plugin => {
+                    return { name: plugin.name, icons: plugin.icons, slug: plugin.slug }
+                });
+                data_filtered = data_filtered.concat(r);
+                console.log(data_filtered);
+                if (total_page == 0 && data.info && data.info.pages) {
+                    console.log('total_page:', data.info.pages );
+                    //data.info.results
+                    total_page = data.info.pages;                                
+                }
+                f_progressbar(total_page, page);
+                page += 1;
+            } while (page <= total_page);
+            listReceivedFromWP_uncl = data_filtered;
+            fun_addItemToSelectedList(data_filtered);
+        } catch (error) {
+            console.error('Error fetching plugin list:', error);
+            showErrorModal(uncl_var.text.error_load_fetch);
+            document.getElementById('progress-bar').style.display = 'none';
+        }
+
+        fun_state_btn_searchPlnguncl(0);
+        return data_filtered;
+
+    }
+    // End new code for dropdown
+
+    /* functions of handling list of plugins */
+    fun_addPluginToList_uncl = (item) => {
+        //pluginlist_uncl
+        ///item.name, item.slug, item.icons['1x'] ?? item.icons['default']
+        const icon =item.hasOwnProperty('icon') ? item.icon : item.icons['1x'] ?? item.icons['default'];
+        pluginlist_uncl.push({ name: item.name, slug: item.slug, icon: icon });
+        console.log(pluginlist_uncl);
+
+        setTimeout(() => {
+            fun_handle_uncl('save');
+        }, 100);
+    }
+
+    /* End functions of handling list of plugins */
+
+    fun_state_btn_searchPlnguncl = (state) => {
+        searchPlng.classList.toggle('disabled', state == 1);
+        searchPlng.disabled = state == 1;
+        searchPlng.innerHTML = state == 1 ? uncl_var.text.loading : uncl_var.text.search;
     };
 
-    // Plugin not on the list
-    selectedItems.add(item.name);
-    const itemRow = document.createElement('div');
-    itemRow.className = 'plugin-card';
-    itemRow.innerHTML = addItemUiselected(item);
-    itemRow.querySelector('.remove-button').addEventListener('click', () => removeItemFromSelectedList(item.name, item.slug ,itemRow));
-    selectedList.appendChild(itemRow);
-    dropdownInput.value = '';
-    dropdownList.innerHTML = '';
-    dropdownList.style.display = 'none';
-    fun_addPluginToList_uncl(item);
-}
-
-// Remove item from selected list
-function removeItemFromSelectedList(name, slug , element) {
-    selectedItems.delete(name);
-    element.remove();
-    pluginlist_uncl = pluginlist_uncl.filter(plugin => plugin.slug != slug);
-    console.log(pluginlist_uncl);
-    setTimeout(() => {
-        fun_handle_uncl('save');
-    }, 100);
-}
-
-// Hide the dropdown list when clicking outside
-document.addEventListener('click', function(event) {
-    if (!event.target.closest('.dropdown')) {
-        dropdownList.style.display = 'none';
+    if(uncl_var.plugin_list) {
+        // let tem= uncl_var.plugin_list.replace(/[\\]/g, '');
+        pluginlist_uncl = JSON.parse(uncl_var.plugin_list);
     }
-});
-
-dropdownInput.addEventListener('click', function(event) {
-    event.stopPropagation();
-    dropdownList.style.display = 'block';
-});
-
-dropdownInput.addEventListener('input', function() {
-    if(listReceivedFromWP_uncl.length==0)return;
-    const value = dropdownInput.value;    
-    const data_filtered = listReceivedFromWP_uncl.filter(plugin => plugin.name.toLowerCase().includes(value.toLowerCase())).map(plugin => {
-        return { name: plugin.name, icons: plugin.icons , slug:plugin.slug }
-    });
-    // list of found plugins
-    //console.log(data_filtered);
-    fun_addItemToSelectedList(data_filtered);
-});
-
-document.getElementById('delete_ok').addEventListener('click', function() {
-    // 2DO: Save option !?
-    let automaticHint = document.getElementById('automatic_hint');
-    fun_handle_uncl('auto');
-    if (this.checked) {
-        automaticHint.innerHTML = `${uncl_var.text.Plugins_will_be_automatically_deleted}`;
-    }
-    else {
-        automaticHint.innerHTML = `${uncl_var.text.Plugins_can_be_manually_deleted}`;
-    }
-});
-
-// fetch the plugin list from the server https://api.wordpress.org/plugins/info/1.2/?action=query_plugins&request[search]=jetpack
-async function fun_fetch_plugin_list_uncl(name ){
     
-    const progressBar = document.getElementById('progressbar-uncl');
-
-    // const response = await fetch(`https://api.wordpress.org/plugins/info/1.2/?action=query_plugins&request[search]=${name}`);
-    fun_state_btn_searchPlnguncl(1);
-    f_u=(lang , page , search)=>{
-        return `https://api.wordpress.org/plugins/info/1.2/?action=query_plugins&request[search]=${search}&request[per_page]=100&request[page]=${page}&request[locale]=${lang}`;
-    }
-
-    f_progressbar= (total_page, page)=>{
-        if (!document.getElementById('progressbar-uncl') ){
-            dropdownList.innerHTML = `<div class="progress px-0 my-4 mx-1">
-                <div class="progress-bar" id="progressbar-uncl" role="progressbar" style="width:0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
-            </div>`;
-            dropdownList.style.display = 'block';
-        } else {
-            console.log(page/total_page);
-            let r = Math.floor((page / total_page) * 100);
-            progressBar.style.width = `${r}%`;
-            progressBar.innerHTML = `${r}%`;
-        }
-    }
-
-    let page = 1;
-    let data_filtered = [];
-    let total_page = 0;
-
-    try {
-        do {
-            const url = f_u(uncl_var.user_lang, page, name);
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const data = await response.json();
-            const r = data.plugins.filter(plugin => plugin.name.toLowerCase().includes(name.toLowerCase())).map(plugin => {
-                return { name: plugin.name, icons: plugin.icons, slug: plugin.slug }
-            });
-            data_filtered = data_filtered.concat(r);
-            console.log(data_filtered);
-            if (total_page == 0 && data.info && data.info.pages) {
-                console.log('total_page:', data.info.pages );
-                //data.info.results
-                total_page = data.info.pages;                                
-            }
-            f_progressbar(total_page, page);
-            page += 1;
-        } while (page <= total_page);
-        listReceivedFromWP_uncl = data_filtered;
-        fun_addItemToSelectedList(data_filtered);
-    } catch (error) {
-        console.error('Error fetching plugin list:', error);
-        showErrorModal(uncl_var.text.error_load_fetch);
-        document.getElementById('progress-bar').style.display = 'none';
-    }
-
-    fun_state_btn_searchPlnguncl(0);
-    return data_filtered;
-
-}
-// End new code for dropdown
-
-/* functions of handling list of plugins */
-fun_addPluginToList_uncl = (item) => {
-    //pluginlist_uncl
-    ///item.name, item.slug, item.icons['1x'] ?? item.icons['default']
-    const icon =item.hasOwnProperty('icon') ? item.icon : item.icons['1x'] ?? item.icons['default'];
-    pluginlist_uncl.push({ name: item.name, slug: item.slug, icon: icon });
-    console.log(pluginlist_uncl);
-
-    setTimeout(() => {
-        fun_handle_uncl('save');
-    }, 100);
-}
-
-/* End functions of handling list of plugins */
-
-fun_state_btn_searchPlnguncl = (state) => {
-    searchPlng.classList.toggle('disabled', state == 1);
-    searchPlng.disabled = state == 1;
-    searchPlng.innerHTML = state == 1 ? uncl_var.text.loading : uncl_var.text.search;
-};
-
-if(uncl_var.plugin_list) {
-    // let tem= uncl_var.plugin_list.replace(/[\\]/g, '');
-    pluginlist_uncl = JSON.parse(uncl_var.plugin_list);
-}
- 
-//let pluginListUi = '<!-- unc -->';    2DO what for?
-pluginlist_uncl.forEach(plugin => {
-     addItemToSelectedList(plugin);
-});
+    //let pluginListUi = '<!-- unc -->';    2DO what for?
+    pluginlist_uncl.forEach(plugin => {
+        addItemToSelectedList(plugin);
+    });
 
 });//end of dom content loaded
 
@@ -508,7 +505,6 @@ document.addEventListener("DOMContentLoaded", function() {
         subtree: true
     });
 });
-
 
 function showErrorModal(errorMessage) {
     if (errorMessage) {
