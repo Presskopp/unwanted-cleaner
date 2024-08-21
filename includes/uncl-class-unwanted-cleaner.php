@@ -1,9 +1,6 @@
 <?php
 namespace uncl_unwantedcleaner;
 
-// 2do 
-// include_once ABSPATH . 'wp-admin/includes/plugin.php';
-
 class uncl_unwanted_cleaner {
     private static $initialized = false;
     private $uncl_unwanted_options;
@@ -38,11 +35,8 @@ class uncl_unwanted_cleaner {
         // Ajax handler
         add_action('wp_ajax_uncl_handler', array( $this,'uncl_unwanted_plugins_handler'));
 
-        ///$this->fun_show_noti_update_happen();
-        
         // Hook to register scripts
         add_action('admin_enqueue_scripts', array($this, 'uncl_enqueue_admin_scripts'));
-
     }
 
     public function uncl_enqueue_admin_scripts($hook) {
@@ -57,10 +51,6 @@ class uncl_unwanted_cleaner {
         wp_enqueue_script('bootstrap', UNCL_PLUGIN_URL . '/includes/assets/js/bootstrap.bundle.min.js', array('jquery'), null, true);
 
     }
-
-
-
-
 
     public function uncl_save_unwanted_list($purpose , $list) {
         error_log('uncl_save_unwanted_list: '.$list);
@@ -102,19 +92,6 @@ class uncl_unwanted_cleaner {
 
         return !empty($plugins_to_delete);
     }
-
-    /*
-    public fun_show_noti_update_happen(){
-
-        if( $option_hod_yesno==1 && !isset($option_wp) && ($option_wp <$wp_version) ) return ;
-        //show message notifaction to user (yes / no)
-        //return
-        
-        $option_hod_yesno=1;
-        $option_wp= $wp_version;
-        if (return_noti === true){// call function for remove plugins 
-        }
-    }*/
 
     public function uncl_delete_unwanted_plugins_after_core_upgrade($upgrader_object, $options) {
 
@@ -269,10 +246,16 @@ class uncl_unwanted_cleaner {
             "deleting" => esc_html__('Deleting plugins...', 'unwanted-cleaner'),
             "no_select_uc" => esc_html__('You are not allowed to select Unwanted Cleaner as an unwanted plugin!', 'unwanted-cleaner'),
             "error_load_fetch" => esc_html__('A network error occurred. Please reload the page and try again.', 'unwanted-cleaner'),
+            "plugins" => esc_html__('Plugins', 'unwanted-cleaner'),
+            "themes" => esc_html__('Themes', 'unwanted-cleaner')
+            /* for future use
+            "Files" => esc_html__('Files', 'unwanted-cleaner'),
+            "Database" => esc_html__('Database', 'unwanted-cleaner')
+            */
         ];
-       // $r = $this->uncl_get_list_of_plugins();
-        $delete_ok= get_option('uncl_state_delete');
-        $delete_ok = !empty($delete_ok) ?  $delete_ok : false;
+        
+        $delete_ok = get_option('uncl_state_delete', false);
+
         wp_enqueue_script('uncl-main-js', UNCL_PLUGIN_URL . '/includes/assets/js/uncl_main.js', array('jquery'), UNCL_PLUGIN_VERSION, true);
         $images = UNCL_PLUGIN_URL . '/includes/assets/img/';
         $user_lang = get_user_locale(get_current_user_id());
@@ -286,7 +269,6 @@ class uncl_unwanted_cleaner {
             'plugin_list' => $plugins,
             'ajaxurl' => admin_url('admin-ajax.php'),
             'delete_ok' => $delete_ok,
-            //'plugin_dropdown_list' => $r,
             'images' => $images,
             'user_lang'=>$user_lang
 		));
@@ -297,45 +279,31 @@ class uncl_unwanted_cleaner {
         if ( !check_ajax_referer( 'uncl-nonce', 'nonce' ) ) {
             wp_send_json_success(array('success' => false, 'm' => esc_html__('Nonce verification failed', 'unwanted-cleaner')), 401);
         }
-
         if ( !current_user_can('manage_options') ) {
             wp_send_json_success(array('success' => false, 'm' => esc_html__('Insufficient permissions', 'unwanted-cleaner')), 401);
         }
 
         $state = sanitize_text_field($_POST['state']);
+        error_log("STATE: " . $state);
         $plugin_list = sanitize_text_field($_POST['plugin_list']);
-        //$plugin_list = json_decode($plugin_list);
         error_log('uncl_unwanted_plugins_handler: '.json_encode($plugin_list));
         
-        $delete_ok =sanitize_text_field($_POST['delete_ok']);
-        $message = esc_html__('Plugins deleted successfully.', 'unwanted-cleaner');
+        $delete_ok = sanitize_text_field($_POST['delete_ok']);
+        $message = esc_html__('This message should not be here.', 'unwanted-cleaner');
         if( $state == 'save' ) {
             $this->uncl_save_unwanted_list('plugins',  $plugin_list);
             $message = esc_html__('List of plugins saved successfully.', 'unwanted-cleaner'); 
-            update_option('uncl_state_delete', $delete_ok);
             update_option('uncl_unwanted_plugins_list', $plugin_list);
-        }elseif( $state == 'delete' ) {
+        } elseif( $state == 'delete' ) {
             $this->uncl_delete_unwanted_plugins();
-        }elseif ($state == 'auto') {
+            $message = esc_html__('Plugins deleted successfully.', 'unwanted-cleaner');
+        } elseif ($state == 'auto') {
             error_log('uncl_unwanted_plugins_handler: auto==>'.$delete_ok);
-            update_option('uncl_state_delete', $delete_ok);
         }
-        
+        // 2DO: good idea to do it in any case?
+        update_option('uncl_state_delete', $delete_ok);
+    
         $response = array( 'success' => true, 'm'=>$message );
         wp_send_json_success($response,200);
     }
-
-    /* public function uncl_get_list_of_plugins(){
-        $url ='https://api.wordpress.org/plugins/info/1.2/?action=query_plugins&request[per_page]=100';
-        $response = wp_remote_get($url); 
-        if (is_wp_error($response)) return 0; // API didn't respond
-        $body = wp_remote_retrieve_body($response); $data = json_decode($body, true); 
-        if (empty($data['plugins'])) return 0; // Plugins not found 
-        $r = [];
-        foreach ($data['plugins'] as $key => $value) {
-            $r[$key] = ['name'=>$value['name'],'slug'=>$value['slug'] ,'icons'=>$value['icons']];
-        }
-        return $r; 
-    } */
-    
 }

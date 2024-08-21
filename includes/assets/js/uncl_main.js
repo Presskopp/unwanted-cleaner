@@ -24,16 +24,9 @@ addItemUiselected=(item)=>{
     }
     
 document.addEventListener("DOMContentLoaded", function() {
-    
-    /* for (let key in pluginListuncl) {
-        if (Object.prototype.hasOwnProperty.call(pluginListuncl, key)) {
-            if (typeof pluginListuncl[key] === 'string') {
-                pluginlist_uncl === null ? pluginlist_uncl = pluginListuncl[key].replace(/,/g, '\n') : pluginlist_uncl += '\n'+ pluginListuncl[key].replace(/,/g, '\n')
-            }
-        }
-    } */
 
-    const delete_ok= uncl_var.delete_ok == 'true' || uncl_var.delete_ok == 1 ? 1 : 0
+    //const delete_ok= uncl_var.delete_ok == 'true' || uncl_var.delete_ok == 1 ? 1 : 0
+    const delete_ok = (uncl_var.delete_ok === 'true' || uncl_var.delete_ok === 1) ? 1 : 0;
     const ui_page = `
     <style>
         #wpwrap {
@@ -84,11 +77,19 @@ document.addEventListener("DOMContentLoaded", function() {
         <!-- h1>${uncl_var.text.Unwanted_Cleaner_Settings}</h1 -->
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="tab1-tab" data-bs-toggle="tab" data-bs-target="#tab1" type="button" role="tab" aria-controls="tab1" aria-selected="true">Plugins</button>
+                <button class="nav-link active" id="tab1-tab" data-bs-toggle="tab" data-bs-target="#tab1" type="button" role="tab" aria-controls="tab1" aria-selected="true">${uncl_var.text.plugins}</button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="tab2-tab" data-bs-toggle="tab" data-bs-target="#tab2" type="button" role="tab" aria-controls="tab2" aria-selected="false">Themes</button>
+                <button class="nav-link" id="tab2-tab" data-bs-toggle="tab" data-bs-target="#tab2" type="button" role="tab" aria-controls="tab2" aria-selected="false">${uncl_var.text.themes}</button>
             </li>
+
+            <!-- for future use: li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab3-tab" data-bs-toggle="tab" data-bs-target="#tab3" type="button" role="tab" aria-controls="tab3" aria-selected="false">${uncl_var.text.files}</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab4-tab" data-bs-toggle="tab" data-bs-target="#tab4" type="button" role="tab" aria-controls="tab3" aria-selected="false">${uncl_var.text.database}</button>
+            </li -->
+
         </ul>
         <div class="tab-content" id="myTabContent">
             <div class="tab-pane fade show active" id="tab1" role="tabpanel" aria-labelledby="tab1-tab">
@@ -103,7 +104,8 @@ document.addEventListener("DOMContentLoaded", function() {
                             <br><br>
                             <p id="automatic_hint">${delete_ok ? uncl_var.text.Plugins_will_be_automatically_deleted : uncl_var.text.Plugins_can_be_manually_deleted}</p>
                         </div>
-                        <div class="uncl selected-list my-3 mx-2" id="selectedList-uncl"></div>
+                        <!-- div class="uncl selected-list my-3 mx-2" id="selectedList-uncl"></div -->
+                        <div class="uncl selected-list" id="selectedList-uncl"></div>
                     </div>
                     <div id="delete_checkbox_section">
                         <input type="checkbox" id="delete_ok" name="delete_ok" value="0" ${delete_ok ? 'checked' : ''}>
@@ -173,8 +175,7 @@ function fun_handle_uncl(state){
     const pluginlist_uncl_ = pluginlist_uncl.filter((v,i,a)=>a.findIndex(t=>(t.slug === v.slug))===i);
     console.log('save/delete:', pluginlist_uncl_);
     const plugin_list = JSON.stringify(pluginlist_uncl_);
-    console.log(plugin_list);
-
+    //console.log(plugin_list);
 
     const checkbox_delete = document.getElementById('delete_ok').checked;
     let el = document.getElementById(`deleteButton`);
@@ -306,7 +307,7 @@ function addItemToSelectedList(item) {
 
     if (item.name === "Unwanted Cleaner") { 
         try {
-            throw new Error(uncl_var.text.unwanted_cleaner_cannot_be_added);
+            throw new Error(uncl_var.text.no_select_uc);
         } catch (error) {
             showErrorModal(error.message);
         }
@@ -337,8 +338,6 @@ function removeItemFromSelectedList(name, slug , element) {
     }, 100);
 }
 
-
-
 // Hide the dropdown list when clicking outside
 document.addEventListener('click', function(event) {
     if (!event.target.closest('.dropdown')) {
@@ -357,12 +356,13 @@ dropdownInput.addEventListener('input', function() {
     const data_filtered = listReceivedFromWP_uncl.filter(plugin => plugin.name.toLowerCase().includes(value.toLowerCase())).map(plugin => {
         return { name: plugin.name, icons: plugin.icons , slug:plugin.slug }
     });
-    console.log(data_filtered);
+    // list of found plugins
+    //console.log(data_filtered);
     fun_addItemToSelectedList(data_filtered);
 });
 
 document.getElementById('delete_ok').addEventListener('click', function() {
-    //const checkbox = document.getElementById('delete_ok');
+    // 2DO: Save option !?
     let automaticHint = document.getElementById('automatic_hint');
     fun_handle_uncl('auto');
     if (this.checked) {
@@ -373,12 +373,15 @@ document.getElementById('delete_ok').addEventListener('click', function() {
     }
 });
 
-//fetch the plugin list from the server https://api.wordpress.org/plugins/info/1.2/?action=query_plugins&request[search]=jetpack
+// fetch the plugin list from the server https://api.wordpress.org/plugins/info/1.2/?action=query_plugins&request[search]=jetpack
 async function fun_fetch_plugin_list_uncl(name ){
-   // const response = await fetch(`https://api.wordpress.org/plugins/info/1.2/?action=query_plugins&request[search]=${name}`);
-   fun_state_btn_searchPlnguncl(1);
-   f_u=(lang , page , search)=>{
-    return `https://api.wordpress.org/plugins/info/1.2/?action=query_plugins&request[search]=${search}&request[per_page]=100&request[page]=${page}&request[locale]=${lang}`;
+    
+    const progressBar = document.getElementById('progressbar-uncl');
+
+    // const response = await fetch(`https://api.wordpress.org/plugins/info/1.2/?action=query_plugins&request[search]=${name}`);
+    fun_state_btn_searchPlnguncl(1);
+    f_u=(lang , page , search)=>{
+        return `https://api.wordpress.org/plugins/info/1.2/?action=query_plugins&request[search]=${search}&request[per_page]=100&request[page]=${page}&request[locale]=${lang}`;
     }
 
     f_progressbar= (total_page, page)=>{
@@ -389,18 +392,17 @@ async function fun_fetch_plugin_list_uncl(name ){
             dropdownList.style.display = 'block';
         } else {
             console.log(page/total_page);
-            let r = (page/total_page);
-            r = Math.floor(r*100);
-            document.getElementById('progressbar-uncl').style.width = `${(r)}%`;
-            document.getElementById('progressbar-uncl').innerHTML = `${(r)}%` ;
+            let r = Math.floor((page / total_page) * 100);
+            progressBar.style.width = `${r}%`;
+            progressBar.innerHTML = `${r}%`;
         }
     }
-    let page = 1;
 
-    
+    let page = 1;
     let data_filtered = [];
-     let total_page = 0;
-     try {
+    let total_page = 0;
+
+    try {
         do {
             const url = f_u(uncl_var.user_lang, page, name);
             const response = await fetch(url);
@@ -428,14 +430,7 @@ async function fun_fetch_plugin_list_uncl(name ){
         showErrorModal(uncl_var.text.error_load_fetch);
         document.getElementById('progress-bar').style.display = 'none';
     }
-/*     const response = await fetch(url);
-    const data = await response.json();
-    let total_page = data.info.pages;
-    page+=1;
-     console.log(data);
-   let data_filtered = data.plugins.filter(plugin => plugin.name.toLowerCase().includes(name.toLowerCase())).map(plugin => {
-        return { name: plugin.name, icons: plugin.icons , slug:plugin.slug }
-    }); */
+
     fun_state_btn_searchPlnguncl(0);
     return data_filtered;
 
@@ -458,32 +453,24 @@ fun_addPluginToList_uncl = (item) => {
 /* End functions of handling list of plugins */
 
 fun_state_btn_searchPlnguncl = (state) => {
-    if (state == 1) {
-        searchPlng.classList.add('disabled');
-        searchPlng.disabled = true;
-        searchPlng.innerHTML = uncl_var.text.loading;
-    } else {
-        searchPlng.classList.remove('disabled');
-        searchPlng.disabled = false;
-        searchPlng.innerHTML = uncl_var.text.search;
-    }
-  
-}
-
+    searchPlng.classList.toggle('disabled', state == 1);
+    searchPlng.disabled = state == 1;
+    searchPlng.innerHTML = state == 1 ? uncl_var.text.loading : uncl_var.text.search;
+};
 
 if(uncl_var.plugin_list) {
     // let tem= uncl_var.plugin_list.replace(/[\\]/g, '');
-    pluginlist_uncl=JSON.parse(uncl_var.plugin_list);
+    pluginlist_uncl = JSON.parse(uncl_var.plugin_list);
 }
  
-let pluginListUi = '<!-- unc -->';
+//let pluginListUi = '<!-- unc -->';    2DO what for?
 pluginlist_uncl.forEach(plugin => {
      addItemToSelectedList(plugin);
 });
 
 });//end of dom content loaded
 
-/* workaround for plugin list columns */
+// workaround for plugin list columns 
 document.addEventListener("DOMContentLoaded", function() {
     function applyStylesToPluginCards() {
         const pluginCards = document.querySelectorAll('.plugin-card');
@@ -527,7 +514,6 @@ function showErrorModal(errorMessage) {
     if (errorMessage) {
         let errorModal =  document.querySelector('#errorModal .modal-body');
         errorModal.innerHTML = `<h6 class="my-3">${errorMessage}</h6>`;
-        
     }
     let myModal = new bootstrap.Modal(document.getElementById('errorModal'), {
         keyboard: true
