@@ -373,7 +373,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // fetch the plugin list from the server https://api.wordpress.org/plugins/info/1.2/?action=query_plugins&request[search]=jetpack
     async function fun_fetch_plugin_list_uncl(name ){
         
-        const progressBar = document.getElementById('progressbar-uncl');
+     //let progressBar = document.getElementById('progressbar-uncl');
 
         // const response = await fetch(`https://api.wordpress.org/plugins/info/1.2/?action=query_plugins&request[search]=${name}`);
         fun_state_btn_searchPlnguncl(1);
@@ -382,7 +382,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         f_progressbar= (total_page, page)=>{
-            if (!document.getElementById('progressbar-uncl') ){
+            let progressBar = document.getElementById('progressbar-uncl')
+            if (!progressBar){
                 dropdownList.innerHTML = `<div class="progress px-0 my-4 mx-1">
                     <div class="progress-bar" id="progressbar-uncl" role="progressbar" style="width:0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
                 </div>`;
@@ -425,7 +426,8 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             console.error('Error fetching plugin list:', error);
             showErrorModal(uncl_var.text.error_load_fetch);
-            document.getElementById('progress-bar').style.display = 'none';
+            let progressBar =document.getElementById('progressbar-uncl');
+            if(progressBar) progressBar.style.display = 'none';
         }
 
         fun_state_btn_searchPlnguncl(0);
