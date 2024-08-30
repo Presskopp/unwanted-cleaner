@@ -25,6 +25,10 @@ if (!defined("UNCL_PLUGIN_VERSION")) {
     define("UNCL_PLUGIN_VERSION", "1.0.1");
 }
 
+if (!defined("UNCL_BOOTSTRAP_VERSION")) {
+    define("UNCL_BOOTSTRAP_VERSION", "5.1.3");
+}
+
 /** Constant pointing to the root directory URL of the plugin */
 if (!defined("UNCL_PLUGIN_URL")) {
     define("UNCL_PLUGIN_URL", plugin_dir_url(__FILE__));

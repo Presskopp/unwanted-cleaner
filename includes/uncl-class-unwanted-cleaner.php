@@ -42,15 +42,13 @@ class uncl_unwanted_cleaner {
     }
 
     public function uncl_enqueue_admin_scripts($hook) {
-        // Überprüfen, ob wir uns auf der Einstellungsseite des Plugins befinden
+        // Check if we are on the settings page
         if ($hook !== 'toplevel_page_unwanted-cleaner') {
             return;
         }
-        // Bootstrap CSS einbinden        
-        wp_enqueue_style('bootstrap', UNCL_PLUGIN_URL . '/includes/assets/css/bootstrap.min.css');
-        wp_enqueue_style('uncl_style', UNCL_PLUGIN_URL . '/includes/assets/css/style.css', true,UNCL_PLUGIN_VERSION);
-        // Bootstrap JavaScript einbinden    
-        wp_enqueue_script('bootstrap', UNCL_PLUGIN_URL . '/includes/assets/js/bootstrap.bundle.min.js', array('jquery'), null, true);
+        wp_enqueue_style('bootstrap', UNCL_PLUGIN_URL . '/includes/assets/css/bootstrap.min.css', array(), UNCL_BOOTSTRAP_VERSION);
+        wp_enqueue_style('uncl_style', UNCL_PLUGIN_URL . '/includes/assets/css/style.css', true, UNCL_PLUGIN_VERSION);
+        wp_enqueue_script('bootstrap', UNCL_PLUGIN_URL . '/includes/assets/js/bootstrap.bundle.min.js', array('jquery'), UNCL_BOOTSTRAP_VERSION, true);
 
     }
 
@@ -75,10 +73,10 @@ class uncl_unwanted_cleaner {
         $plugins =json_decode($plugins, true);
        foreach ($plugins as $plugin) {
                 $slug =  $plugin['slug'];
-                array_push($slugs, $slug);          
+                array_push($slugs, $slug);
         }
         $this->uncl_delete_unwanted_delete_hello_php_above_plugin();
-        error_log('slugs: '.json_encode($slugs));
+        error_log('slugs: ' . wp_json_encode($slugs));
         // Go through all of the installed plugins so if a plugin is active, it can be deactivated first
         // foreach ($installed_plugins as $plugin_file => $plugin_data) {
         foreach ($installed_plugins as $plugin_file => $_) {    // Deconstruction of $plugin_data because we don't use it
@@ -232,9 +230,24 @@ class uncl_unwanted_cleaner {
         // $pro = 0;    // for future use
         $lang = [
             "Unwanted_Cleaner_Settings" => esc_html__('Unwanted Cleaner Settings', 'unwanted-cleaner'),
-            "Plugins_can_be_manually_deleted" => sprintf( esc_html__('Plugins shown below will %1$snot%2$s be automatically deleted, unless you check the checkbox below.', 'unwanted-cleaner'), '<b>', '</b>' ),
-            "Plugins_will_be_automatically_deleted" => sprintf( esc_html__('Plugins shown below will be %1$sautomatically%2$s deleted as soon as a core upgrade has taken place.', 'unwanted-cleaner'), '<b>', '</b>' ),
-            "Automatic_deletion_confirmation" => sprintf( esc_html__('If checked you give permission to Unwanted Cleaner to %1$sautomatically%2$s delete the plugins listed above, whenever a core update did run.', 'unwanted-cleaner'), '<b>', '</b>' ),
+            "Plugins_can_be_manually_deleted" => sprintf(
+                /* translators: %1$s and %2$s are HTML tags for bold text. */
+                esc_html__('Plugins shown below will %1$snot%2$s be automatically deleted, unless you check the checkbox below.', 'unwanted-cleaner'), 
+                '<b>', 
+                '</b>' 
+            ),
+            "Plugins_will_be_automatically_deleted" => sprintf(
+                /* translators: %1$s and %2$s are HTML tags for bold text. */
+                esc_html__('Plugins shown below will be %1$sautomatically%2$s deleted as soon as a core upgrade has taken place.', 'unwanted-cleaner'),
+                '<b>',
+                '</b>'
+            ),
+            "Automatic_deletion_confirmation" => sprintf(
+                /* translators: %1$s and %2$s are HTML tags for bold text. */
+                esc_html__('If checked you give permission to Unwanted Cleaner to %1$sautomatically%2$s delete the plugins listed above, whenever a core update did run.', 'unwanted-cleaner'),
+                '<b>',
+                '</b>'
+            ),
             "save_changes" => esc_html__('Save Changes', 'unwanted-cleaner'),
             "delete_now_hint" => esc_html__('If you want to delete the unwanted plugins right now, push the button below.', 'unwanted-cleaner'),
             "delete_unwanted_plugins" => esc_html__('Delete unwanted plugins now', 'unwanted-cleaner'),
@@ -283,16 +296,18 @@ class uncl_unwanted_cleaner {
             wp_send_json_success(array('success' => false, 'm' => esc_html__('Insufficient permissions', 'unwanted-cleaner')), 401);
         }
 
-        $state = sanitize_text_field($_POST['state']);
+        $state = !empty($_POST['state']) ? sanitize_text_field($_POST['state']) : '';
         error_log("STATE: " . $state);
-        $plugin_list = sanitize_text_field($_POST['plugin_list']);
-        error_log('uncl_unwanted_plugins_handler: '.json_encode($plugin_list));
+
+        $plugin_list = !empty($_POST['plugin_list']) ? sanitize_text_field($_POST['plugin_list']) : '';
+        error_log('uncl_unwanted_plugins_handler: ' . wp_json_encode($plugin_list));
         
-        $delete_ok = sanitize_text_field($_POST['delete_ok']);
+        $delete_ok = !empty($_POST['delete_ok']) ? sanitize_text_field($_POST['delete_ok']) : '';
+
         $message = esc_html__('Settings saved successfully.', 'unwanted-cleaner');
         if( $state == 'save' ) {
             $this->uncl_save_unwanted_list('plugins',  $plugin_list);
-            $message = esc_html__('List of plugins saved successfully.', 'unwanted-cleaner'); 
+            $message = esc_html__('List of plugins saved successfully.', 'unwanted-cleaner');
             update_option('uncl_unwanted_plugins_list', $plugin_list);
         } elseif( $state == 'delete' ) {
             $this->uncl_delete_unwanted_plugins();
@@ -303,7 +318,7 @@ class uncl_unwanted_cleaner {
         // 2DO: good idea to do it in any case?
         update_option('uncl_state_delete', $delete_ok);
     
-        $response = array( 'success' => true, 'm'=>$message );
+        $response = array( 'success' => true, 'm' => $message );
         wp_send_json_success($response,200);
     }
 }
