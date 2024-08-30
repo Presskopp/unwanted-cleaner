@@ -22,21 +22,23 @@ class uncl_unwanted_cleaner {
         // fires after upgrade of core, themes or plugins
         add_action('upgrader_process_complete', array($this, 'uncl_delete_unwanted_plugins_after_core_upgrade'), 10, 2);
 
-        if ( !is_admin() ) return;
+        // Add admin-specific hooks only if in the admin area
+        if (is_admin()) {
+            // Add entries to admin menu
+            add_action('admin_menu', array($this, 'add_admin_menu'));
 
-        // add entries to admin menu
-		add_action('admin_menu', array($this, 'add_admin_menu'));
-        // fires when admin panel is initialised
-        add_action('admin_init', array($this, 'uncl_register_settings'));
-        
-        // fires on plugin activation
-        add_action('activated_plugin', array($this, 'uncl_on_plugin_activation'));
+            // Fires when admin panel is initialised
+            add_action('admin_init', array($this, 'uncl_register_settings'));
 
-        // Ajax handler
-        add_action('wp_ajax_uncl_handler', array( $this,'uncl_unwanted_plugins_handler'));
+            // Fires on plugin activation
+            add_action('activated_plugin', array($this, 'uncl_on_plugin_activation'));
 
-        // Hook to register scripts
-        add_action('admin_enqueue_scripts', array($this, 'uncl_enqueue_admin_scripts'));
+            // Ajax handler
+            add_action('wp_ajax_uncl_handler', array($this, 'uncl_unwanted_plugins_handler'));
+
+            // Hook to register scripts
+            add_action('admin_enqueue_scripts', array($this, 'uncl_enqueue_admin_scripts'));
+        }
     }
 
     public function uncl_enqueue_admin_scripts($hook) {
@@ -287,7 +289,7 @@ class uncl_unwanted_cleaner {
         error_log('uncl_unwanted_plugins_handler: '.json_encode($plugin_list));
         
         $delete_ok = sanitize_text_field($_POST['delete_ok']);
-        $message = esc_html__('This message should not be here.', 'unwanted-cleaner');
+        $message = esc_html__('Settings saved successfully.', 'unwanted-cleaner');
         if( $state == 'save' ) {
             $this->uncl_save_unwanted_list('plugins',  $plugin_list);
             $message = esc_html__('List of plugins saved successfully.', 'unwanted-cleaner'); 
