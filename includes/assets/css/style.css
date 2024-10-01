@@ -102,3 +102,11 @@
 p#automatic_hint {
     font-size: 1.1em;
 }
+
+/* this needs more love */
+@media screen and (max-width: 1100px) and (min-width: 783px) {
+	.plugin-card .name, .plugin-card .desc > p {
+    margin-left: 105px !important;
+    margin-top: -20px;
+    }
+}
