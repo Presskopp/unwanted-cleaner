@@ -5,6 +5,7 @@ class uncl_unwanted_cleaner {
     private static $initialized = false;
     private $uncl_unwanted_options;
     private $uncl_unwanted_plugins = array();
+    private $uncl_unwanted_themes = array();
 
     public function __construct() {
 
@@ -55,6 +56,7 @@ class uncl_unwanted_cleaner {
     public function uncl_save_unwanted_list($purpose , $list) {
         error_log('uncl_save_unwanted_list: '.$list);
         if (isset($list)) {
+            //uncl_unwanted_plugins_list
             $n = "uncl_unwanted_".$purpose."_list";
             update_option($n, $list);
         }
@@ -65,8 +67,7 @@ class uncl_unwanted_cleaner {
     public function uncl_delete_unwanted_plugins() {
         
         $installed_plugins = get_plugins();
-        $plugins_to_delete = array();
-        //$plugin_list = count($this->uncl_unwanted_plugins) == 1 ? explode( ",", $this->uncl_unwanted_plugins[0] ) : $this->uncl_unwanted_plugins;
+        $plugins_to_delete = array();        
         $plugin_list = str_replace( '\\', "",  $this->uncl_unwanted_plugins );
         $slugs = [];
         $plugins = $plugin_list[0];
@@ -87,6 +88,36 @@ class uncl_unwanted_cleaner {
                 $deleted = delete_plugins(array($plugin_file));
 
                 if ($deleted) $plugins_to_delete[] = $plugin_file;
+            }
+        }
+
+        return !empty($plugins_to_delete);
+    }
+    public function uncl_delete_unwanted_themes() {
+        
+       //$installed_plugins = get_plugins();
+        $installed_themes = wp_get_themes();
+        $themes_to_delete = array();
+        $themes_list = str_replace( '\\', "",  $this->uncl_delete_unwanted_themes );
+        $slugs = [];
+        $themes = $themes_list[0];
+        $themes =json_decode($themes, true);
+       foreach ($themes as $theme) {
+                $slug =  $theme['slug'];
+                array_push($slugs, $slug);
+        }
+      
+        error_log('slugs: ' . wp_json_encode($slugs));
+        // Go through all of the installed plugins so if a plugin is active, it can be deactivated first
+        // foreach ($installed_plugins as $plugin_file => $plugin_data) {
+        foreach ($installed_themes as $themes_file => $_) {    // Deconstruction of $plugin_data because we don't use it
+
+            if (in_array(dirname($themes), $slugs)) {
+                error_log('themes: ' . wp_json_encode($themes));
+               /*  $this->uncl_deactivate_plugin( $plugin_file );
+                $deleted = delete_plugins(array($plugin_file));
+
+                if ($deleted) $plugins_to_delete[] = $plugin_file; */
             }
         }
 
@@ -208,6 +239,8 @@ class uncl_unwanted_cleaner {
         error_log($this->uncl_unwanted_options);
         
         $this->uncl_unwanted_plugins = get_option($this->uncl_unwanted_options, array());
+        $this->uncl_unwanted_themes = get_option('uncl_unwanted_themes_list', array());
+
     }
 
     public function add_admin_menu() {
@@ -231,32 +264,35 @@ class uncl_unwanted_cleaner {
         $lang = [
             "Unwanted_Cleaner_Settings" => esc_html__('Unwanted Cleaner Settings', 'unwanted-cleaner'),
             "Plugins_can_be_manually_deleted" => sprintf(
-                /* translators: %1$s and %2$s are HTML tags for bold text. */
-                esc_html__('Plugins shown below will %1$snot%2$s be automatically deleted, unless you check the checkbox below.', 'unwanted-cleaner'), 
+                /* translators: %1$s will be replaced by either themes or plugins, %2$s and %3$s are HTML tags for bold text. */
+                esc_html__('%1$s shown below will %2$snot%3$s be automatically deleted, unless you check the checkbox below.', 'unwanted-cleaner'), 
+                '%s',
                 '<b>', 
                 '</b>' 
             ),
             "Plugins_will_be_automatically_deleted" => sprintf(
-                /* translators: %1$s and %2$s are HTML tags for bold text. */
-                esc_html__('Plugins shown below will be %1$sautomatically%2$s deleted as soon as a core upgrade has taken place.', 'unwanted-cleaner'),
+                /* translators: %1$s will be replaced by either themes or plugins, %2$s and %3$s are HTML tags for bold text. */
+                esc_html__('%1$s shown below will be %2$sautomatically%3$s deleted as soon as a core upgrade has taken place.', 'unwanted-cleaner'),
+                '%s',
                 '<b>',
                 '</b>'
             ),
             "Automatic_deletion_confirmation" => sprintf(
-                /* translators: %1$s and %2$s are HTML tags for bold text. */
-                esc_html__('If checked you give permission to Unwanted Cleaner to %1$sautomatically%2$s delete the plugins listed above, whenever a core update did run.', 'unwanted-cleaner'),
+                /* translators: %1$s and %2$s are HTML tags for bold text, %3$s will be replaced by either themes or plugins. */
+                esc_html__('If checked you give permission to Unwanted Cleaner to %1$sautomatically%2$s delete the %3$s listed above, whenever a core update did run.', 'unwanted-cleaner'),
                 '<b>',
-                '</b>'
+                '</b>',
+                '%s'    
             ),
             "save_changes" => esc_html__('Save Changes', 'unwanted-cleaner'),
-            "delete_now_hint" => esc_html__('If you want to delete the unwanted plugins right now, push the button below.', 'unwanted-cleaner'),
-            "delete_unwanted_plugins" => esc_html__('Delete unwanted plugins now', 'unwanted-cleaner'),
+            "delete_now_hint" => esc_html__('If you want to delete the unwanted %s right now, push the button below.', 'unwanted-cleaner'),
+            "delete_unwanted_plugins" => esc_html__('Delete unwanted %s now', 'unwanted-cleaner'),
             "saving" => esc_html__('Saving list...', 'unwanted-cleaner'),
             "please_enter_atleast_2chrs" => esc_html__('Please enter at least 2 characters', 'unwanted-cleaner'),
-            "no_plugin_found" => esc_html__('No plugin found', 'unwanted-cleaner'),
+            "no_plugin_found" => esc_html__('No %s found', 'unwanted-cleaner'),
             "loading" => esc_html__('Loading...', 'unwanted-cleaner'),
             "search" => esc_html__('Search', 'unwanted-cleaner'),
-            "deleting" => esc_html__('Deleting plugins...', 'unwanted-cleaner'),
+            "deleting" => esc_html__('Deleting %s ...', 'unwanted-cleaner'),
             "no_select_uc" => esc_html__('You are not allowed to select Unwanted Cleaner as an unwanted plugin!', 'unwanted-cleaner'),
             "error_load_fetch" => esc_html__('A network error occurred. Please reload the page and try again.', 'unwanted-cleaner'),
             "plugins" => esc_html__('Plugins', 'unwanted-cleaner'),
@@ -273,6 +309,7 @@ class uncl_unwanted_cleaner {
         $images = UNCL_PLUGIN_URL . '/includes/assets/img/';
         $user_lang = get_user_locale(get_current_user_id());
         $plugins = str_replace( '\\', "",  $this->uncl_unwanted_plugins );
+        $themes = str_replace( '\\', "",  $this->uncl_unwanted_themes );
         wp_localize_script('uncl-main-js','uncl_var',array(
 			'nonce' => wp_create_nonce("uncl-nonce"),
 			'check' => 1,
@@ -280,6 +317,7 @@ class uncl_unwanted_cleaner {
 			'rtl' => is_rtl() ,
 			'text' => $lang,
             'plugin_list' => $plugins,
+            'theme_list' => $themes,
             'ajaxurl' => admin_url('admin-ajax.php'),
             'delete_ok' => $delete_ok,
             'images' => $images,
@@ -300,6 +338,7 @@ class uncl_unwanted_cleaner {
         error_log("STATE: " . $state);
 
         $plugin_list = !empty($_POST['plugin_list']) ? sanitize_text_field($_POST['plugin_list']) : '';
+        $theme_list = !empty($_POST['theme_list']) ? sanitize_text_field($_POST['theme_list']) : '';
         error_log('uncl_unwanted_plugins_handler: ' . wp_json_encode($plugin_list));
         
         $delete_ok = !empty($_POST['delete_ok']) ? sanitize_text_field($_POST['delete_ok']) : '';
@@ -307,12 +346,16 @@ class uncl_unwanted_cleaner {
         $message = esc_html__('Settings saved successfully.', 'unwanted-cleaner');
         if( $state == 'save' ) {
             $this->uncl_save_unwanted_list('plugins',  $plugin_list);
+            $this->uncl_save_unwanted_list('themes',  $theme_list);
             $message = esc_html__('List of plugins saved successfully.', 'unwanted-cleaner');
-            update_option('uncl_unwanted_plugins_list', $plugin_list);
-        } elseif( $state == 'delete' ) {
+           // update_option('uncl_unwanted_plugins_list', $plugin_list);
+        } elseif( $state == 'delete_plugins' ) {
             $this->uncl_delete_unwanted_plugins();
             $message = esc_html__('Plugins deleted successfully.', 'unwanted-cleaner');
-        } elseif ($state == 'auto') {
+        } elseif( $state == 'delete_themes' ) {
+            $this->uncl_delete_unwanted_themes();
+            $message = esc_html__('Themes deleted successfully.', 'unwanted-cleaner');
+        }  elseif ($state == 'auto') {
             error_log('uncl_unwanted_plugins_handler: auto==>'.$delete_ok);
         }
         // 2DO: good idea to do it in any case?
