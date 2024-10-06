@@ -23,7 +23,8 @@ addItemUiselected=(item)=>{
 document.addEventListener("DOMContentLoaded", function() {
 
     //const delete_ok = (uncl_var.delete_ok === 'true' || uncl_var.delete_ok === 1) ? 1 : 0;
-    const delete_ok = Number(uncl_var.delete_ok === 'true' || uncl_var.delete_ok === 1);
+    const delete_ok = Number(uncl_var.delete_ok_plugins === 'true' || uncl_var.delete_ok_plugins === 1);
+    const delete_ok_themes = Number(uncl_var.delete_ok_themes === 'true' || uncl_var.delete_ok_themes === 1);
 
     //const delete_ok_phrase_plugins = delete_ok ? replace_phrase_uncl(uncl_var.text.will_be_automatically_deleted,'plugins') : replace_phrase_uncl(uncl_var.text.can_be_manually_deleted ,'plugins')
     //const delete_ok_phrase_themes = delete_ok ? replace_phrase_uncl(uncl_var.text.will_be_automatically_deleted,'themes') : replace_phrase_uncl(uncl_var.text.can_be_manually_deleted ,'themes')
@@ -109,7 +110,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         <div class="uncl selected-list" id="selectedList-uncl"></div>
                     </div>
                     <div id="delete_checkbox_section">
-                        <input type="checkbox" id="delete_ok" name="delete_ok" value="0" ${delete_ok ? 'checked' : ''}>
+                        <input type="checkbox" class="delete_ok_cb" id="delete_ok" data-context="plugins" name="delete_ok" value="0" ${delete_ok ? 'checked' : ''}>
                         <label for="delete_ok">${replace_phrase_uncl(uncl_var.text.Automatic_deletion_confirmation, 'plugins')}</label><br><br>
                     </div>
                     <div>
@@ -139,7 +140,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 </div>
                 <div id="themes_delete_checkbox_section">
                     <!-- <label style="display: flex; align-items: center;"> -->
-                        <input type="checkbox" id="themes_delete_ok" name="themes_delete_ok" value="0" ${delete_ok ? 'checked' : ''}>
+                        <input type="checkbox" class="delete_ok_cb" id="themes_delete_ok" data-context="themes" name="themes_delete_ok" value="0" ${delete_ok_themes ? 'checked' : ''}>
                          <label for="themes_delete_ok">${replace_phrase_uncl(uncl_var.text.Automatic_deletion_confirmation, 'themes')}</label>
                    <!-- </label>-->
                     <br><br>
@@ -208,15 +209,17 @@ function fun_handle_uncl(state){
     const plugin_list = JSON.stringify(pluginlist_uncl_);
     const theme_list = JSON.stringify(themelist_uncl_);
     //console.log(plugin_list);
-
+    //+check
     const checkbox_delete = document.getElementById('delete_ok').checked;
-    let el = document.getElementById(`deleteButton`);
+    const checkbox_delete_themes = document.getElementById('themes_delete_ok').checked;
+
+    let el = state=='delete_plugins' ? document.getElementById(`deleteButton`) : document.getElementById(`themes-deleteButton`);
 
     const d = el.innerHTML;
     el.blur();
-    if(state == 'delete'){
-      
-       const deleting = replace_phrase_uncl(uncl_var.text.deleting, 'plugins');
+    if(state == 'delete_themes' || state == 'delete_plugins'){
+      const context = state == 'delete_themes' ? 'themes' : 'plugins';
+       const deleting = replace_phrase_uncl(uncl_var.text.deleting, context);
         el.innerHTML=deleting;
     }
 
@@ -230,10 +233,12 @@ function fun_handle_uncl(state){
             state: state,
             plugin_list: plugin_list,
             theme_list: theme_list,
-            delete_ok: checkbox_delete,
+            delete_ok_plugins: checkbox_delete,
+            delete_ok_themes: checkbox_delete_themes,
             nonce: uncl_var.nonce
             };
-            
+          
+        console.log(data);
         $.post(uncl_var.ajaxurl, data, function (res) {
             if(res.data.success == true){
                 msg = res.data.m;
@@ -482,7 +487,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // 2DO separate checkboxes logic!!
-    document.getElementById('delete_ok').addEventListener('click', function() {
+  /*   document.getElementById('delete_ok').addEventListener('click', function() {
         
         let context = 'plugins'; // Defaultwert
 
@@ -505,6 +510,20 @@ document.addEventListener('DOMContentLoaded', function() {
             automaticHint.innerHTML = replace_phrase_uncl(uncl_var.text.can_be_manually_deleted, context);
         }
 
+    }); */
+    let delete_ok_cb = document.querySelectorAll('.delete_ok_cb');
+    delete_ok_cb.forEach(function(cb) {
+        cb.addEventListener('click', function() {
+            let context = this.getAttribute('data-context');
+            let automaticHint = document.getElementById('automatic_hint_' + context);
+            fun_handle_uncl('auto');
+            
+            if (this.checked) {
+                automaticHint.innerHTML = replace_phrase_uncl(uncl_var.text.will_be_automatically_deleted, context);
+            } else {
+                automaticHint.innerHTML = replace_phrase_uncl(uncl_var.text.can_be_manually_deleted, context);
+            }
+        });
     });
 
     // fetch the plugin list from the server https://api.wordpress.org/plugins/info/1.2/?action=query_plugins&request[search]=jetpack
@@ -751,12 +770,9 @@ function showErrorModal(errorMessage) {
 function replace_phrase_uncl(phrase, context) {
 
     const s = uncl_var.text[context];
-    console.log(`[${phrase}]`,`[${context}]`,phrase.replace('%s', s), s);
-
-    const r = phrase.replace('%s', s);
-    console.log(r);
-
-    return r;
+    console.log(`[${phrase}]`,`[${context}]`,phrase.replace('%s', s), s);    
+    const replacement = phrase.indexOf('%s') === 0 ? s : s.toLowerCase();
+    return phrase.replace('%s', replacement);
 }
 
 

@@ -65,7 +65,7 @@ class uncl_unwanted_cleaner {
     //$option_value = get_option('uncl_last_wp_version');
     // main function to delete the unwanted plugins
     public function uncl_delete_unwanted_plugins() {
-        
+        error_log('---->uncl_delete_unwanted_plugins');
         $installed_plugins = get_plugins();
         $plugins_to_delete = array();        
         $plugin_list = str_replace( '\\', "",  $this->uncl_unwanted_plugins );
@@ -94,14 +94,17 @@ class uncl_unwanted_cleaner {
         return !empty($plugins_to_delete);
     }
     public function uncl_delete_unwanted_themes() {
-        
+        error_log('---->uncl_delete_unwanted_themes');
        //$installed_plugins = get_plugins();
+        $uncl_delete_unwanted_themes_list = get_option('uncl_unwanted_themes_list', false);
+        error_log('uncl_delete_unwanted_themes: ' . wp_json_encode($uncl_delete_unwanted_themes_list));
+        if($uncl_delete_unwanted_themes_list==false) return;
+        
         $installed_themes = wp_get_themes();
         $themes_to_delete = array();
-        $themes_list = str_replace( '\\', "",  $this->uncl_delete_unwanted_themes );
-        $slugs = [];
-        $themes = $themes_list[0];
-        $themes =json_decode($themes, true);
+        $themes_list = str_replace( '\\', "",  $uncl_delete_unwanted_themes_list );
+        $slugs = [];        
+        $themes =json_decode($themes_list, true);
        foreach ($themes as $theme) {
                 $slug =  $theme['slug'];
                 array_push($slugs, $slug);
@@ -110,50 +113,76 @@ class uncl_unwanted_cleaner {
         error_log('slugs: ' . wp_json_encode($slugs));
         // Go through all of the installed plugins so if a plugin is active, it can be deactivated first
         // foreach ($installed_plugins as $plugin_file => $plugin_data) {
-        foreach ($installed_themes as $themes_file => $_) {    // Deconstruction of $plugin_data because we don't use it
+            $active_theme = wp_get_theme()->get_stylesheet();
 
-            if (in_array(dirname($themes), $slugs)) {
-                error_log('themes: ' . wp_json_encode($themes));
-               /*  $this->uncl_deactivate_plugin( $plugin_file );
-                $deleted = delete_plugins(array($plugin_file));
-
-                if ($deleted) $plugins_to_delete[] = $plugin_file; */
+            foreach ($installed_themes as $themes_file => $_) {
+                // Get the slug (directory name) of the theme
+                $theme_slug = basename($themes_file);
+                
+                // Skip the active theme
+                if ($theme_slug === $active_theme) {
+                    continue;
+                }
+                
+                // Check if the theme is in the list of slugs to be deleted
+                if (in_array($theme_slug, $slugs)) {
+                    error_log('Deactivating and deleting theme: ' . wp_json_encode($theme_slug));
+                    
+                    // Deactivate the theme by switching to the default theme
+                    switch_theme(WP_DEFAULT_THEME);
+                    
+                    // Delete the theme
+                    $deleted = delete_theme($theme_slug);
+                    
+                    if ($deleted) {
+                        error_log('Theme deleted successfully: ' . $theme_slug);
+                    } else {
+                        error_log('Failed to delete theme: ' . $theme_slug);
+                    }
+                }
             }
-        }
 
         return !empty($plugins_to_delete);
     }
 
     public function uncl_delete_unwanted_plugins_after_core_upgrade($upgrader_object, $options) {
 
-        $option_delete = get_option('uncl_state_delete') ?? false;
-        if( $option_delete==false ) return ;
+        $option_delete_plugins = get_option('uncl_state_delete_plugins') ?? false;
+        $option_delete_themes = get_option('uncl_state_delete_themes') ?? false;
+        //if( $option_delete_plugins==false ) return ;
 
         ///auto
         if ($options['action'] === 'update' && $options['type'] === 'core') {
             
             // Load the list of unwanted plugins
-            $uncl_unwanted_plugins = get_option('uncl_unwanted_plugins_list', array());
+            if($option_delete_plugins){
+                $uncl_unwanted_plugins = get_option('uncl_unwanted_plugins_list', array());
 
-            if (empty($uncl_unwanted_plugins)) return;
-            $plugin_list =  count($uncl_unwanted_plugins)==1 ? explode( ",", $uncl_unwanted_plugins[0] ) : $uncl_unwanted_plugins;
-
-            // Check and delete unwanted plugins
-            foreach ($plugin_list as $plugin) {
-
-                if (isset($plugin)) {
-                    $plugin_deactivated = $this->uncl_deactivate_plugin( $plugin );
-
-                    if($plugin_deactivated){
-                        $plugin_dir = UNCL_PLUGIN_DIR . '/' . $plugin;
-                        // recursively delete plugin folder
-                        $this->uncl_delete_file($plugin_dir, true); 
+                if (empty($uncl_unwanted_plugins)) return;
+                $plugin_list =  count($uncl_unwanted_plugins)==1 ? explode( ",", $uncl_unwanted_plugins[0] ) : $uncl_unwanted_plugins;
+    
+                // Check and delete unwanted plugins
+                foreach ($plugin_list as $plugin) {
+    
+                    if (isset($plugin)) {
+                        $plugin_deactivated = $this->uncl_deactivate_plugin( $plugin );
+    
+                        if($plugin_deactivated){
+                            $plugin_dir = UNCL_PLUGIN_DIR . '/' . $plugin;
+                            // recursively delete plugin folder
+                            $this->uncl_delete_file($plugin_dir, true); 
+                        }
                     }
                 }
+    
+                // Delete hello.php file, if hello-dolly is in list of unwanted plugins
+                if (in_array('hello-dolly', $plugin_list))  $this->uncl_delete_unwanted_delete_hello_php_above_plugin();
             }
-
-            // Delete hello.php file, if hello-dolly is in list of unwanted plugins
-            if (in_array('hello-dolly', $plugin_list))  $this->uncl_delete_unwanted_delete_hello_php_above_plugin();
+            if($option_delete_themes){
+                $this->uncl_delete_unwanted_themes = get_option('uncl_unwanted_themes_list', false);
+                $this->uncl_delete_unwanted_themes();
+            }
+ 
 
         }
     }
@@ -239,7 +268,7 @@ class uncl_unwanted_cleaner {
         error_log($this->uncl_unwanted_options);
         
         $this->uncl_unwanted_plugins = get_option($this->uncl_unwanted_options, array());
-        $this->uncl_unwanted_themes = get_option('uncl_unwanted_themes_list', array());
+        $this->uncl_unwanted_themes = get_option('uncl_unwanted_themes_list', false);
 
     }
 
@@ -303,7 +332,8 @@ class uncl_unwanted_cleaner {
             */
         ];
         
-        $delete_ok = get_option('uncl_state_delete', false);
+        $delete_ok_plugins = get_option('uncl_state_delete_plugins', false);
+        $delete_ok_themes = get_option('uncl_state_delete_themes', false);
 
         wp_enqueue_script( 'uncl-main-js', UNCL_PLUGIN_URL . '/includes/assets/js/uncl_main.js', array('jquery'), UNCL_PLUGIN_VERSION, true );
         $images = UNCL_PLUGIN_URL . '/includes/assets/img/';
@@ -319,7 +349,8 @@ class uncl_unwanted_cleaner {
             'plugin_list' => $plugins,
             'theme_list' => $themes,
             'ajaxurl' => admin_url('admin-ajax.php'),
-            'delete_ok' => $delete_ok,
+            'delete_ok_plugins' => $delete_ok_plugins,
+            'delete_ok_themes' => $delete_ok_themes,
             'images' => $images,
             'user_lang'=>$user_lang
 		) );
@@ -341,7 +372,8 @@ class uncl_unwanted_cleaner {
         $theme_list = !empty($_POST['theme_list']) ? sanitize_text_field($_POST['theme_list']) : '';
         error_log('uncl_unwanted_plugins_handler: ' . wp_json_encode($plugin_list));
         
-        $delete_ok = !empty($_POST['delete_ok']) ? sanitize_text_field($_POST['delete_ok']) : '';
+        $delete_ok_plugins = !empty($_POST['delete_ok_plugins']) ? sanitize_text_field($_POST['delete_ok_plugins']) : '';
+        $delete_ok_themes = !empty($_POST['delete_ok_themes']) ? sanitize_text_field($_POST['delete_ok_themes']) : '';
 
         $message = esc_html__('Settings saved successfully.', 'unwanted-cleaner');
         if( $state == 'save' ) {
@@ -356,10 +388,12 @@ class uncl_unwanted_cleaner {
             $this->uncl_delete_unwanted_themes();
             $message = esc_html__('Themes deleted successfully.', 'unwanted-cleaner');
         }  elseif ($state == 'auto') {
-            error_log('uncl_unwanted_plugins_handler: auto==>'.$delete_ok);
+            error_log('uncl_unwanted_plugins_handler: auto==>'.$delete_ok_plugins);
         }
         // 2DO: good idea to do it in any case?
-        update_option('uncl_state_delete', $delete_ok);
+        update_option('uncl_state_delete_plugins', $delete_ok_plugins);
+        update_option('uncl_state_delete_themes', $delete_ok_themes);
+        
     
         $response = array( 'success' => true, 'm' => $message );
         wp_send_json_success($response,200);
