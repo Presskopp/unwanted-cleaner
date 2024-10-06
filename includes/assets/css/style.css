@@ -87,7 +87,7 @@
     margin-left: 80px!important;
 }
 
-#delete_checkbox_section{
+#delete_checkbox_section, #themes_delete_checkbox_section{
     clear: both;
 }
 
@@ -95,11 +95,11 @@
     width: 50%;
 }
 
-#searchPlng-uncl {
+#searchPlg-uncl, #themes-searchPlg-uncl {
     margin: 10px;
 }
 
-p#automatic_hint {
+p#automatic_hint_plugins, p#automatic_hint_themes {
     font-size: 1.1em;
 }
 

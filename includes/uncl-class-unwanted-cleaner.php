@@ -263,17 +263,17 @@ class uncl_unwanted_cleaner {
         // $pro = 0;    // for future use
         $lang = [
             "Unwanted_Cleaner_Settings" => esc_html__('Unwanted Cleaner Settings', 'unwanted-cleaner'),
-            "Plugins_can_be_manually_deleted" => sprintf(
-                /* translators: %1$s will be replaced by either themes or plugins, %2$s and %3$s are HTML tags for bold text. */
+            "can_be_manually_deleted" => sprintf(
+                /* translators: %1$s will be replaced by either 'Themes' or 'Plugins', %2$s and %3$s are HTML tags for bold text. */
                 esc_html__('%1$s shown below will %2$snot%3$s be automatically deleted, unless you check the checkbox below.', 'unwanted-cleaner'), 
-                '%s',
-                '<b>', 
-                '</b>' 
+                esc_html__('%s', 'unwanted-cleaner'),
+                '<b>',
+                '</b>'
             ),
-            "Plugins_will_be_automatically_deleted" => sprintf(
-                /* translators: %1$s will be replaced by either themes or plugins, %2$s and %3$s are HTML tags for bold text. */
+            "will_be_automatically_deleted" => sprintf(
+                /* translators: %1$s will be replaced by either 'Themes' or 'Plugins', %2$s and %3$s are HTML tags for bold text. */
                 esc_html__('%1$s shown below will be %2$sautomatically%3$s deleted as soon as a core upgrade has taken place.', 'unwanted-cleaner'),
-                '%s',
+                esc_html__('%s', 'unwanted-cleaner'),
                 '<b>',
                 '</b>'
             ),
@@ -282,7 +282,7 @@ class uncl_unwanted_cleaner {
                 esc_html__('If checked you give permission to Unwanted Cleaner to %1$sautomatically%2$s delete the %3$s listed above, whenever a core update did run.', 'unwanted-cleaner'),
                 '<b>',
                 '</b>',
-                '%s'    
+                '%s'
             ),
             "save_changes" => esc_html__('Save Changes', 'unwanted-cleaner'),
             "delete_now_hint" => esc_html__('If you want to delete the unwanted %s right now, push the button below.', 'unwanted-cleaner'),
@@ -305,12 +305,12 @@ class uncl_unwanted_cleaner {
         
         $delete_ok = get_option('uncl_state_delete', false);
 
-        wp_enqueue_script('uncl-main-js', UNCL_PLUGIN_URL . '/includes/assets/js/uncl_main.js', array('jquery'), UNCL_PLUGIN_VERSION, true);
+        wp_enqueue_script( 'uncl-main-js', UNCL_PLUGIN_URL . '/includes/assets/js/uncl_main.js', array('jquery'), UNCL_PLUGIN_VERSION, true );
         $images = UNCL_PLUGIN_URL . '/includes/assets/img/';
-        $user_lang = get_user_locale(get_current_user_id());
+        $user_lang = get_user_locale( get_current_user_id() );
         $plugins = str_replace( '\\', "",  $this->uncl_unwanted_plugins );
         $themes = str_replace( '\\', "",  $this->uncl_unwanted_themes );
-        wp_localize_script('uncl-main-js','uncl_var',array(
+        wp_localize_script( 'uncl-main-js', 'uncl_var', array(
 			'nonce' => wp_create_nonce("uncl-nonce"),
 			'check' => 1,
 			//'pro' => $pro,  // for future use
@@ -322,7 +322,7 @@ class uncl_unwanted_cleaner {
             'delete_ok' => $delete_ok,
             'images' => $images,
             'user_lang'=>$user_lang
-		));
+		) );
 	}
 
     public function uncl_unwanted_plugins_handler() {

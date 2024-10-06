@@ -22,9 +22,12 @@ addItemUiselected=(item)=>{
     
 document.addEventListener("DOMContentLoaded", function() {
 
-    const delete_ok = (uncl_var.delete_ok === 'true' || uncl_var.delete_ok === 1) ? 1 : 0;
-    const delete_ok_phrase_plugin = delete_ok ? replace_phrase_uncl(uncl_var.text.Plugins_will_be_automatically_deleted,'plugins') : replace_phrase_uncl(uncl_var.text.Plugins_can_be_manually_deleted ,'plugins')
-    console.log(`delete_ok_phrase_plugin: ${delete_ok_phrase_plugin}`);
+    //const delete_ok = (uncl_var.delete_ok === 'true' || uncl_var.delete_ok === 1) ? 1 : 0;
+    const delete_ok = Number(uncl_var.delete_ok === 'true' || uncl_var.delete_ok === 1);
+
+    //const delete_ok_phrase_plugins = delete_ok ? replace_phrase_uncl(uncl_var.text.will_be_automatically_deleted,'plugins') : replace_phrase_uncl(uncl_var.text.can_be_manually_deleted ,'plugins')
+    //const delete_ok_phrase_themes = delete_ok ? replace_phrase_uncl(uncl_var.text.will_be_automatically_deleted,'themes') : replace_phrase_uncl(uncl_var.text.can_be_manually_deleted ,'themes')
+    //console.log(`delete_ok_phrase_plugin: ${delete_ok_phrase_plugins}`);
     const ui_page = `
     <style>
         #wpwrap {
@@ -98,16 +101,16 @@ document.addEventListener("DOMContentLoaded", function() {
                                 <input type="text" id="dropdownInput-uncl" >
                                 <div class="uncl dropdown-content" id="dropdownList-uncl"></div>                                    
                             </div>
-                            <a class="button button-primary" role="button" id="searchPlng-uncl">${uncl_var.text.search}</a>
+                            <a class="button button-primary" role="button" id="searchPlg-uncl">${uncl_var.text.search}</a>
                             <br><br>
-                            <p id="automatic_hint">${delete_ok_phrase_plugin}</p>
+                            <p id="automatic_hint_plugins">${delete_ok ? replace_phrase_uncl(uncl_var.text.will_be_automatically_deleted,'plugins') : replace_phrase_uncl(uncl_var.text.can_be_manually_deleted ,'plugins')}</p>
                         </div>
                         <!-- div class="uncl selected-list my-3 mx-2" id="selectedList-uncl"></div -->
                         <div class="uncl selected-list" id="selectedList-uncl"></div>
                     </div>
                     <div id="delete_checkbox_section">
                         <input type="checkbox" id="delete_ok" name="delete_ok" value="0" ${delete_ok ? 'checked' : ''}>
-                        <label for="delete_ok">${replace_phrase_uncl(uncl_var.text.Automatic_deletion_confirmation,'plugins')}</label><br><br>
+                        <label for="delete_ok">${replace_phrase_uncl(uncl_var.text.Automatic_deletion_confirmation, 'plugins')}</label><br><br>
                     </div>
                     <div>
                        <button class="button button-primary d-none" id="saveButton">${uncl_var.text.save_changes}</button>
@@ -115,7 +118,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     <br>
                     <div>
                     <p>${replace_phrase_uncl(uncl_var.text.delete_now_hint ,'plugins')}</p>
-                        <button class="button" id="deleteButton">${replace_phrase_uncl(uncl_var.text.delete_unwanted_plugins , 'plugins')}</button>
+                        <button class="button" id="deleteButton">${replace_phrase_uncl(uncl_var.text.delete_unwanted_plugins, 'plugins')}</button>
                     </div>
                 </div>
             </div>
@@ -127,17 +130,20 @@ document.addEventListener("DOMContentLoaded", function() {
                             <input type="text" id="themes-dropdownInput-uncl" >
                             <div class="uncl dropdown-content" id="themes-dropdownList-uncl"></div>                                    
                         </div>
-                        <a class="button button-primary" role="button" id="themes-searchPlng-uncl">${uncl_var.text.search}</a>
+                        <a class="button button-primary" role="button" id="themes-searchPlg-uncl">${uncl_var.text.search}</a>
                         <br><br>
-                        <p id="automatic_hint">${delete_ok ? replace_phrase_uncl(uncl_var.text.Plugins_will_be_automatically_deleted,'themes') : replace_phrase_uncl(uncl_var.text.Plugins_can_be_manually_deleted ,'themes')}</p>
+                        <p id="automatic_hint_themes">${delete_ok ? replace_phrase_uncl(uncl_var.text.will_be_automatically_deleted, 'themes') : replace_phrase_uncl(uncl_var.text.can_be_manually_deleted ,'themes')}</p>
                     </div>
                     <!-- div class="uncl selected-list my-3 mx-2" id="selectedList-uncl"></div -->
                     <div class="uncl selected-list" id="themes-selectedList-uncl"></div>
                 </div>
                 <div id="themes_delete_checkbox_section">
-                    <input type="checkbox" id="themes_delete_ok" name="themes_delete_ok" value="0" ${delete_ok ? 'checked' : ''}>
-                    <label for="themes_delete_ok">${replace_phrase_uncl(uncl_var.text.Automatic_deletion_confirmation,'themes')}</label><br><br>
-                </div>                    
+                    <!-- <label style="display: flex; align-items: center;"> -->
+                        <input type="checkbox" id="themes_delete_ok" name="themes_delete_ok" value="0" ${delete_ok ? 'checked' : ''}>
+                         <label for="themes_delete_ok">${replace_phrase_uncl(uncl_var.text.Automatic_deletion_confirmation, 'themes')}</label>
+                   <!-- </label>-->
+                    <br><br>
+                </div>
                 <br>
                 <div>
                 <p>${replace_phrase_uncl(uncl_var.text.delete_now_hint ,'themes')}</p>
@@ -197,8 +203,8 @@ function fun_handle_uncl(state){
     //delete duplicate
     const pluginlist_uncl_ = pluginlist_uncl.filter((v,i,a)=>a.findIndex(t=>(t.slug === v.slug))===i);
     const themelist_uncl_ = themelist_uncl.filter((v,i,a)=>a.findIndex(t=>(t.slug === v.slug))===i);
-    console.log('save/delete plugin:', pluginlist_uncl_);
-    console.log('save/delete theme:', themelist_uncl_);
+    //console.log('save/delete plugin:', pluginlist_uncl_);
+    //console.log('save/delete theme:', themelist_uncl_);
     const plugin_list = JSON.stringify(pluginlist_uncl_);
     const theme_list = JSON.stringify(themelist_uncl_);
     //console.log(plugin_list);
@@ -264,19 +270,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const dropdownInput = document.getElementById('dropdownInput-uncl');
     const dropdownList = document.getElementById('dropdownList-uncl');
     const selectedList = document.getElementById('selectedList-uncl');
-    const searchPlng = document.getElementById('searchPlng-uncl');
+    const searchPlg = document.getElementById('searchPlg-uncl');
     const selectedItems_themes = new Set();
     const dropdownInput_themes = document.getElementById('themes-dropdownInput-uncl');
     const dropdownList_themes = document.getElementById('themes-dropdownList-uncl');
     const selectedList_themes = document.getElementById('themes-selectedList-uncl');
-    const searchPlng_themes = document.getElementById('themes-searchPlng-uncl');
+    const searchPlg_themes = document.getElementById('themes-searchPlg-uncl');
     let filteredItems_plugin = [];
     let filteredItems_themes = [];
     let listReceivedFromWP_uncl = [];
 
-    // Filter and display the dropdown list
+    /* Filter and display the dropdown list
     fun_addItemToSelectedList = (items ,context) => {
-        console.log('DEBUG: ' + items , context);
+        console.log('DEBUG: items/context ' + items , context);
         fun_addedItems =()=>{
             dropdownList.innerHTML = '';
          
@@ -304,10 +310,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             dropdownList_themes.style.display = filteredItems_themes.length ? 'block' : 'none';
         }//end of fun_addedItems_themes
-     
-    
-     
-        
+
         if(context=='plugins'){
             filteredItems_plugin =items;
             if(items.length==0){
@@ -333,9 +336,51 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     }
+    */
 
-    //fun_searchPlng-uncl
-    searchPlng.addEventListener('click', function() {
+    // General function to display items in the dropdown
+    const fun_addedItems = (items, dropdown, context) => {
+        dropdown.innerHTML = '';
+        if (items.length) {
+            items.forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.innerHTML = `<img src="${item.icons['1x'] ?? item.icons['default']}" alt="${item.name}"><span>${item.name}</span>`;
+                itemElement.addEventListener('click', () => addItemToSelectedList(item, context));
+                dropdown.appendChild(itemElement);
+            });
+        }
+        dropdown.style.display = items.length ? 'block' : 'none';
+    }; // end of fun_addedItems
+
+    // Usage within fun_addItemToSelectedList
+    const fun_addItemToSelectedList = (items, context) => {
+        console.log('DEBUG: items/context ', items, context);
+        
+        if (context === 'plugins') {
+            filteredItems_plugin = items;
+            if (items.length === 0) {
+                const no_plugin_found = replace_phrase_uncl(uncl_var.text.no_plugin_found, 'plugins');
+                dropdownList.innerHTML = `<div><span>${no_plugin_found}</span></div>`;
+                return;
+            }
+            fun_addedItems(filteredItems_plugin, dropdownList, 'plugins');
+            dropdownInput.addEventListener('input', () => fun_addedItems(filteredItems_plugin, dropdownList, 'plugins'));
+        } else {
+            filteredItems_themes = items;
+            if (items.length === 0) {
+                const no_theme_found = replace_phrase_uncl(uncl_var.text.no_plugin_found, 'themes');
+                dropdownList_themes.innerHTML = `<div><span>${no_theme_found}</span></div>`;
+                return;
+            }
+            fun_addedItems(filteredItems_themes, dropdownList_themes, 'themes');
+            dropdownInput_themes.addEventListener('input', () => fun_addedItems(filteredItems_themes, dropdownList_themes, 'themes'));
+        }
+    };
+
+
+    //fun_searchPlg-uncl
+    console.log ("searchPlg: " + searchPlg);
+    searchPlg.addEventListener('click', function() {
         const name = dropdownInput.value;
         if (name.length < 2) {
             noti_box_uncl(uncl_var.text.please_enter_atleast_2chrs, 'error');
@@ -345,8 +390,8 @@ document.addEventListener('DOMContentLoaded', function() {
         //remove event click on dropdownInput
     });
 
-    //searchPlng_themes
-    searchPlng_themes.addEventListener('click', function() {
+    //searchPlg_themes
+    searchPlg_themes.addEventListener('click', function() {
         const name = dropdownInput_themes.value;
         if (name.length < 2) {
             noti_box_uncl(uncl_var.text.please_enter_atleast_2chrs, 'error');
@@ -356,69 +401,45 @@ document.addEventListener('DOMContentLoaded', function() {
         //remove event click on dropdownInput
     });
 
+    // ChatGPT version:
     // Add item to selected list
     function addItemToSelectedList(item, context) {
         console.log('DEBUG: ' + item.name);
-        // Plugin already on the list?
-      
-
+        
         if (!item.name) {
-            console.error("Plugin name missing.");
-            return;
+            return console.error("Plugin name missing.");
         }
-
+        
         if (item.name === "Unwanted Cleaner") { 
-            try {
-                throw new Error(uncl_var.text.no_select_uc);
-            } catch (error) {
-                showErrorModal(error.message);
-            }
-            return;
-        };
-        if(context=='plugins'){
-            if (selectedItems.has(item.name)) {
-                try {
-                    throw new Error("The selected item has already been added!");
-                } catch (error) {
-                    showErrorModal(error.message);
-                }
-                return;
-            }
-        // Plugin not on the list
-        selectedItems.add(item.name);
+            return showErrorModal(uncl_var.text.no_select_uc);
+        }
+        
+        const isPlugin = (context === 'plugins');
+        const selectedSet = isPlugin ? selectedItems : selectedItems_themes;
+        const selectedListElement = isPlugin ? selectedList : selectedList_themes;
+        const dropdownInputElement = isPlugin ? dropdownInput : dropdownInput_themes;
+        const dropdownListElement = isPlugin ? dropdownList : dropdownList_themes;
+        const addToListFunction = isPlugin ? fun_addPluginToList_uncl : fun_addThemeToList_uncl;
+
+        if (selectedSet.has(item.name)) {
+            return showErrorModal("The selected item has already been added!");
+        }
+        
+        selectedSet.add(item.name);
         const itemRow = document.createElement('div');
         itemRow.className = 'plugin-card';
         itemRow.innerHTML = addItemUiselected(item, context);
-        itemRow.querySelector('.remove-button').addEventListener('click', () => removeItemFromSelectedList(item.name, item.slug ,itemRow ,context));
-        selectedList.appendChild(itemRow);
-        dropdownInput.value = '';
-        dropdownList.innerHTML = '';
-        dropdownList.style.display = 'none';
-        fun_addPluginToList_uncl(item);
-        }else{
-            // Theme not on the list
-            if (selectedItems_themes.has(item.name)) {
-                try {
-                    throw new Error("The selected item has already been added!");
-                } catch (error) {
-                    showErrorModal(error.message);
-                }
-                return;
-            }
-            selectedItems_themes.add(item.name);
-            const itemRow = document.createElement('div');
-            itemRow.className = 'plugin-card';
-            itemRow.innerHTML = addItemUiselected(item, context);
-            itemRow.querySelector('.remove-button').addEventListener('click', () => removeItemFromSelectedList(item.name, item.slug ,itemRow ,context));
-            selectedList_themes.appendChild(itemRow);
-            dropdownInput_themes.value = '';
-            dropdownList_themes.innerHTML = '';
-            dropdownList_themes.style.display = 'none';
-            fun_addThemeToList_uncl(item);
-        }
+        itemRow.querySelector('.remove-button').addEventListener('click', () => removeItemFromSelectedList(item.name, item.slug, itemRow, context));
+        selectedListElement.appendChild(itemRow);
+        
+        dropdownInputElement.value = '';
+        dropdownListElement.innerHTML = '';
+        dropdownListElement.style.display = 'none';
+        
+        addToListFunction(item);
     }
 
-    // Remove item from selected list
+     // Remove item from selected list
     function removeItemFromSelectedList(name, slug , element ,context) {
         if(context=='plugins') {
             selectedItems.delete(name);
@@ -431,7 +452,6 @@ document.addEventListener('DOMContentLoaded', function() {
             themelist_uncl = themelist_uncl.filter(theme => theme.slug != slug);
             console.log(themelist_uncl);
         }
-
 
         setTimeout(() => {
             fun_handle_uncl('save');
@@ -461,16 +481,30 @@ document.addEventListener('DOMContentLoaded', function() {
         fun_addItemToSelectedList(data_filtered ,'plugins');
     });
 
+    // 2DO separate checkboxes logic!!
     document.getElementById('delete_ok').addEventListener('click', function() {
-        // 2DO: Save option !?
-        let automaticHint = document.getElementById('automatic_hint');
+        
+        let context = 'plugins'; // Defaultwert
+
+        // get context by active tab button
+        const active_button = document.querySelector('.nav-link.active');
+        if (active_button) {
+            const buttonText = active_button.textContent.trim().toLowerCase();
+            if (buttonText !== 'plugins') {
+                context = buttonText;
+            }
+        }
+        console.log ("Context: " + context);
+
+        let automaticHint = document.getElementById('automatic_hint_' + context);
         fun_handle_uncl('auto');
+        
         if (this.checked) {
-            automaticHint.innerHTML = `${uncl_var.text.Plugins_will_be_automatically_deleted}`;
+            automaticHint.innerHTML = replace_phrase_uncl(uncl_var.text.will_be_automatically_deleted, context);
+        } else {
+            automaticHint.innerHTML = replace_phrase_uncl(uncl_var.text.can_be_manually_deleted, context);
         }
-        else {
-            automaticHint.innerHTML = `${uncl_var.text.Plugins_can_be_manually_deleted}`;
-        }
+
     });
 
     // fetch the plugin list from the server https://api.wordpress.org/plugins/info/1.2/?action=query_plugins&request[search]=jetpack
@@ -479,7 +513,7 @@ document.addEventListener('DOMContentLoaded', function() {
      //let progressBar = document.getElementById('progressbar-uncl');
 
         // const response = await fetch(`https://api.wordpress.org/plugins/info/1.2/?action=query_plugins&request[search]=${name}`);
-        fun_state_btn_searchPlnguncl(1);
+        fun_state_btn_searchPlguncl(1);
         f_u=(lang , page , search)=>{
             return `https://api.wordpress.org/plugins/info/1.2/?action=query_plugins&request[search]=${search}&request[per_page]=100&request[page]=${page}&request[locale]=${lang}`;
         }
@@ -525,10 +559,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 page += 1;
             } while (page <= total_page);
             listReceivedFromWP_uncl = data_filtered;
-            fun_addItemToSelectedList(data_filtered ,'plugins');
+            fun_addItemToSelectedList(data_filtered, 'plugins');
             //delete the progressBar tag
-
-
 
         } catch (error) {
             console.error('Error fetching plugin list:', error);
@@ -537,7 +569,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if(progressBar) progressBar.style.display = 'none';
         }
 
-        fun_state_btn_searchPlnguncl(0);
+        fun_state_btn_searchPlguncl(0);
         return data_filtered;
 
     }
@@ -545,7 +577,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // fetch the plugin list from the server https://api.wordpress.org/plugins/info/1.2/?action=query_plugins&request[search]=jetpack
     async function fun_fetch_theme_list_uncl(name ){
         
-        fun_state_btn_searchPlnguncl(1);
+        fun_state_btn_searchPlguncl(1);
     
         // Modify this function to use the themes API instead of the plugins API
         f_u = (lang , page , search) => {
@@ -601,7 +633,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             listReceivedFromWP_uncl = data_filtered;
             console.log('listReceivedFromWP_uncl:', listReceivedFromWP_uncl);
-            fun_addItemToSelectedList(data_filtered,'themes');
+            fun_addItemToSelectedList(data_filtered, 'themes');
     
         } catch (error) {
             console.error('Error fetching theme list:', error);
@@ -610,7 +642,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if(progressBar) progressBar.style.display = 'none';
         }
     
-        fun_state_btn_searchPlnguncl(0);
+        fun_state_btn_searchPlguncl(0);
         return data_filtered;
     }
     
@@ -628,6 +660,7 @@ document.addEventListener('DOMContentLoaded', function() {
             fun_handle_uncl('save');
         }, 100);
     }
+	
     fun_addThemeToList_uncl = (item) => {
         //pluginlist_uncl
         ///item.name, item.slug, item.icons['1x'] ?? item.icons['default']
@@ -642,10 +675,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     /* End functions of handling list of plugins */
 
-    fun_state_btn_searchPlnguncl = (state) => {
-        searchPlng.classList.toggle('disabled', state == 1);
-        searchPlng.disabled = state == 1;
-        searchPlng.innerHTML = state == 1 ? uncl_var.text.loading : uncl_var.text.search;
+    fun_state_btn_searchPlguncl = (state) => {
+        searchPlg.classList.toggle('disabled', state == 1);
+        searchPlg.disabled = state == 1;
+        searchPlg.innerHTML = state == 1 ? uncl_var.text.loading : uncl_var.text.search;
     };
 
     if(uncl_var.plugin_list) {
@@ -667,10 +700,6 @@ document.addEventListener('DOMContentLoaded', function() {
         addItemToSelectedList(theme , 'themes');
     });
 
-});//end of dom content loaded
-
-// workaround for plugin list columns 
-document.addEventListener("DOMContentLoaded", function() {
     function applyStylesToPluginCards() {
         const pluginCards = document.querySelectorAll('.plugin-card');
 
@@ -720,11 +749,13 @@ function showErrorModal(errorMessage) {
 }
 
 function replace_phrase_uncl(phrase, context) {
+
     const s = uncl_var.text[context];
-   
     console.log(`[${phrase}]`,`[${context}]`,phrase.replace('%s', s), s);
+
     const r = phrase.replace('%s', s);
     console.log(r);
+
     return r;
 }
 
