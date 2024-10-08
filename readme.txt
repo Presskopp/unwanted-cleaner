@@ -55,8 +55,8 @@ Version 1.0.1 introduces theme deletion, a refreshed user interface, and improve
 
 = 1.0.1 =
 *New feature: Themes can now be deleted, finally!*
-*Enhancement: Completely new and shiny UI*
-*Bugfix: All strings are now translatable, oops*
+*Enhancement: Completely new and shiny UI/UX*
+*Bugfix: All strings, even error messages, are now translatable, oops*
 
 = 1.0.0 =
 *Initial Release*

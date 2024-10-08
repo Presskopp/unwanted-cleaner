@@ -26,6 +26,7 @@ if (!defined("UNCL_PLUGIN_VERSION")) {
 }
 
 if (!defined("UNCL_BOOTSTRAP_VERSION")) {
+    // 2DO: new version 5.3.3
     define("UNCL_BOOTSTRAP_VERSION", "5.1.3");
 }
 
@@ -47,5 +48,4 @@ if (!defined("UNCL_PLUGIN_DIR")) {
 require_once plugin_dir_path(__FILE__) . 'includes/uncl-class-unwanted-cleaner.php';
 
 // Instantiate the main plugin class
-// $uncl_unwanted_cleaner = new uncl_unwantedcleaner\uncl_unwanted_cleaner();
 new uncl_unwantedcleaner\uncl_unwanted_cleaner();

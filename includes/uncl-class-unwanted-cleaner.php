@@ -323,6 +323,7 @@ class uncl_unwanted_cleaner {
             "search" => esc_html__('Search', 'unwanted-cleaner'),
             "deleting" => esc_html__('Deleting %s ...', 'unwanted-cleaner'),
             "no_select_uc" => esc_html__('You are not allowed to select Unwanted Cleaner as an unwanted plugin!', 'unwanted-cleaner'),
+            "already_added" => esc_html__('The selected item has already been added!', 'unwanted-cleaner'),
             "error_load_fetch" => esc_html__('A network error occurred. Please reload the page and try again.', 'unwanted-cleaner'),
             "plugins" => esc_html__('Plugins', 'unwanted-cleaner'),
             "themes" => esc_html__('Themes', 'unwanted-cleaner')

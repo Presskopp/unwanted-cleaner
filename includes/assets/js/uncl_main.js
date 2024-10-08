@@ -427,7 +427,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const addToListFunction = isPlugin ? fun_addPluginToList_uncl : fun_addThemeToList_uncl;
 
         if (selectedSet.has(item.name)) {
-            return showErrorModal("The selected item has already been added!");
+            return showErrorModal(uncl_var.text.already_added);
         }
         
         selectedSet.add(item.name);
@@ -464,19 +464,22 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Hide the dropdown list when clicking outside
+    // 2DO also for themes!
     document.addEventListener('click', function(event) {
         if (!event.target.closest('.dropdown')) {
             dropdownList.style.display = 'none';
+            dropdownList_themes.style.display = 'none';
         }
     });
 
     dropdownInput.addEventListener('click', function(event) {
         event.stopPropagation();
         dropdownList.style.display = 'block';
+        dropdownList_themes.style.display = 'block';
     });
 
     dropdownInput.addEventListener('input', function() {
-        if(listReceivedFromWP_uncl.length==0)return;
+        if (listReceivedFromWP_uncl.length == 0) return;
         const value = dropdownInput.value;    
         const data_filtered = listReceivedFromWP_uncl.filter(plugin => plugin.name.toLowerCase().includes(value.toLowerCase())).map(plugin => {
             return { name: plugin.name, icons: plugin.icons , slug:plugin.slug }
