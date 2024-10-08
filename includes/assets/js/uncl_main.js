@@ -9,7 +9,7 @@ addItemUiselected=(item)=>{
                     <h3>
                     <div class="action-links">
                         <div class="plugin-action-buttons">
-                            <span class="btn btn-secondary btn-sm remove-button removeItemBtnFromListUncl" data-slug='${item.slug}' >&#120299;</span>
+                            <span class="btn btn-outline-secondary btn-sm remove-button removeItemBtnFromListUncl" data-slug='${item.slug}' >&#120299;</span>
                         </div>
                     </div>
                     <p class="thickbox open-plugin-details-modal">
@@ -22,13 +22,8 @@ addItemUiselected=(item)=>{
     
 document.addEventListener("DOMContentLoaded", function() {
 
-    //const delete_ok = (uncl_var.delete_ok === 'true' || uncl_var.delete_ok === 1) ? 1 : 0;
     const delete_ok = Number(uncl_var.delete_ok_plugins === 'true' || uncl_var.delete_ok_plugins === 1);
     const delete_ok_themes = Number(uncl_var.delete_ok_themes === 'true' || uncl_var.delete_ok_themes === 1);
-
-    //const delete_ok_phrase_plugins = delete_ok ? replace_phrase_uncl(uncl_var.text.will_be_automatically_deleted,'plugins') : replace_phrase_uncl(uncl_var.text.can_be_manually_deleted ,'plugins')
-    //const delete_ok_phrase_themes = delete_ok ? replace_phrase_uncl(uncl_var.text.will_be_automatically_deleted,'themes') : replace_phrase_uncl(uncl_var.text.can_be_manually_deleted ,'themes')
-    //console.log(`delete_ok_phrase_plugin: ${delete_ok_phrase_plugins}`);
     const ui_page = `
     <style>
         #wpwrap {
@@ -209,7 +204,6 @@ function fun_handle_uncl(state){
     const plugin_list = JSON.stringify(pluginlist_uncl_);
     const theme_list = JSON.stringify(themelist_uncl_);
     //console.log(plugin_list);
-    //+check
     const checkbox_delete = document.getElementById('delete_ok').checked;
     const checkbox_delete_themes = document.getElementById('themes_delete_ok').checked;
 
@@ -245,7 +239,7 @@ function fun_handle_uncl(state){
                 // clss= "valid";
                 clss= "success";
                if(state!='save'){ 
-                noti_box_uncl(msg ,clss);
+                //noti_box_uncl(msg ,clss);
                 el.innerHTML = d;
                 }
             } else {
@@ -260,14 +254,6 @@ function fun_handle_uncl(state){
     });
 }
 
-//Start new code for parsing Plugins
-/* uncl_var.plugin_dropdown_list.forEach(plugin => {
-    console.log(plugin.name,plugin.icons['1x'])
-}); */
-
-//End new code for parsing Plugins
-
-// Start new code for dropdown
 
 document.addEventListener('DOMContentLoaded', function() {
 
@@ -284,64 +270,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let filteredItems_plugin = [];
     let filteredItems_themes = [];
     let listReceivedFromWP_uncl = [];
-
-    /* Filter and display the dropdown list
-    fun_addItemToSelectedList = (items ,context) => {
-        console.log('DEBUG: items/context ' + items , context);
-        fun_addedItems =()=>{
-            dropdownList.innerHTML = '';
-         
-            if (filteredItems_plugin.length) {
-                filteredItems_plugin.forEach(item => {
-                    const itemElement = document.createElement('div');
-                    itemElement.innerHTML = `<img src="${item.icons['1x'] ?? item.icons['default']}" alt="${item.name}"><span>${item.name}</span>`;
-                    itemElement.addEventListener('click', () => addItemToSelectedList(item , 'plugins'));
-                    dropdownList.appendChild(itemElement);
-                });
-            } 
-            dropdownList.style.display = filteredItems_plugin.length ? 'block' : 'none';
-        }//end of fun_addedItems
-
-        fun_addedItems_themes = () => {
-            dropdownList_themes.innerHTML = '';
-            
-            if (filteredItems_themes.length) {
-                filteredItems_themes.forEach(item => {
-                    const itemElement = document.createElement('div');
-                    itemElement.innerHTML = `<img src="${item.icons['1x'] ?? item.icons['default']}" alt="${item.name}"><span>${item.name}</span>`;
-                    itemElement.addEventListener('click', () => addItemToSelectedList(item, 'themes'));
-                    dropdownList_themes.appendChild(itemElement);
-                });
-            }
-            dropdownList_themes.style.display = filteredItems_themes.length ? 'block' : 'none';
-        }//end of fun_addedItems_themes
-
-        if(context=='plugins'){
-            filteredItems_plugin =items;
-            if(items.length==0){
-     
-                const no_plugin_found = replace_phrase_uncl(uncl_var.text.no_plugin_found, 'plugins');
-                dropdownList.innerHTML = `<div><span>${no_plugin_found}</span></div>`;
-                return;
-            }
-            fun_addedItems();
-            dropdownInput.addEventListener('input', function() {
-                fun_addedItems();       
-            });
-        } else {
-            filteredItems_themes=items;
-            if(items.length==0){
-                const no_theme_found = replace_phrase_uncl(uncl_var.text.no_plugin_found, 'themes');
-                dropdownList_themes.innerHTML = `<div><span>${no_theme_found}</span></div>`;
-                return;
-            }
-            fun_addedItems_themes();
-            dropdownInput_themes.addEventListener('input', function() {
-                fun_addedItems_themes();
-            });
-        }
-    }
-    */
 
     // General function to display items in the dropdown
     const fun_addedItems = (items, dropdown, context) => {
@@ -464,7 +392,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Hide the dropdown list when clicking outside
-    // 2DO also for themes!
     document.addEventListener('click', function(event) {
         if (!event.target.closest('.dropdown')) {
             dropdownList.style.display = 'none';
@@ -475,7 +402,7 @@ document.addEventListener('DOMContentLoaded', function() {
     dropdownInput.addEventListener('click', function(event) {
         event.stopPropagation();
         dropdownList.style.display = 'block';
-        dropdownList_themes.style.display = 'block';
+       
     });
 
     dropdownInput.addEventListener('input', function() {
@@ -489,31 +416,23 @@ document.addEventListener('DOMContentLoaded', function() {
         fun_addItemToSelectedList(data_filtered ,'plugins');
     });
 
-    // 2DO separate checkboxes logic!!
-  /*   document.getElementById('delete_ok').addEventListener('click', function() {
-        
-        let context = 'plugins'; // Defaultwert
+    dropdownInput_themes.addEventListener('click', function(event) {
+        event.stopPropagation();
+        dropdownList_themes.style.display = 'block';
+    });
 
-        // get context by active tab button
-        const active_button = document.querySelector('.nav-link.active');
-        if (active_button) {
-            const buttonText = active_button.textContent.trim().toLowerCase();
-            if (buttonText !== 'plugins') {
-                context = buttonText;
-            }
-        }
-        console.log ("Context: " + context);
+    dropdownInput_themes.addEventListener('input', function() {
+        console.log('filteredItems_themes:', filteredItems_themes);
+        if (filteredItems_themes.length == 0) return;
+        const value = dropdownInput_themes.value;
+        const data_filtered = filteredItems_themes.filter(theme => theme.name.toLowerCase().includes(value.toLowerCase())).map(theme => {
+            return { name: theme.name, icons: theme.icons, slug: theme.slug }
+        });
 
-        let automaticHint = document.getElementById('automatic_hint_' + context);
-        fun_handle_uncl('auto');
-        
-        if (this.checked) {
-            automaticHint.innerHTML = replace_phrase_uncl(uncl_var.text.will_be_automatically_deleted, context);
-        } else {
-            automaticHint.innerHTML = replace_phrase_uncl(uncl_var.text.can_be_manually_deleted, context);
-        }
+        fun_addItemToSelectedList(data_filtered, 'themes');
+    });
 
-    }); */
+
     let delete_ok_cb = document.querySelectorAll('.delete_ok_cb');
     delete_ok_cb.forEach(function(cb) {
         cb.addEventListener('click', function() {
@@ -599,7 +518,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // fetch the plugin list from the server https://api.wordpress.org/plugins/info/1.2/?action=query_plugins&request[search]=jetpack
     async function fun_fetch_theme_list_uncl(name ){
         
-        fun_state_btn_searchPlguncl(1);
+        fun_state_btn_themes_searchPlguncl(1);
     
         // Modify this function to use the themes API instead of the plugins API
         f_u = (lang , page , search) => {
@@ -664,7 +583,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if(progressBar) progressBar.style.display = 'none';
         }
     
-        fun_state_btn_searchPlguncl(0);
+        fun_state_btn_themes_searchPlguncl(0);
         return data_filtered;
     }
     
@@ -702,6 +621,11 @@ document.addEventListener('DOMContentLoaded', function() {
         searchPlg.disabled = state == 1;
         searchPlg.innerHTML = state == 1 ? uncl_var.text.loading : uncl_var.text.search;
     };
+    fun_state_btn_themes_searchPlguncl = (state) => {
+        searchPlg_themes.classList.toggle('disabled', state == 1);
+        searchPlg_themes.disabled = state == 1;
+        searchPlg_themes.innerHTML = state == 1 ? uncl_var.text.loading : uncl_var.text.search;
+    };
 
     if(uncl_var.plugin_list) {
         // let tem= uncl_var.plugin_list.replace(/[\\]/g, '');
@@ -713,7 +637,6 @@ document.addEventListener('DOMContentLoaded', function() {
         themelist_uncl = JSON.parse(uncl_var.theme_list);
     }
     
-    //let pluginListUi = '<!-- unc -->';    2DO what for?
     pluginlist_uncl.forEach(plugin => {
         addItemToSelectedList(plugin , 'plugins');
     });
@@ -782,6 +705,6 @@ function replace_phrase_uncl(phrase, context) {
 noti_box_uncl = (m, clss) => {
     let noti = document.getElementById('noti-uncl')
     // noti.className = clss;
-    noti.innerHTML = '<div class="notice notice-' + clss + ' ' + '" data-slug="unwanted-changer"><p>' + m + '</p></div>';
+    noti.innerHTML = '<div class="notice notice-' + clss + ' ' + ' is-dismissible" data-slug="unwanted-changer"><p>' + m + '</p></div>';
   
 }

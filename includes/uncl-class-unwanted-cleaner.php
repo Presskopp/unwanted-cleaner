@@ -391,7 +391,7 @@ class uncl_unwanted_cleaner {
         }  elseif ($state == 'auto') {
             error_log('uncl_unwanted_plugins_handler: auto==>'.$delete_ok_plugins);
         }
-        // 2DO: good idea to do it in any case?
+        
         update_option('uncl_state_delete_plugins', $delete_ok_plugins);
         update_option('uncl_state_delete_themes', $delete_ok_themes);
         
