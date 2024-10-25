@@ -365,7 +365,10 @@ class uncl_unwanted_cleaner {
             "already_added" => esc_html__('The selected item has already been added!', 'unwanted-cleaner'),
             "error_load_fetch" => esc_html__('A network error occurred. Please reload the page and try again.', 'unwanted-cleaner'),
             "plugins" => esc_html__('Plugins', 'unwanted-cleaner'),
-            "themes" => esc_html__('Themes', 'unwanted-cleaner')
+            "themes" => esc_html__('Themes', 'unwanted-cleaner'),
+            'close' => esc_html__('Close', 'unwanted-cleaner'),
+            /* translators: %1$s and %2$s are HTML tags for opening and closing tag A and %3$s and %4$s are HTML tags for opening and closing tag A  */
+            'sponsor_context' => esc_html__('Thank you for using %1$s Unwanted Cleaner%2$s. If you like it, you may consider %3$s buying me a coffee%4$s', 'unwanted-cleaner'),
             /* for future use
             "files" => esc_html__('Files', 'unwanted-cleaner'),
             "database" => esc_html__('Database', 'unwanted-cleaner')

@@ -21,7 +21,12 @@ addItemUiselected=(item)=>{
     }
     
 document.addEventListener("DOMContentLoaded", function() {
-
+    let lang = 'en';
+    if( uncl_var.user_lang == 'de_DE' || uncl_var.user_lang == 'de_AT' || uncl_var.user_lang == 'de_CH' ){ lang = 'de'; }
+    const link_site = `https://presskopp.com/${lang}/unwanted-cleaner`;
+    const link_buy_me_coffee = `https://presskopp.com/${lang}/unwanted-cleaner/#main-footer`;
+    
+    const sponsor_context = uncl_var.text.sponsor_context.replace('%1$s', `<a href="${link_site}" target="_blank">`).replace('%2$s', '</a>').replace('%3$s', `<a href="${link_buy_me_coffee}" target="_blank">`).replace('%4$s', '</a>');
     const delete_ok = Number(uncl_var.delete_ok_plugins === 'true' || uncl_var.delete_ok_plugins === 1);
     const delete_ok_themes = Number(uncl_var.delete_ok_themes === 'true' || uncl_var.delete_ok_themes === 1);
     const ui_page = `
@@ -149,8 +154,8 @@ document.addEventListener("DOMContentLoaded", function() {
             <!-- Themes Section -->
         </div>
     </div>
-    <br>
-    <div class="uncl-footer">Thank you for using <a href="https://presskopp.com/en/unwanted-cleaner">Unwanted Cleaner</a>. If you like it, you may consider <a href="https://presskopp.com/en/unwanted-cleaner/#main-footer"> buying me a coffee</a></div>
+    <br> 
+    <div class="uncl-footer">${sponsor_context}</div>
 
     <!-- Vertically centered modal -->
     <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
@@ -162,15 +167,10 @@ document.addEventListener("DOMContentLoaded", function() {
                     <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
                     </svg>
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="${uncl_var.text.close}"></button>
             </div>
             <div class="modal-body">
             </div>
-            <!--
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-            -->
         </div>
     </div>
     </div>
@@ -464,11 +464,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // fetch the plugin list from the server https://api.wordpress.org/plugins/info/1.2/?action=query_plugins&request[search]=jetpack
-    async function fun_fetch_plugin_list_uncl(name ){
-        
-     //let progressBar = document.getElementById('progressbar-uncl');
-
-        // const response = await fetch(`https://api.wordpress.org/plugins/info/1.2/?action=query_plugins&request[search]=${name}`);
+    async function fun_fetch_plugin_list_uncl(name){
         fun_state_btn_searchPlguncl(1);
         f_u=(lang , page , search)=>{
             return `https://api.wordpress.org/plugins/info/1.2/?action=query_plugins&request[search]=${search}&request[per_page]=100&request[page]=${page}&request[locale]=${lang}`;
