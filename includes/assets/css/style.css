@@ -110,3 +110,6 @@ p#automatic_hint_plugins, p#automatic_hint_themes {
     margin-top: -20px;
     }
 }
+.modal-header .bg-bg-success{
+    background-color: #00a32a!important;
+}

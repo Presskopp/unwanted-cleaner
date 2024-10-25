@@ -220,6 +220,7 @@ function fun_handle_uncl(state){
     data = {};
     let msg = 'not working';
     let clss = "not-valid-";
+    console.log('state:', state);
     jQuery(function ($) {
     
         data = {
@@ -236,18 +237,28 @@ function fun_handle_uncl(state){
         $.post(uncl_var.ajaxurl, data, function (res) {
             if(res.data.success == true){
                 msg = res.data.m;
+                console.log('recived true');
+                console.log(msg);
                 // clss= "valid";
                 clss= "success";
                if(state!='save'){ 
                 //noti_box_uncl(msg ,clss);
                 el.innerHTML = d;
+                showModal_uncl(msg, 'success');
                 }
+
             } else {
+                console.log('recived false');
+                console.log(msg);
                 msg = res.data.m;
                 // clss = "not-valid";
                 clss = "error";
-                noti_box_uncl(msg ,clss);
+                 //noti_box_uncl(msg ,clss);
                 el.innerHTML = d;
+
+                if (state != 'save') {
+                    showModal_uncl(msg, 'error');
+                }
             }  
         })
         return true;
@@ -344,7 +355,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         if (item.name === "Unwanted Cleaner") { 
-            return showErrorModal(uncl_var.text.no_select_uc);
+            console.log(uncl_var.text.no_select_uc);
+            return showModal_uncl(uncl_var.text.no_select_uc, 'error');
+            //return showErrorModal(uncl_var.text.no_select_uc);
+
         }
         
         const isPlugin = (context === 'plugins');
@@ -355,7 +369,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const addToListFunction = isPlugin ? fun_addPluginToList_uncl : fun_addThemeToList_uncl;
 
         if (selectedSet.has(item.name)) {
-            return showErrorModal(uncl_var.text.already_added);
+            return showModal_uncl(uncl_var.text.already_added, 'error');
+            //return showErrorModal(uncl_var.text.already_added);
         }
         
         selectedSet.add(item.name);
@@ -505,7 +520,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         } catch (error) {
             console.error('Error fetching plugin list:', error);
-            showErrorModal(uncl_var.text.error_load_fetch);
+            //showErrorModal(uncl_var.text.error_load_fetch);
+            showModal_uncl(uncl_var.text.error_load_fetch, 'error');
             let progressBar =document.getElementById('progressbar-uncl');
             if(progressBar) progressBar.style.display = 'none';
         }
@@ -578,7 +594,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
         } catch (error) {
             console.error('Error fetching theme list:', error);
-            showErrorModal(uncl_var.text.error_load_fetch);
+            //showErrorModal(uncl_var.text.error_load_fetch);
+            showModal_uncl(uncl_var.text.error_load_fetch, 'error');
             let progressBar = document.getElementById('themes-progressbar-uncl');
             if(progressBar) progressBar.style.display = 'none';
         }
@@ -686,6 +703,35 @@ function showErrorModal(errorMessage) {
     if (errorMessage) {
         let errorModal =  document.querySelector('#errorModal .modal-body');
         errorModal.innerHTML = `<h6 class="my-3">${errorMessage}</h6>`;
+    }
+    let myModal = new bootstrap.Modal(document.getElementById('errorModal'), {
+        keyboard: true
+    });
+    myModal.show();
+}
+
+
+function showModal_uncl(message , context) {
+    console.log('showModal_uncl:', message, context);
+    let classes ='bg-success';   
+    let icon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check2-circle" viewBox="0 0 16 16">
+            <path d="M2.5 8a5.5 5.5 0 0 1 8.25-4.764.5.5 0 0 0 .5-.866A6.5 6.5 0 1 0 14.5 8a.5.5 0 0 0-1 0 5.5 5.5 0 1 1-11 0"/>
+            <path d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0z"/>
+        </svg>`
+    let modalHeader = document.querySelector('#errorModal .modal-header');
+    modalHeader.classList.remove('bg-warning');
+    if(context=='error'){
+        classes = 'bg-warning';
+        icon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="30px" height="30px">
+                    <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+                    </svg>`
+        modalHeader.classList.add('bg-success');
+    }
+    modalHeader.classList.add(classes);
+    if (message) {
+        let successModal =  document.querySelector('#errorModal .modal-body');
+        successModal.innerHTML = `<h6 class="my-3">${message}</h6>`;
+        document.getElementById('errorModalLabel').innerHTML=icon
     }
     let myModal = new bootstrap.Modal(document.getElementById('errorModal'), {
         keyboard: true
