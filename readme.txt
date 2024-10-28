@@ -1,14 +1,14 @@
 === Unwanted Cleaner ===
 Contributors: presskopp, hassantafreshi
-Tags: plugins
+Tags: plugins, themes, core, clean, delete
 Requires at least: 6.5
 Requires PHP: 7.0
 Tested up to: 6.7
-Stable tag: 1.0.1
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URL: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 Donate link: https://presskopp.com#main-footer
-Unwanted plugins and themes are automatically removed during WordPress core updates, or you can delete them manually at any time. Management of these unwanted items is done directly from the WordPress admin dashboard.
+Unwanted plugins and themes are automatically removed during WordPress core updates, or you can delete them manually at any time in your dashboard.
 
 == Description ==
 
@@ -21,6 +21,7 @@ The **Unwanted Cleaner** plugin helps you automatically remove unnecessary plugi
 * '''Search Feature:''' Quickly find and add any plugin or theme to the unwanted list using a built-in search functionality.
 
 This plugin is ideal for users who wish to prevent unwanted items from being reinstalled during core updates or who prefer to keep their WordPress installation clean and optimized with minimal effort.
+Uninstall plugins and themes automatically by selecting them as unwanted.
 
 == Installation ==
 
@@ -36,9 +37,9 @@ Because you want a plugin to delete unwanted plugins and themes so your place wi
 
 =Why should I use this plugin=
 
-You don't need to! But if you don't like the fact of plugins and themes being automatically installed when you upgrade or reinstall your WordPress, this plugin may be for you.
+You don't need to! But if you don't like the fact of plugins and themes being automatically installed when you upgrade or reinstall WordPress, this plugin may be for you.
 
-=I install one plugin to get rid of two other plugins? Really?=
+=I install one plugin to get rid of other plugins? Really?=
 
 Yes. I can understand if you want to to the dirty work yourself. But if not, this plugin might be just the thing for you.
 Also if there are other plugins and themes you don't want to have installed on your website, you've come to the right place!
@@ -51,9 +52,16 @@ Since UC v1.0.1 you can search for any official plugin or theme you know the nam
 
 Version 1.0.1 introduces theme deletion, a refreshed user interface, and improved translation support
 
+== Screenshots ==
+1. Plugins Tab of Unwanted Cleaner
+2. Themes Tab of Unwanted Cleaner
+
 == Changelog ==
 
-= 1.0.1 =
+= 1.1.1 =
+*Bugfix: Version number mismatch*
+
+= 1.1 =
 *New feature: Themes can now be deleted, finally!*
 *Enhancement: Completely new and shiny UI/UX*
 *Bugfix: All strings, even error messages, are now translatable, oops*
