@@ -4,7 +4,7 @@ Tags: plugins, themes, core, clean, delete
 Requires at least: 6.5
 Requires PHP: 7.0
 Tested up to: 6.7
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 License: GPLv2 or later
 License URL: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 Donate link: https://presskopp.com#main-footer
@@ -57,6 +57,9 @@ Version 1.1.1 introduces theme deletion, a refreshed user interface, and improve
 2. Themes Tab of Unwanted Cleaner
 
 == Changelog ==
+
+= 1.1.2 =
+*Bugfix: Missing assets*
 
 = 1.1.1 =
 *Bugfix: Version number mismatch*

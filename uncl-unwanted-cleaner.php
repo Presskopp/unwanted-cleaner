@@ -3,7 +3,7 @@
 Plugin Name: Unwanted Cleaner
 Plugin URI: https://presskopp.com/unwanted-cleaner
 Description: This plugin removes unwanted plugins during the WordPress core upgrade process. You can manage the list of unwanted plugins from the settings page.
-Version: 1.1.1
+Version: 1.1.2
 Author: Presskopp
 Author URI: https://presskopp.com/
 License: GPL2
