@@ -285,7 +285,7 @@ class uncl_unwanted_cleaner {
             'close' => esc_html__('Close', 'unwanted-cleaner'),
 
             /* translators: %1$s and %2$s are HTML tags for opening and closing tag A and %3$s and %4$s are HTML tags for opening and closing tag A  */
-            'sponsor_context' => esc_html__('Thank you for using %1$s Unwanted Cleaner%2$s. If you like it, you may consider %3$s buying me a coffee%4$s', 'unwanted-cleaner'),
+            'sponsor_context' => esc_html__('Thank you for using %1$sUnwanted Cleaner%2$s. If you like it, you may consider %3$s buying me a coffee%4$s', 'unwanted-cleaner'),
             
             /* for future use */
             "files" => esc_html__('Files', 'unwanted-cleaner'),

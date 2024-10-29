@@ -14,7 +14,7 @@ Here some description how it works
 == Installation ==
 
 Upload the plugin to your blog/website, activate it.
-To manage the list of unwanted plugins, go to Settings > Unwanted Cleaner
+To manage the list of unwanted plugins and themes, click the Unwanted Cleaner icon in the Admin Menu
 
 == Frequently Asked Questions ==
 

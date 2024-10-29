@@ -15,10 +15,10 @@ Unwanted plugins and themes are automatically removed during WordPress core upda
 The **Unwanted Cleaner** plugin helps you automatically remove unnecessary plugins and themes from your WordPress site. Designed to streamline your site management, it ensures that any plugins or themes you designate as "unwanted" are deleted immediately after WordPress core updates. You can also manually remove unwanted plugins and themes at any time through a simple interface in the admin dashboard.
 
 === Key Features ===
-* '''Automatic Cleanups:''' Automatically removes specified plugins and themes after WordPress core updates, keeping your site clutter-free.
-* '''Manual Deletions:''' Easily delete unwanted plugins and themes from your admin dashboard whenever you choose, without waiting for an update.
-* '''Easy Management:''' Add or remove items from your unwanted list through an intuitive settings page.
-* '''Search Feature:''' Quickly find and add any plugin or theme to the unwanted list using a built-in search functionality.
+* **Automatic Cleanups:** Automatically removes specified plugins and themes after WordPress core updates, keeping your site clutter-free.
+* **Manual Deletions:** Easily delete unwanted plugins and themes from your admin dashboard whenever you choose, without waiting for an update.
+* **Easy Management:** Add or remove items from your unwanted list through an intuitive settings page.
+* **Search Feature:** Quickly find and add any plugin or theme to the unwanted list using a built-in search functionality.
 
 This plugin is ideal for users who wish to prevent unwanted items from being reinstalled during core updates or who prefer to keep their WordPress installation clean and optimized with minimal effort.
 Uninstall plugins and themes automatically by selecting them as unwanted.
@@ -26,7 +26,7 @@ Uninstall plugins and themes automatically by selecting them as unwanted.
 == Installation ==
 
 Upload the plugin to your blog/website, activate it.
-To manage the list of unwanted plugins, click the Unwanted Cleaner icon in the Admin Menu
+To manage the list of unwanted plugins and themes, click the Unwanted Cleaner icon in the Admin Menu
 
 == Frequently Asked Questions ==
 
@@ -46,11 +46,11 @@ Also if there are other plugins and themes you don't want to have installed on y
 
 = How do add a plugin or a theme to that unwanted list? =
 
-Since UC v1.0.1 you can search for any official plugin or theme you know the name of (or a part of it)
+Since UC v1.1.1 you can search for any official plugin or theme you know the name of (or a part of it)
 
 == Upgrade Notice ==
 
-Version 1.0.1 introduces theme deletion, a refreshed user interface, and improved translation support
+Version 1.1.1 introduces theme deletion, a refreshed user interface, and improved translation support
 
 == Screenshots ==
 1. Plugins Tab of Unwanted Cleaner
