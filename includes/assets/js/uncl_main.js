@@ -95,7 +95,7 @@ document.addEventListener("DOMContentLoaded", function() {
                             </div>
                             <a class="button button-primary" role="button" id="searchPlg-uncl">${uncl_var.text.search}</a>
                             <br><br>
-                            <p id="automatic_hint_plugins">${delete_ok ? replace_phrase_uncl(uncl_var.text.will_be_automatically_deleted,'plugins') : replace_phrase_uncl(uncl_var.text.can_be_manually_deleted ,'plugins')}</p>
+                            <p id="automatic_hint_plugins">${delete_ok ? replace_phrase_uncl(uncl_var.text.will_be_automatically_deleted, 'plugins') : replace_phrase_uncl(uncl_var.text.can_be_manually_deleted ,'plugins')}</p>
                         </div>
                         <div class="uncl selected-list" id="selectedList-uncl"></div>
                     </div>
@@ -459,11 +459,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (total_page == 0 && data.info && data.info.pages) {
 
                     //data.info.results
-                    total_page = data.info.pages;                                
+                    total_page = data.info.pages;
                 }
+
                 f_progressbar(total_page, page);
                 page += 1;
             } while (page <= total_page);
+
             listReceivedFromWP_uncl = data_filtered;
             fun_addItemToSelectedList(data_filtered, 'plugins');
         } catch (error) {
@@ -475,7 +477,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         fun_state_btn_searchPlguncl(0);
         return data_filtered;
-
     }
 
     // fetch the plugin list from the server https://api.wordpress.org/plugins/info/1.2/?action=query_plugins&request[search]=jetpack
@@ -483,11 +484,10 @@ document.addEventListener('DOMContentLoaded', function() {
         
         fun_state_btn_themes_searchPlguncl(1);
     
-        // Modify this function to use the themes API instead of the plugins API
         f_u = (lang , page , search) => {
             return `https://api.wordpress.org/themes/info/1.2/?action=query_themes&request[search]=${search}&request[per_page]=100&request[page]=${page}&request[locale]=${lang}`;
         }
-    
+
         f_progressbar = (total_page, page) => {
             let progressBar = document.getElementById('themes-progressbar-uncl')
             if (!progressBar){
@@ -501,7 +501,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 progressBar.innerHTML = `${r}%`;
             }
         }
-    
+
         let page = 1;
         let data_filtered = [];
         let total_page = 0;
@@ -643,36 +643,39 @@ function showErrorModal(errorMessage) {
 
 function showModal_uncl(message , context) {
 
-    let classes ='bg-success';   
-    let icon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check2-circle" viewBox="0 0 16 16">
+    let classes = 'bg-success';   
+    let icon = `<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-check2-circle" viewBox="0 0 16 16">
             <path d="M2.5 8a5.5 5.5 0 0 1 8.25-4.764.5.5 0 0 0 .5-.866A6.5 6.5 0 1 0 14.5 8a.5.5 0 0 0-1 0 5.5 5.5 0 1 1-11 0"/>
             <path d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0z"/>
         </svg>`
     let modalHeader = document.querySelector('#errorModal .modal-header');
+
     modalHeader.classList.remove('bg-warning');
-    if(context=='error'){
+
+    if( context == 'error' ) {
         classes = 'bg-warning';
-        icon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="30px" height="30px">
+        icon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="30" height="30">
                     <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
                     </svg>`
-        modalHeader.classList.add('bg-success');
+        modalHeader.classList.add('bg-warning');
     }
     modalHeader.classList.add(classes);
-    if (message) {
-        let successModal =  document.querySelector('#errorModal .modal-body');
+
+    if ( message ) {
+        let successModal = document.querySelector('#errorModal .modal-body');
         successModal.innerHTML = `<h6 class="my-3">${message}</h6>`;
-        document.getElementById('errorModalLabel').innerHTML=icon
+        document.getElementById('errorModalLabel').innerHTML=icon;
     }
+
     let myModal = new bootstrap.Modal(document.getElementById('errorModal'), {
         keyboard: true
     });
+
     myModal.show();
 }
 
 function replace_phrase_uncl(phrase, context) {
-    const s = uncl_var.text[context];
-    const replacement = phrase.indexOf('%s') === 0 ? s : s.toLowerCase();
-    return phrase.replace('%s', replacement);
+    return phrase.replace('%s', uncl_var.text[context]);
 }
 
 noti_box_uncl = (m, clss) => {

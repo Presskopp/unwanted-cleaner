@@ -89,15 +89,16 @@ class uncl_unwanted_cleaner {
         return !empty($plugins_to_delete);
     }
     public function uncl_delete_unwanted_themes() {
+
         $uncl_delete_unwanted_themes_list = get_option('uncl_unwanted_themes_list', false);
 
-        if($uncl_delete_unwanted_themes_list==false) return;
+        if ( $uncl_delete_unwanted_themes_list == false ) return;
         
         $installed_themes = wp_get_themes();
         $themes_list = str_replace( '\\', "",  $uncl_delete_unwanted_themes_list );
         $slugs = [];        
-        $themes =json_decode($themes_list, true);
-        foreach ($themes as $theme) {
+        $themes = json_decode($themes_list, true);
+        foreach ( $themes as $theme ) {
                 $slug =  $theme['slug'];
                 array_push($slugs, $slug);
         }
@@ -105,18 +106,39 @@ class uncl_unwanted_cleaner {
         // Go through all of the installed themes so if a theme is active, it won't be deleted
         $active_theme = wp_get_theme()->get_stylesheet();
 
-        foreach ($installed_themes as $themes_file => $_) {
+        foreach ( $installed_themes as $themes_file => $_ ) {
             // Get the slug (directory name) of the theme
             $theme_slug = basename($themes_file);
             
             // Skip the active theme
-            if ($theme_slug === $active_theme) {
+            if ( $theme_slug === $active_theme ) {
                 continue;
             }
-            
+
             // Check if the theme is in the list of slugs to be deleted
-            if (in_array($theme_slug, $slugs)) {
-                delete_theme($theme_slug);
+            if ( in_array( $theme_slug, $slugs ) ) {
+
+                //delete_theme( $theme_slug );
+
+                error_log("Theme gefunden: " . $theme_slug );
+
+                // Try to delete the theme
+                try {
+                    $result = delete_theme($theme_slug);
+                    
+                    // Check if deleting of theme was successfull
+                    if ( !$result ) {
+                        throw new Exception("ERROR: The theme '$theme_slug' could not be deleted.");
+                    }
+                
+                    echo "Theme '$theme_slug' wurde erfolgreich gelöscht.";
+                    error_log("The theme '$theme_slug' has been deleted.");
+                
+                } catch ( Exception $e ) {
+                    // Fehlermeldung ausgeben und im Log speichern, falls das Löschen fehlschlägt
+                    echo "Fehler: " . $e->getMessage();
+                    error_log("ERROR: Error deleting theme '$theme_slug': " . $e->getMessage());
+                }
             }
         }
 
@@ -128,6 +150,8 @@ class uncl_unwanted_cleaner {
         $option_delete_plugins = get_option('uncl_state_delete_plugins' ,false);
         $option_delete_themes = get_option('uncl_state_delete_themes' ,false);
 
+        // type = core / translation
+
         if ($options['action'] === 'update' && $options['type'] === 'core') {
             
             if ( $option_delete_plugins != false ) {
@@ -135,7 +159,7 @@ class uncl_unwanted_cleaner {
             }
 
             if ( $option_delete_themes != false ) {
-                $this->uncl_delete_unwanted_themes();              
+                $this->uncl_delete_unwanted_themes();
             }
         }
     }

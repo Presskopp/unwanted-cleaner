@@ -26,8 +26,7 @@ if (!defined("UNCL_PLUGIN_VERSION")) {
 }
 
 if (!defined("UNCL_BOOTSTRAP_VERSION")) {
-    // 2DO: new version 5.3.3
-    define("UNCL_BOOTSTRAP_VERSION", "5.1.3");
+    define("UNCL_BOOTSTRAP_VERSION", "5.3.3");
 }
 
 /** Constant pointing to the root directory URL of the plugin */
