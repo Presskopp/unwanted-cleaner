@@ -1,0 +1,115 @@
+.uncl.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.uncl.dropdown input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px;
+}
+
+.uncl.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    max-height: 200px;
+    overflow-y: auto;
+    width: 100%;
+    border-radius: 2px;
+}
+
+.uncl.dropdown-content div {
+    padding: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.uncl.dropdown-content div img {
+    margin-right: 10px;
+    width: 30px;
+    height: 30px;
+}
+
+.uncl.dropdown-content div:hover {
+    background-color: #ddd;
+}
+
+.uncl.selected-list {
+    margin-top: 20px;
+}
+
+.uncl.selected-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.uncl.selected-item img {
+    margin-right: 10px;
+    width: 30px;
+    height: 30px;
+}
+
+.uncl.remove-icon {
+    margin-left: 10px;
+    cursor: pointer;
+    color: red;
+}
+
+.uncl.item-row {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.uncl.item-row input {
+    margin-right: 10px;
+    padding: 5px;
+}
+
+.uncl.item-row .remove-button {
+    margin-left: 10px;
+    cursor: pointer;
+    color: red;
+    font-size: 20px;
+}
+
+.plugin-icon {
+    width: 70px!important;
+    height: 70px!important;
+}
+
+.plugin-card .name, .plugin-card .desc > p {
+    margin-left: 80px!important;
+}
+
+#delete_checkbox_section, #themes_delete_checkbox_section{
+    clear: both;
+}
+
+.plugin-card .name, .plugin-card .desc > p {
+    width: 50%;
+}
+
+#searchPlg-uncl, #themes-searchPlg-uncl {
+    margin: 10px;
+}
+
+p#automatic_hint_plugins, p#automatic_hint_themes {
+    font-size: 1.1em;
+}
+
+/* this needs more love */
+@media screen and (max-width: 1100px) and (min-width: 783px) {
+	.plugin-card .name, .plugin-card .desc > p {
+    margin-left: 105px !important;
+    margin-top: -20px;
+    }
+}
+.modal-header .bg-bg-success{
+    background-color: #00a32a!important;
+}
