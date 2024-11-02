@@ -10,6 +10,7 @@ License URL: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 Donate link: https://presskopp.com#main-footer
 Unwanted plugins and themes are automatically removed during WordPress core updates, or you can delete them manually at any time in your dashboard.
 
+
 == Description ==
 
 The **Unwanted Cleaner** plugin helps you automatically remove unnecessary plugins and themes from your WordPress site. Designed to streamline your site management, it ensures that any plugins or themes you designate as "unwanted" are deleted immediately after WordPress core updates. You can also manually remove unwanted plugins and themes at any time through a simple interface in the admin dashboard.
@@ -73,5 +74,7 @@ Version 1.1.1 introduces theme deletion, a refreshed user interface, and improve
 *Enhancement: Completely new and shiny UI/UX*
 *Bugfix: All strings, even error messages, are now translatable, oops*
 
+
 = 1.0.0 =
 *Initial Release*
+
