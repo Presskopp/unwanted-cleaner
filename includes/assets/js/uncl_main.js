@@ -184,6 +184,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 function fun_handle_uncl(state){
     //delete duplicate
+    console.log(state);
     const pluginlist_uncl_ = pluginlist_uncl.filter((v,i,a)=>a.findIndex(t=>(t.slug === v.slug))===i);
     const themelist_uncl_ = themelist_uncl.filter((v,i,a)=>a.findIndex(t=>(t.slug === v.slug))===i);
     const plugin_list = JSON.stringify(pluginlist_uncl_);
@@ -193,6 +194,18 @@ function fun_handle_uncl(state){
 
     let el = state=='delete_plugins' ? document.getElementById(`deleteButton`) : document.getElementById(`themes-deleteButton`);
     const d = el.innerHTML;
+
+    delete_ok_cb_s = () =>{
+        const delete_ok_cb_ = sessionStorage.getItem('delete_ok_cb');
+       // console.log(delete_ok_cb_);
+        if(state=='auto' && delete_ok_cb_==1 ){
+            let delete_ok_cb = document.querySelectorAll('.delete_ok_cb');
+            delete_ok_cb.forEach(cb => {
+               // console.log( cb.disabled);
+                cb.classList.remove('disabled');
+            });
+        }
+    }
 
     el.blur();
     if(state == 'delete_themes' || state == 'delete_plugins'){
@@ -217,6 +230,7 @@ function fun_handle_uncl(state){
             };
 
         $.post(uncl_var.ajaxurl, data, function (res) {
+            delete_ok_cb_s();
             if(res.data.success == true){
                 msg = res.data.m;
                 clss= "success";
@@ -234,6 +248,9 @@ function fun_handle_uncl(state){
                 }
             }  
         })
+
+
+      
         return true;
     });
 }
@@ -406,8 +423,13 @@ document.addEventListener('DOMContentLoaded', function() {
     let delete_ok_cb = document.querySelectorAll('.delete_ok_cb');
     delete_ok_cb.forEach(function(cb) {
         cb.addEventListener('click', function() {
+            console.log('click event happen!');
             let context = this.getAttribute('data-context');
             let automaticHint = document.getElementById('automatic_hint_' + context);
+            
+            sessionStorage.setItem('delete_ok_cb',1);
+            cb.className ='delete_ok_cb disabled test';
+            console.log(cb);
             fun_handle_uncl('auto');
             
             if (this.checked) {
