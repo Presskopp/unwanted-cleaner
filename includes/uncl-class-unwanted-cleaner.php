@@ -14,8 +14,8 @@ class uncl_unwanted_cleaner {
 
         $this->uncl_unwanted_options = 'uncl_unwanted_plugins_list';
 
-        register_activation_hook(UNCL_PLUGIN_FILE, array($this, 'uncl_activate'));
-        register_deactivation_hook(UNCL_PLUGIN_FILE, array($this, 'uncl_deactivate'));
+       /*  register_activation_hook(UNCL_PLUGIN_FILE, array($this, 'uncl_activate'));
+        register_deactivation_hook(UNCL_PLUGIN_FILE, array($this, 'uncl_deactivate')); */
 
         // Initialisation
         add_action('init', array($this, 'uncl_init'));
@@ -31,10 +31,10 @@ class uncl_unwanted_cleaner {
             add_action('admin_menu', array($this, 'add_admin_menu'));
 
             // Fires when admin panel is initialised
-            add_action('admin_init', array($this, 'uncl_register_settings'));
+            //add_action('admin_init', array($this, 'uncl_register_settings'));
 
             // Fires on plugin activation
-            add_action('activated_plugin', array($this, 'uncl_on_plugin_activation'));
+            // add_action('activated_plugin', array($this, 'uncl_on_plugin_activation'));
 
             // Ajax handler
             add_action('wp_ajax_uncl_handler', array($this, 'uncl_unwanted_plugins_handler'));
@@ -206,20 +206,17 @@ class uncl_unwanted_cleaner {
         return $wp_filesystem->delete($file, $recursive, $type);
     }
 
-    public function uncl_on_plugin_activation($plugin) {
+    /* public function uncl_on_plugin_activation($plugin) {
         if ( $plugin === plugin_basename( UNCL_PLUGIN_FILE ) ) $this->uncl_activate();
-    }
+    } */
 
-    public function uncl_activate() {
-        $default_options = array('hello-dolly');
-        update_option($this->uncl_unwanted_options, $default_options);
-        update_option('uncl_unwanted_cleaner_active', true);
+ /*    public function uncl_activate() {
+ 
     }
 
     public function uncl_deactivate() {
-        delete_option($this->uncl_unwanted_options);
-        delete_option('uncl_unwanted_cleaner_active');
-    }
+       
+    } */
 
     public function uncl_init() {
         load_plugin_textdomain(
@@ -227,13 +224,13 @@ class uncl_unwanted_cleaner {
             false,
             UNCL_PLUGIN_URL . "/languages"
         );
-        if ( is_admin() && current_user_can('manage_options') && get_option('uncl_unwanted_cleaner_active') ) {
+        if ( is_admin() && current_user_can('manage_options') ) {
             $this->uncl_load_unwanted_plugins();
         }
     }
 
     public function uncl_load_unwanted_plugins() {
-        $this->uncl_unwanted_plugins = get_option($this->uncl_unwanted_options, array());
+        $this->uncl_unwanted_plugins = get_option('uncl_unwanted_plugins_list', false);
         $this->uncl_unwanted_themes = get_option('uncl_unwanted_themes_list', false);
     }
 
@@ -241,9 +238,9 @@ class uncl_unwanted_cleaner {
         add_menu_page('Unwanted Cleaner', 'Unwanted Cleaner', 'manage_options', 'unwanted-cleaner', array($this, 'uncl_init_admin_page'), ''.UNCL_PLUGIN_URL . '/includes/assets/img/icon.png', 100);
     }
 
-    public function uncl_register_settings() {
-        register_setting('unwanted_cleaner_group', $this->uncl_unwanted_options, array($this, 'uncl_sanitize_plugins_list'));
-    }
+    /* public function uncl_register_settings() {
+        //register_setting('unwanted_cleaner_group', $this->uncl_unwanted_options, array($this, 'uncl_sanitize_plugins_list'));
+    } */
 
 	public function uncl_sanitize_plugins_list($input) {
         return explode("\n", sanitize_textarea_field($input));

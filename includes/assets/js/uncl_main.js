@@ -124,7 +124,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         </div>
                         <a class="button button-primary" role="button" id="themes-searchPlg-uncl">${uncl_var.text.search}</a>
                         <br><br>
-                        <p id="automatic_hint_themes">${delete_ok ? replace_phrase_uncl(uncl_var.text.will_be_automatically_deleted, 'themes') : replace_phrase_uncl(uncl_var.text.can_be_manually_deleted ,'themes')}</p>
+                        <p id="automatic_hint_themes">${delete_ok_themes ? replace_phrase_uncl(uncl_var.text.will_be_automatically_deleted, 'themes') : replace_phrase_uncl(uncl_var.text.can_be_manually_deleted ,'themes')}</p>
                     </div>
                     <div class="uncl selected-list" id="themes-selectedList-uncl"></div>
                 </div>
@@ -279,7 +279,7 @@ document.addEventListener('DOMContentLoaded', function() {
             items.forEach(item => {
                 const itemElement = document.createElement('div');
                 itemElement.innerHTML = `<img src="${item.icons['1x'] ?? item.icons['default']}" alt="${item.name}"><span>${item.name}</span>`;
-                itemElement.addEventListener('click', () => addItemToSelectedList(item, context,false));
+                itemElement.addEventListener('click', () => addItemToSelectedList(item, context,true));
                 dropdown.appendChild(itemElement);
             });
         }
@@ -329,7 +329,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Add item to selected list
     function addItemToSelectedList(item, context, isClick = true) {
-        console.log(isClick);
+  
         if (!item.name) {
             return console.error("Plugin name missing.");
         }
