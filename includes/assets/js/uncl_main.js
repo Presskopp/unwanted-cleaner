@@ -194,7 +194,7 @@ function fun_handle_uncl(state){
 
     let el = state=='delete_plugins' ? document.getElementById(`deleteButton`) : document.getElementById(`themes-deleteButton`);
     const d = el.innerHTML;
-
+   
     delete_ok_cb_s = () =>{
         const delete_ok_cb_ = sessionStorage.getItem('delete_ok_cb');
        // console.log(delete_ok_cb_);
@@ -213,6 +213,7 @@ function fun_handle_uncl(state){
         const context = state == 'delete_themes' ? 'themes' : 'plugins';
         const deleting = replace_phrase_uncl(uncl_var.text.deleting, context);
         el.innerHTML=deleting;
+        el.disabled = true;
     }
 
     data = {};
@@ -237,6 +238,7 @@ function fun_handle_uncl(state){
                 clss= "success";
                 if(state!='save'){ 
                      el.innerHTML = d;
+                     el.disabled = false;
                     showModal_uncl(msg, 'success');
                 }
             } else {
