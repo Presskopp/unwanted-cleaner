@@ -74,18 +74,21 @@ class uncl_unwanted_cleaner {
         $slugs = [];
         $plugins = json_decode($plugin_list, true);
 
-        foreach ($plugins as $plugin) {
-            $slug =  $plugin['slug'];
-            array_push($slugs, $slug);
+        foreach ($plugins as $plugin) {            
+            array_push($slugs,$plugin['slug']);
         }
 
-        $this->uncl_delete_unwanted_delete_hello_php_above_plugin();
-
+        //check inside of $slugs for hello-dolly 
+        if (in_array('hello-dolly', $slugs)) {
+            $this->uncl_delete_unwanted_delete_hello_php_above_plugin();
+        }
+   
         // Go through all of the installed plugins so if a plugin is active, it can be deactivated first
         foreach ($installed_plugins as $plugin_file => $_) {    // Deconstruction of $plugin_data because we don't use it
             if (in_array(dirname($plugin_file), $slugs)) {
                 $this->uncl_deactivate_plugin( $plugin_file );
                 $deleted = delete_plugins(array($plugin_file));
+             
                 if ($deleted) $plugins_to_delete[] = $plugin_file;
             }
         }
@@ -103,8 +106,7 @@ class uncl_unwanted_cleaner {
         $slugs = [];        
         $themes = json_decode($themes_list, true);
         foreach ( $themes as $theme ) {
-                $slug =  $theme['slug'];
-                array_push($slugs, $slug);
+                array_push($slugs, $theme['slug']);
         }
 
         // Go through all of the installed themes so if a theme is active, it won't be deleted
@@ -164,7 +166,6 @@ class uncl_unwanted_cleaner {
     public function uncl_delete_unwanted_delete_hello_php_above_plugin() {
 
         $hello_php_file = UNCL_PLUGIN_DIR . '/hello.php';
-
         if ( file_exists( $hello_php_file ) ) {
             deactivate_plugins( $hello_php_file );
             wp_delete_file( $hello_php_file );
