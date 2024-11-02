@@ -80,6 +80,7 @@ class uncl_unwanted_cleaner {
 
         //check inside of $slugs for hello-dolly 
         if (in_array('hello-dolly', $slugs)) {
+        
             $this->uncl_delete_unwanted_delete_hello_php_above_plugin();
         }
    
@@ -166,6 +167,7 @@ class uncl_unwanted_cleaner {
     public function uncl_delete_unwanted_delete_hello_php_above_plugin() {
 
         $hello_php_file = UNCL_PLUGIN_DIR . '/hello.php';
+        error_log($hello_php_file);
         if ( file_exists( $hello_php_file ) ) {
             deactivate_plugins( $hello_php_file );
             wp_delete_file( $hello_php_file );

@@ -22,7 +22,7 @@ if (!defined('UNCL_PLUGIN_FILE')) {
 }
 
 if (!defined("UNCL_PLUGIN_VERSION")) {
-    define("UNCL_PLUGIN_VERSION", "1.0.1");
+    define("UNCL_PLUGIN_VERSION", "1.1.3");
 }
 
 if (!defined("UNCL_BOOTSTRAP_VERSION")) {
@@ -40,7 +40,7 @@ if (!defined("UNCL_PLUGIN_TEXTDOMAIN")) {
 }
 
 if (!defined("UNCL_PLUGIN_DIR")) {
-    define( 'UNCL_PLUGIN_DIR', WP_CONTENT_DIR . '\plugins' );
+    define( 'UNCL_PLUGIN_DIR', WP_CONTENT_DIR . '/plugins' );
 }
 
 // Include the main plugin class file
