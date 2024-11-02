@@ -203,6 +203,7 @@ function fun_handle_uncl(state){
             delete_ok_cb.forEach(cb => {
                // console.log( cb.disabled);
                 cb.classList.remove('disabled');
+                cb.disabled = false;
             });
         }
     }
@@ -278,7 +279,7 @@ document.addEventListener('DOMContentLoaded', function() {
             items.forEach(item => {
                 const itemElement = document.createElement('div');
                 itemElement.innerHTML = `<img src="${item.icons['1x'] ?? item.icons['default']}" alt="${item.name}"><span>${item.name}</span>`;
-                itemElement.addEventListener('click', () => addItemToSelectedList(item, context));
+                itemElement.addEventListener('click', () => addItemToSelectedList(item, context,false));
                 dropdown.appendChild(itemElement);
             });
         }
@@ -327,8 +328,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Add item to selected list
-    function addItemToSelectedList(item, context) {
-
+    function addItemToSelectedList(item, context, isClick = true) {
+        console.log(isClick);
         if (!item.name) {
             return console.error("Plugin name missing.");
         }
@@ -358,7 +359,9 @@ document.addEventListener('DOMContentLoaded', function() {
         dropdownListElement.innerHTML = '';
         dropdownListElement.style.display = 'none';
 
-        addToListFunction(item);
+        if (isClick) {
+            addToListFunction(item);
+        }
     }
 
     // Remove item from selected list
@@ -376,6 +379,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         setTimeout(() => {
+           
             fun_handle_uncl('save');
         }, 100);
     }
@@ -428,7 +432,8 @@ document.addEventListener('DOMContentLoaded', function() {
             let automaticHint = document.getElementById('automatic_hint_' + context);
             
             sessionStorage.setItem('delete_ok_cb',1);
-            cb.className ='delete_ok_cb disabled test';
+            cb.className ='delete_ok_cb disabled';
+            cb.disabled = true;
             console.log(cb);
             fun_handle_uncl('auto');
             
@@ -574,6 +579,7 @@ document.addEventListener('DOMContentLoaded', function() {
         pluginlist_uncl.push({ name: item.name, slug: item.slug, icon: icon });
 
         setTimeout(() => {
+            console.log('save!!!');
             fun_handle_uncl('save');
         }, 100);
     }
@@ -608,11 +614,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     pluginlist_uncl.forEach(plugin => {
-        addItemToSelectedList(plugin , 'plugins');
+        addItemToSelectedList(plugin , 'plugins' , false);
     });
 
     themelist_uncl.forEach(theme => {
-        addItemToSelectedList(theme , 'themes');
+        addItemToSelectedList(theme , 'themes' , false);
     });
 
     function applyStylesToPluginCards() {
@@ -664,7 +670,12 @@ function showErrorModal(errorMessage) {
 }
 
 function showModal_uncl(message , context) {
-
+    
+    //modal-backdrop
+    const modalBackdrop = document.querySelector('.modal-backdrop');
+    if (modalBackdrop) {
+        return;
+    }
     let classes = 'bg-success';   
     let icon = `<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-check2-circle" viewBox="0 0 16 16">
             <path d="M2.5 8a5.5 5.5 0 0 1 8.25-4.764.5.5 0 0 0 .5-.866A6.5 6.5 0 1 0 14.5 8a.5.5 0 0 0-1 0 5.5 5.5 0 1 1-11 0"/>
