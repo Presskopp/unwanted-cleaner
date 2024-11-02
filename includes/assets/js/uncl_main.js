@@ -184,7 +184,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
 function fun_handle_uncl(state){
     //delete duplicate
-    console.log(state);
     const pluginlist_uncl_ = pluginlist_uncl.filter((v,i,a)=>a.findIndex(t=>(t.slug === v.slug))===i);
     const themelist_uncl_ = themelist_uncl.filter((v,i,a)=>a.findIndex(t=>(t.slug === v.slug))===i);
     const plugin_list = JSON.stringify(pluginlist_uncl_);
@@ -197,11 +196,9 @@ function fun_handle_uncl(state){
    
     delete_ok_cb_s = () =>{
         const delete_ok_cb_ = sessionStorage.getItem('delete_ok_cb');
-       // console.log(delete_ok_cb_);
         if(state=='auto' && delete_ok_cb_==1 ){
             let delete_ok_cb = document.querySelectorAll('.delete_ok_cb');
             delete_ok_cb.forEach(cb => {
-               // console.log( cb.disabled);
                 cb.classList.remove('disabled');
                 cb.disabled = false;
             });
@@ -429,14 +426,12 @@ document.addEventListener('DOMContentLoaded', function() {
     let delete_ok_cb = document.querySelectorAll('.delete_ok_cb');
     delete_ok_cb.forEach(function(cb) {
         cb.addEventListener('click', function() {
-            console.log('click event happen!');
             let context = this.getAttribute('data-context');
             let automaticHint = document.getElementById('automatic_hint_' + context);
             
             sessionStorage.setItem('delete_ok_cb',1);
             cb.className ='delete_ok_cb disabled';
             cb.disabled = true;
-            console.log(cb);
             fun_handle_uncl('auto');
             
             if (this.checked) {
@@ -581,7 +576,6 @@ document.addEventListener('DOMContentLoaded', function() {
         pluginlist_uncl.push({ name: item.name, slug: item.slug, icon: icon });
 
         setTimeout(() => {
-            console.log('save!!!');
             fun_handle_uncl('save');
         }, 100);
     }

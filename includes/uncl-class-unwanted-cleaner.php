@@ -68,12 +68,14 @@ class uncl_unwanted_cleaner {
         $installed_plugins = get_plugins();
         $plugins_to_delete = array();  
         $this->uncl_unwanted_plugins = get_option('uncl_unwanted_plugins_list', false);
+        error_log(print_r($this->uncl_unwanted_plugins, true));
         $plugin_list = str_replace( '\\', "",  $this->uncl_unwanted_plugins );
+
         $slugs = [];
-        $plugins = json_decode($plugin_list[0]);
+        $plugins = json_decode($plugin_list, true);
 
         foreach ($plugins as $plugin) {
-            $slug =  $plugin->slug;
+            $slug =  $plugin['slug'];
             array_push($slugs, $slug);
         }
 
