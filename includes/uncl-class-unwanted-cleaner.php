@@ -21,7 +21,9 @@ class uncl_unwanted_cleaner {
         add_action('init', array($this, 'uncl_init'));
 
         // fires after upgrade of core, themes or plugins
-        add_action('upgrader_process_complete', array($this, 'uncl_delete_unwanted_items_after_core_upgrade'), 10, 2);
+        //add_action('upgrader_process_complete', array($this, 'uncl_delete_unwanted_items_after_core_upgrade'), 10, 2);
+        add_action('upgrader_process_complete', array($this, 'uncl_core_upgrade_flag'), 10, 2);
+        add_action('shutdown',array($this, 'uncl_delete_unwanted_shutdown'), 10, 2);
 
         // Add admin-specific hooks only if in the admin area
         if ( is_admin() ) {
@@ -118,10 +120,6 @@ class uncl_unwanted_cleaner {
             // Check if the theme is in the list of slugs to be deleted
             if ( in_array( $theme_slug, $slugs ) ) {
 
-                //delete_theme( $theme_slug );
-
-                error_log("Theme gefunden: " . $theme_slug );
-
                 // Try to delete the theme
                 try {
                     $result = delete_theme($theme_slug);
@@ -130,13 +128,7 @@ class uncl_unwanted_cleaner {
                     if ( !$result ) {
                         throw new Exception("ERROR: The theme '$theme_slug' could not be deleted.");
                     }
-                
-                    echo "Theme '$theme_slug' wurde erfolgreich gelöscht.";
-                    error_log("The theme '$theme_slug' has been deleted.");
-                
                 } catch ( Exception $e ) {
-                    // Fehlermeldung ausgeben und im Log speichern, falls das Löschen fehlschlägt
-                    echo "Fehler: " . $e->getMessage();
                     error_log("ERROR: Error deleting theme '$theme_slug': " . $e->getMessage());
                 }
             }
@@ -145,22 +137,24 @@ class uncl_unwanted_cleaner {
         return !empty($plugins_to_delete);
     }
 
-    public function uncl_delete_unwanted_items_after_core_upgrade($upgrader_object, $options) {
-
-        $option_delete_plugins = get_option('uncl_state_delete_plugins' ,false);
-        $option_delete_themes = get_option('uncl_state_delete_themes' ,false);
-
-        // type = core / translation
-
+    public function uncl_core_upgrade_flag($upgrader_object, $options){
         if ($options['action'] === 'update' && $options['type'] === 'core') {
-            
-            if ( $option_delete_plugins != false ) {
-                $this->uncl_delete_unwanted_plugins();
-            }
+            update_option('uncl_core_upgrade_flag', true);           
+        }
+    }
 
-            if ( $option_delete_themes != false ) {
-                $this->uncl_delete_unwanted_themes();
-            }
+    public function uncl_delete_unwanted_shutdown(){
+
+            if (get_option('uncl_core_upgrade_flag')) {
+                delete_option('uncl_core_upgrade_flag');
+
+                if ( get_option('uncl_state_delete_plugins') ) {
+                    $this->uncl_delete_unwanted_plugins();
+                }
+    
+                if ( get_option('uncl_state_delete_themes') ) {
+                    $this->uncl_delete_unwanted_themes();
+                }
         }
     }
 
