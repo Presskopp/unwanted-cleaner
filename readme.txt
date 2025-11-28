@@ -3,13 +3,12 @@ Contributors: presskopp, hassantafreshi
 Tags: plugins, themes, core, clean, delete
 Requires at least: 6.5
 Requires PHP: 7.0
-Tested up to: 6.7
-Stable tag: 1.1.3
+Tested up to: 6.8
+Stable tag: 1.1.4
 License: GPLv2 or later
 License URL: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 Donate link: https://presskopp.com#main-footer
 Unwanted plugins and themes are automatically removed during WordPress core updates, or you can delete them manually at any time in your dashboard.
-
 
 == Description ==
 
@@ -59,6 +58,9 @@ Version 1.1.1 introduces theme deletion, a refreshed user interface, and improve
 
 == Changelog ==
 
+= 1.1.4 =
+*Tested against WP v6.8*
+
 = 1.1.3 =
 *Bugfix: Themes didn't get deleted always*
 *Bugfix: Some small errors got fixed*
@@ -74,7 +76,5 @@ Version 1.1.1 introduces theme deletion, a refreshed user interface, and improve
 *Enhancement: Completely new and shiny UI/UX*
 *Bugfix: All strings, even error messages, are now translatable, oops*
 
-
 = 1.0.0 =
 *Initial Release*
-
