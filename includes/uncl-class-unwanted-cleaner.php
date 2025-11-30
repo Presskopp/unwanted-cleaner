@@ -67,8 +67,7 @@ class uncl_unwanted_cleaner {
 
         $installed_plugins = get_plugins();
         $plugins_to_delete = array();  
-        $this->uncl_unwanted_plugins = get_option('uncl_unwanted_plugins_list', false);
-        error_log(print_r($this->uncl_unwanted_plugins, true));
+        $this->uncl_unwanted_plugins = get_option('uncl_unwanted_plugins_list', false);        
         $plugin_list = str_replace( '\\', "",  $this->uncl_unwanted_plugins );
 
         $slugs = [];
@@ -134,7 +133,7 @@ class uncl_unwanted_cleaner {
                         throw new Exception("ERROR: The theme '$theme_slug' could not be deleted.");
                     }
                 } catch ( Exception $e ) {
-                    error_log("ERROR: Error deleting theme '$theme_slug': " . $e->getMessage());
+
                 }
             }
         }
@@ -167,7 +166,6 @@ class uncl_unwanted_cleaner {
     public function uncl_delete_unwanted_delete_hello_php_above_plugin() {
 
         $hello_php_file = UNCL_PLUGIN_DIR . '/hello.php';
-        error_log($hello_php_file);
         if ( file_exists( $hello_php_file ) ) {
             deactivate_plugins( $hello_php_file );
             wp_delete_file( $hello_php_file );
@@ -224,11 +222,6 @@ class uncl_unwanted_cleaner {
     } */
 
     public function uncl_init() {
-        load_plugin_textdomain(
-            UNCL_PLUGIN_TEXTDOMAIN,
-            false,
-            UNCL_PLUGIN_URL . "/languages"
-        );
         if ( is_admin() && current_user_can('manage_options') ) {
             $this->uncl_load_unwanted_plugins();
         }
@@ -259,14 +252,14 @@ class uncl_unwanted_cleaner {
             "can_be_manually_deleted" => sprintf(
                 /* translators: %1$s will be replaced by either 'Themes' or 'Plugins', %2$s and %3$s are HTML tags for bold text. */
                 esc_html__('%1$s shown below will %2$snot%3$s be automatically deleted, unless you check the checkbox below.', 'unwanted-cleaner'), 
-                esc_html__('%s', 'unwanted-cleaner'),
+                '%s',
                 '<b>',
                 '</b>'
             ),
             "will_be_automatically_deleted" => sprintf(
                 /* translators: %1$s will be replaced by either 'Themes' or 'Plugins', %2$s and %3$s are HTML tags for bold text. */
                 esc_html__('%1$s shown below will be %2$sautomatically%3$s deleted as soon as a core upgrade has taken place.', 'unwanted-cleaner'),
-                esc_html__('%s', 'unwanted-cleaner'),
+                '%s',
                 '<b>',
                 '</b>'
             ),
@@ -344,11 +337,11 @@ class uncl_unwanted_cleaner {
             wp_send_json_success(array('success' => false, 'm' => esc_html__('Insufficient permissions', 'unwanted-cleaner')), 401);
         }
 
-        $state = !empty($_POST['state']) ? sanitize_text_field($_POST['state']) : '';
-        $plugin_list = !empty($_POST['plugin_list']) ? sanitize_text_field($_POST['plugin_list']) : '';
-        $theme_list = !empty($_POST['theme_list']) ? sanitize_text_field($_POST['theme_list']) : '';
-        $delete_ok_plugins = !empty($_POST['delete_ok_plugins']) ? sanitize_text_field($_POST['delete_ok_plugins']) : '';
-        $delete_ok_themes = !empty($_POST['delete_ok_themes']) ? sanitize_text_field($_POST['delete_ok_themes']) : '';
+        $state = !empty($_POST['state']) ? sanitize_text_field(wp_unslash($_POST['state'])) : '';
+        $plugin_list = !empty($_POST['plugin_list']) ? sanitize_text_field(wp_unslash($_POST['plugin_list'])) : '';
+        $theme_list = !empty($_POST['theme_list']) ? sanitize_text_field(wp_unslash($_POST['theme_list'])) : '';
+        $delete_ok_plugins = !empty($_POST['delete_ok_plugins']) ? sanitize_text_field(wp_unslash($_POST['delete_ok_plugins'])) : '';
+        $delete_ok_themes = !empty($_POST['delete_ok_themes']) ? sanitize_text_field(wp_unslash($_POST['delete_ok_themes'])) : '';
         $message = esc_html__('Settings saved successfully.', 'unwanted-cleaner');
 
         if( $state == 'save' ) {

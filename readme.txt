@@ -3,8 +3,8 @@ Contributors: presskopp, hassantafreshi
 Tags: plugins, themes, core, clean, delete
 Requires at least: 6.5
 Requires PHP: 7.0
-Tested up to: 6.8
-Stable tag: 1.1.4
+Tested up to: 6.9
+Stable tag: 1.1.5
 License: GPLv2 or later
 License URL: https://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 Donate link: https://presskopp.com#main-footer
@@ -57,6 +57,10 @@ Version 1.1.1 introduces theme deletion, a refreshed user interface, and improve
 2. Themes Tab of Unwanted Cleaner
 
 == Changelog ==
+
+= 1.1.5 =
+*Enhancement: Some security features added*
+*Tested against WP v6.9*
 
 = 1.1.4 =
 *Tested against WP v6.8*

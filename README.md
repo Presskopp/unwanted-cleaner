@@ -50,6 +50,9 @@ Since version 1.0.1, you can search for any official plugin or theme by name (or
 
 ## Changelog
 
+### 1.1.5
+- **Enhancement:** Some security features added
+
 ### 1.1.1
 - **Bugfix:** Version number mismatch
 
