@@ -52,14 +52,25 @@ Since version 1.0.1, you can search for any official plugin or theme by name (or
 
 ### 1.1.5
 - **Enhancement:** Some security features added
+- Tested against WP v6.9
+
+### 1.1.4
+- Tested against WP v6.8
+
+### 1.1.3
+- **Bugfix:** Themes didn't get deleted always
+- **Bugfix:** Some small errors got fixed
+
+### 1.1.2
+- **Bugfix:** Missing assets
 
 ### 1.1.1
 - **Bugfix:** Version number mismatch
 
 ### 1.1
-- **New Feature:** Theme deletion capability added
-- **Enhancement:** New and improved UI/UX
-- **Bugfix:** Improved translation for all strings, including error messages
+- **New Feature:** Themes can now be deleted, finally!
+- **Enhancement:** Completely new and shiny UI/UX
+- **Bugfix:** All strings, even error messages, are now translatable, oops
 
 ### 1.0.0
 - Initial Release
